@@ -1,0 +1,47 @@
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+    ##### EXCLUIR DEPOIS ESSE NOME FIXO DE LOCALHOST
+    hostname: localhost
+  client:
+    service-url:
+      defaultZone: ${DEFAULT_ZONE:http://localhost:8761/eureka}
+
+
+products:
+  api:
+    # FAZER PARECIDO COM ISSO PARA O DOCKER ${DEFAULT_ZONE:http://localhost:8761/eureka}
+    url: http://localhost:8080/api/v1/products
+
+
+spring:
+  application:
+    name: delivery
+  datasource:
+    driverClassName: org.h2.Driver
+    password: '1234'
+    username: root
+    url: jdbc:h2:file:./delivery
+  mvc:
+    locale-resolver: fixed
+    locale: pt_BR
+  h2:
+    console:
+      path: /h2-delivery
+      enabled: 'true'
+  jpa:
+    defer-datasource-initialization: 'true'
+    show-sql: 'true'
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      hibernate:
+        format_sql: 'true'
+  kafka:
+    consumer:
+      #spring.kafka.producer.bootstrap-servers=localhost:19092
+      #spring.kafka.bootstrap-servers=${KAFKA_HOST:localhost:19092}
+      bootstrap-servers: ${KAFKA_HOST:localhost:19092}
+server:
+  port: '0'
