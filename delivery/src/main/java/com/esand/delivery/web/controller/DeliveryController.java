@@ -10,7 +10,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/processeds")
+@RequestMapping("/api/v1/deliveries")
 public class DeliveryController {
 
     private final DeliveryService deliveryService;
@@ -20,8 +20,24 @@ public class DeliveryController {
         return ResponseEntity.ok(deliveryService.findAll());
     }
 
+    @GetMapping("/id/{id}")
+    public ResponseEntity<DeliveryResponseDto> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(deliveryService.findById(id));
+    }
+
     @PatchMapping("/cancel/{id}")
-    public ResponseEntity<String> cancelProcessed(@PathVariable Long id) {
+    public ResponseEntity<String> cancelDelivery(@PathVariable Long id) {
         return ResponseEntity.ok(deliveryService.cancel(id));
+    }
+
+    @PatchMapping("/status/{id}")
+    public ResponseEntity<String> productShipped(@PathVariable Long id) {
+        return ResponseEntity.ok(deliveryService.statusShipped(id));
+    }
+
+    @DeleteMapping("/delete/canceled")
+    public ResponseEntity<String> deleteAllCanceled() {
+        deliveryService.deleteAllCanceled();
+        return ResponseEntity.noContent().build();
     }
 }

@@ -40,9 +40,16 @@ public class Delivery {
 
     private Double total;
 
-    private Boolean status = true;
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.PROCESSING;
 
     @CreatedDate
     @Column(name = "date", nullable = false)
     private LocalDateTime date;
+
+    public enum Status {
+        PROCESSING,
+        SHIPPED,
+        CANCELED
+    }
 }

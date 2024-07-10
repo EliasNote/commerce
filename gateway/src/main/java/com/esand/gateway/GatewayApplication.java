@@ -22,7 +22,7 @@ public class GatewayApplication {
 				.route(r -> r.path("/api/v1/products/**").uri("lb://products"))
 				.route(r -> r.path("/api/v1/clients/**").uri("lb://clients"))
 				.route(r -> r.path("/api/v1/orders/**").uri("lb://orders"))
-				.route(r -> r.path("/api/v1/processeds/**").uri("lb://delivery"))
+				.route(r -> r.path("/api/v1/deliveries/**").uri("lb://delivery"))
 				.build();
 	}
 

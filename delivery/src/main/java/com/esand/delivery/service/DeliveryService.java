@@ -32,11 +32,35 @@ public class DeliveryService {
         return deliveryRepository.findAll().stream().map(x -> deliveryMapper.toDto(x)).toList();
     }
 
+    @Transactional(readOnly = true)
+    public DeliveryResponseDto findById(Long id) {
+        Delivery delivery = deliveryRepository.findById(id).orElseThrow(
+                () -> new RuntimeException("Order nº" + id + " does not exist")
+        );
+        return deliveryMapper.toDto(delivery);
+    }
+
     @Transactional
     public String cancel(Long id) {
-        Delivery delivery = deliveryRepository.findById(id).orElseThrow();
-        delivery.setStatus(false);
+        Delivery delivery = deliveryRepository.findById(id).orElseThrow(
+                () -> new RuntimeException("Order nº" + id + " does not exist")
+        );
+        delivery.setStatus(Delivery.Status.CANCELED);
         productClient.addProductQuantityBySku(delivery.getSku(), delivery.getQuantity());
-        return "Order nº " + delivery.getId() + " canceled successfully";
+        return "Order nº" + delivery.getId() + " status changed to canceled successfully";
+    }
+
+    @Transactional
+    public String statusShipped(Long id) {
+        Delivery delivery = deliveryRepository.findById(id).orElseThrow(
+                () -> new RuntimeException("Order nº" + id + " does not exist")
+        );
+        delivery.setStatus(Delivery.Status.SHIPPED);
+        return "Order nº" + delivery.getId() + " status changed to shipped successfully";
+    }
+
+    @Transactional
+    public void deleteAllCanceled() {
+        deliveryRepository.deleteAllByStatus(Delivery.Status.CANCELED);
     }
 }

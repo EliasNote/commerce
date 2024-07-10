@@ -81,7 +81,7 @@ public class OrderService {
 
     public String sendOrder(Long id) {
         Order order = orderRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("Order don't exist")
+                () -> new RuntimeException("Order nº" + id + " does not exist")
         );
         if (order.getProcessed()) {
             throw new RuntimeException("Already processed order");
@@ -93,7 +93,7 @@ public class OrderService {
         productClient.decreaseProductQuantityBySku(order.getSku(), order.getQuantity());
         OrderResponseDto response = orderMapper.toDto(orderRepository.save(order));
         sendMessage(response);
-        return "Order nº " + id + " processed successfully";
+        return "Order nº" + id + " processed successfully";
     }
 
     private void sendMessage(OrderResponseDto dto) {
