@@ -2,7 +2,11 @@ package com.esand.delivery.web.controller;
 
 import com.esand.delivery.service.DeliveryService;
 import com.esand.delivery.web.dto.DeliveryResponseDto;
+import com.esand.delivery.web.dto.PageableDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,8 +20,8 @@ public class DeliveryController {
     private final DeliveryService deliveryService;
 
     @GetMapping
-    public ResponseEntity<List<DeliveryResponseDto>> findAll() {
-        return ResponseEntity.ok(deliveryService.findAll());
+    public ResponseEntity<PageableDto> findAll(@PageableDefault(size = 10) Pageable pageable) {
+        return ResponseEntity.ok(deliveryService.findAll(pageable));
     }
 
     @GetMapping("/id/{id}")

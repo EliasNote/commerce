@@ -5,9 +5,12 @@ import com.esand.delivery.entity.Delivery;
 import com.esand.delivery.repository.DeliveryRepository;
 import com.esand.delivery.web.dto.DeliveryResponseDto;
 import com.esand.delivery.web.dto.DeliverySaveDto;
+import com.esand.delivery.web.dto.PageableDto;
 import com.esand.delivery.web.mapper.DeliveryMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,8 +31,8 @@ public class DeliveryService {
     }
 
     @Transactional(readOnly = true)
-    public List<DeliveryResponseDto> findAll() {
-        return deliveryRepository.findAll().stream().map(x -> deliveryMapper.toDto(x)).toList();
+    public PageableDto findAll(Pageable pageable) {
+        return deliveryMapper.toPageableDto(deliveryRepository.findAllPageable(pageable));
     }
 
     @Transactional(readOnly = true)
@@ -45,6 +48,9 @@ public class DeliveryService {
         Delivery delivery = deliveryRepository.findById(id).orElseThrow(
                 () -> new RuntimeException("Order nº" + id + " does not exist")
         );
+        if (delivery.getStatus().equals(Delivery.Status.CANCELED)) {
+            throw new RuntimeException("Order nº" + delivery.getId() + " has already been canceled");
+        }
         delivery.setStatus(Delivery.Status.CANCELED);
         productClient.addProductQuantityBySku(delivery.getSku(), delivery.getQuantity());
         return "Order nº" + delivery.getId() + " status changed to canceled successfully";
@@ -55,6 +61,12 @@ public class DeliveryService {
         Delivery delivery = deliveryRepository.findById(id).orElseThrow(
                 () -> new RuntimeException("Order nº" + id + " does not exist")
         );
+        if (delivery.getStatus().equals(Delivery.Status.SHIPPED)) {
+            throw new RuntimeException("Order nº" + delivery.getId() + " has already been shipped");
+        }
+        if (delivery.getStatus().equals(Delivery.Status.CANCELED)) {
+            throw new RuntimeException("Order nº" + delivery.getId() + " is canceled");
+        }
         delivery.setStatus(Delivery.Status.SHIPPED);
         return "Order nº" + delivery.getId() + " status changed to shipped successfully";
     }

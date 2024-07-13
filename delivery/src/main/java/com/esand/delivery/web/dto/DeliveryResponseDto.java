@@ -38,7 +38,7 @@ public class DeliveryResponseDto implements Serializable {
     @JsonProperty("total price")
     private Double total;
 
-    private Delivery.Status status;
+    private String status;
 
     @JsonProperty("purchase date")
     private LocalDateTime date;
