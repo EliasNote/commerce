@@ -43,3 +43,10 @@ management:
     health:
       enabled: 'true'
       show-details: always
+
+springdoc:
+  api-docs:
+    path: /docs-clients-api
+  packagesToScan: com.esand.clients.web.controller
+  swagger-ui:
+    path: /docs-clients-api.html
