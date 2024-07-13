@@ -9,7 +9,6 @@ import com.esand.clients.web.dto.ClientResponseDto;
 import com.esand.clients.web.dto.ClientUpdateDto;
 import com.esand.clients.web.dto.PageableDto;
 import com.esand.clients.web.mapper.ClientMapper;
-import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
