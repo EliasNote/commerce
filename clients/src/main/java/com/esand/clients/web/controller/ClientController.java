@@ -25,13 +25,13 @@ public class ClientController {
     }
 
     @GetMapping
-    public ResponseEntity<PageableDto> findAll(@PageableDefault(size = 5) Pageable pageable) {
+    public ResponseEntity<PageableDto> findAll(@PageableDefault(size = 10) Pageable pageable) {
         return ResponseEntity.ok(clientService.findAll(pageable));
     }
 
     @GetMapping("/name/{name}")
-    public ResponseEntity<ClientResponseDto> findByName(@PathVariable String name) {
-        return ResponseEntity.ok(clientService.findByName(name));
+    public ResponseEntity<PageableDto> findByName(@PageableDefault(size = 10) Pageable pageable, @PathVariable String name) {
+        return ResponseEntity.ok(clientService.findByName(name, pageable));
     }
 
     @GetMapping("/cpf/{cpf}")

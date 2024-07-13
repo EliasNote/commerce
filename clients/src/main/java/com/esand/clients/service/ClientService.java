@@ -38,10 +38,12 @@ public class ClientService {
     }
 
     @Transactional(readOnly = true)
-    public ClientResponseDto findByName(String name) {
-        return clientMapper.toDto(clientRepository.findByNameIgnoreCase(name).orElseThrow(
-                () -> new EntityNotFoundException("Customer not found by name")
-        ));
+    public PageableDto findByName(String name, Pageable pageable) {
+        PageableDto dto = clientMapper.toPageableDto(clientRepository.findByNameIgnoreCase(name, pageable));
+        if (dto.getContent().isEmpty()) {
+            throw new EntityNotFoundException("Customer not found by name");
+        }
+        return dto;
     }
 
     @Transactional(readOnly = true)
