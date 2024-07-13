@@ -3,7 +3,9 @@ package com.esand.clients.web.controller;
 import com.esand.clients.service.ClientService;
 import com.esand.clients.web.dto.ClientCreateDto;
 import com.esand.clients.web.dto.ClientResponseDto;
+import com.esand.clients.web.dto.ClientUpdateDto;
 import com.esand.clients.web.dto.PageableDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -18,7 +20,7 @@ public class ClientController {
     private final ClientService clientService;
 
     @PostMapping
-    public ResponseEntity<ClientResponseDto> create(@RequestBody ClientCreateDto dto) {
+    public ResponseEntity<ClientResponseDto> create(@RequestBody @Valid ClientCreateDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(clientService.save(dto));
     }
 
@@ -38,7 +40,7 @@ public class ClientController {
     }
 
     @PatchMapping("/edit/{cpf}")
-    public ResponseEntity<Void> update(@PathVariable String cpf, @RequestBody ClientCreateDto dto) {
+    public ResponseEntity<Void> update(@PathVariable String cpf, @RequestBody @Valid ClientUpdateDto dto) {
         clientService.update(cpf, dto);
         return ResponseEntity.noContent().build();
     }

@@ -15,12 +15,10 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClientCreateDto {
-    @NotBlank
+public class ClientUpdateDto {
     @Size(min = 5, max = 100)
     private String name;
 
-    @NotBlank
     @Size(min = 11, max = 11, message = "the CPF must have 11 characters")
     @CPF
     private String cpf;
@@ -31,13 +29,11 @@ public class ClientCreateDto {
     @Size(min = 7, max = 100)
     private String email;
 
-    @NotBlank
     @Size(min = 10, max = 200)
     private String address;
 
     private LocalDate birthDate;
 
-    @NotBlank
     @Pattern(regexp = "M|F")
     private String gender;
 }

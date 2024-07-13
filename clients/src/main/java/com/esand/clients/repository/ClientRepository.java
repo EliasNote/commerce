@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface ClientRepository extends JpaRepository<Client, Long> {
     Optional<Client> findByNameIgnoreCase(String name);
 
-    Optional<Client> findByCpfIgnoreCase(String cpf);
+    Optional<Client> findByCpf(String cpf);
 
     @Query("SELECT c FROM Client c")
     Page<ClientDtoPagination> findAllPageable(Pageable pageable);

@@ -10,7 +10,7 @@ public interface ClientDtoPagination {
     String getPhone();
     String getEmail();
     String getAddress();
-    @JsonFormat(pattern = "dd/MM/yyyy")
+    @JsonFormat(pattern = "yyyy/MM/dd")
     LocalDate getBirthDate();
     String getGender();
     Boolean getStatus();
