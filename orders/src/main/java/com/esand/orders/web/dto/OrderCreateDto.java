@@ -10,7 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderCreateDto {
-    private String clientName;
-    private String productTitle;
+    private String cpf;
+    private String sku;
     private Integer quantity;
 }

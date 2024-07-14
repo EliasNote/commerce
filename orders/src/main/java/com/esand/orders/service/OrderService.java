@@ -39,8 +39,8 @@ public class OrderService {
         Product product;
 
         try {
-            client = clientClient.getClientByName(dto.getClientName());
-            product = productClient.getProductByTitle(dto.getProductTitle());
+            client = clientClient.getClientByCpf(dto.getCpf());
+            product = productClient.getProductBySku(dto.getSku());
         } catch (RuntimeException e) {
             throw new RuntimeException("Fazer com que seja retornado erro para cada caso usando o e.getMessage(), que deve retornar uma mensagem diferente sendo o erro do client ou do product");
         }
@@ -113,8 +113,8 @@ public class OrderService {
         Product product;
 
         try {
-            client = clientClient.getClientByName(order.getName());
-            product = productClient.getProductByTitle(order.getTitle());
+            client = clientClient.getClientByCpf(order.getCpf());
+            product = productClient.getProductBySku(order.getSku());
         } catch (RuntimeException e) {
             throw new RuntimeException("Fazer com que seja retornado erro para cada caso usando o e.getMessage(), que deve retornar uma mensagem diferente sendo o erro do client ou do product");
         }
