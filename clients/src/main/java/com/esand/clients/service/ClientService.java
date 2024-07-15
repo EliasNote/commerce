@@ -33,7 +33,11 @@ public class ClientService {
 
     @Transactional(readOnly = true)
     public PageableDto findAll(Pageable pageable) {
-        return clientMapper.toPageableDto(clientRepository.findAllPageable(pageable));
+        PageableDto dto = clientMapper.toPageableDto(clientRepository.findAllPageable(pageable));
+        if (dto.getContent().isEmpty()) {
+            throw new EntityNotFoundException("No customers found");
+        }
+        return dto;
     }
 
     @Transactional(readOnly = true)
