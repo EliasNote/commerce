@@ -5,6 +5,8 @@ import com.esand.products.service.ProductService;
 import com.esand.products.web.dto.PageableDto;
 import com.esand.products.web.dto.ProductCreateDto;
 import com.esand.products.web.dto.ProductResponseDto;
+import com.esand.products.web.dto.ProductUpdateDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -22,7 +24,7 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping
-    public ResponseEntity<ProductResponseDto> create(@RequestBody ProductCreateDto dto) {
+    public ResponseEntity<ProductResponseDto> create(@RequestBody @Valid ProductCreateDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.save(dto));
     }
 
@@ -52,7 +54,7 @@ public class ProductController {
     }
 
     @PutMapping("/edit/{sku}")
-    public ResponseEntity<Void> update(@PathVariable String sku, @RequestBody ProductCreateDto dto) {
+    public ResponseEntity<Void> update(@PathVariable String sku, @RequestBody @Valid ProductUpdateDto dto) {
         productService.update(sku, dto);
         return ResponseEntity.noContent().build();
     }

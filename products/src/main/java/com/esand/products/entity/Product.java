@@ -50,6 +50,7 @@ public class Product implements Serializable {
 
     private Double height;
 
+    @Column(name = "supplier", length = 100)
     private String supplier;
 
     @CreatedDate

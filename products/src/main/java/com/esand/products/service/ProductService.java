@@ -1,10 +1,15 @@
 package com.esand.products.service;
 
 import com.esand.products.entity.Product;
+import com.esand.products.exception.EntityNotFoundException;
+import com.esand.products.exception.InvalidQuantityException;
+import com.esand.products.exception.SkuUniqueViolationException;
+import com.esand.products.exception.TitleUniqueViolationException;
 import com.esand.products.repository.ProductRepository;
 import com.esand.products.web.dto.PageableDto;
 import com.esand.products.web.dto.ProductCreateDto;
 import com.esand.products.web.dto.ProductResponseDto;
+import com.esand.products.web.dto.ProductUpdateDto;
 import com.esand.products.web.mapper.ProductMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +25,14 @@ public class ProductService {
 
     @Transactional
     public ProductResponseDto save(ProductCreateDto dto) {
+        if (productRepository.existsByTitle(dto.getTitle())){
+            throw new TitleUniqueViolationException("There is already a product registered with this title");
+        }
+
+        if (productRepository.existsBySku(dto.getSku())) {
+            throw new SkuUniqueViolationException("There is already a product registered with this sku");
+        }
+
         Product product = productRepository.save(productMapper.toProduct(dto));
         updateProductStatus(product);
         return productMapper.toDto(product);
@@ -27,22 +40,36 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public PageableDto findAll(Pageable pageable) {
-        return productMapper.toPageableDto(productRepository.findAllPageable(pageable));
+        PageableDto dto = productMapper.toPageableDto(productRepository.findAllPageable(pageable));
+        if (dto.getContent().isEmpty()) {
+            throw new EntityNotFoundException("No products found");
+        }
+        return dto;
     }
 
     @Transactional(readOnly = true)
     public ProductResponseDto findByTitle(String title) {
-        return productMapper.toDto(productRepository.findByTitleIgnoreCase(title).orElseThrow());
+        return productMapper.toDto(productRepository.findByTitleIgnoreCase(title).orElseThrow(
+                () -> new EntityNotFoundException("Product not found by title")
+        ));
     }
 
     @Transactional(readOnly = true)
     public PageableDto findBySupplier(Pageable pageable, String supplier) {
-        return productMapper.toPageableDto(productRepository.findBySupplierIgnoreCaseContaining(pageable, supplier).orElseThrow());
+        PageableDto dto = productMapper.toPageableDto(productRepository.findBySupplierIgnoreCaseContaining(pageable, supplier).orElseThrow());
+        if (dto.getContent().isEmpty()) {
+            throw new EntityNotFoundException("No products found by supplier");
+        }
+        return dto;
     }
 
     @Transactional(readOnly = true)
     public PageableDto findByCategory(Pageable pageable, String category) {
-        return productMapper.toPageableDto(productRepository.findByCategory(pageable, Product.Category.valueOf(category.toUpperCase())).orElseThrow());
+        PageableDto dto = productMapper.toPageableDto(productRepository.findByCategory(pageable, Product.Category.valueOf(category.toUpperCase())).orElseThrow());
+        if (dto.getContent().isEmpty()) {
+            throw new EntityNotFoundException("No products found by category");
+        }
+        return dto;
     }
 
     @Transactional(readOnly = true)
@@ -51,7 +78,7 @@ public class ProductService {
     }
 
     @Transactional
-    public void update(String sku, ProductCreateDto dto) {
+    public void update(String sku, ProductUpdateDto dto) {
         Product product = findProductBySku(sku);
         productMapper.updateProduct(dto, product);
         updateProductStatus(product);
@@ -67,21 +94,24 @@ public class ProductService {
     @Transactional
     public String add(String sku, Integer quantity) {
         Product product = findProductBySku(sku);
-        product.setQuantity(product.getQuantity() + quantity);
+        if (quantity == null || quantity <= 0) {
+            throw new InvalidQuantityException("No quantity stated");
+        }
         if (product.getQuantity() - quantity == 0) {
             updateProductStatus(product);
         }
+        product.setQuantity(product.getQuantity() + quantity);
         return product.getQuantity().toString();
     }
 
     @Transactional
     public String sub(String sku, Integer quantity) {
         Product product = findProductBySku(sku);
-        if (quantity == null || quantity == 0) {
-            throw new RuntimeException("No quantity informed");
+        if (quantity == null || quantity <= 0) {
+            throw new InvalidQuantityException("No quantity stated");
         }
         if (product.getQuantity() < quantity) {
-            throw new RuntimeException("The quantity of available products is " + product.getQuantity());
+            throw new InvalidQuantityException("The quantity of available products is " + product.getQuantity());
         }
         product.setQuantity(product.getQuantity() - quantity);
         updateProductStatus(product);
@@ -91,7 +121,7 @@ public class ProductService {
     @Transactional
     private Product findProductBySku(String sku) {
         return productRepository.findBySku(sku).orElseThrow(
-                () -> new RuntimeException("Produto não encontrado para o sku: " + sku)
+                () -> new EntityNotFoundException("Product not found by sku")
         );
     }
 

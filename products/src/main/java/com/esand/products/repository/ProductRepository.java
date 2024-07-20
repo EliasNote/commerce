@@ -22,5 +22,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Optional<Page<ProductDtoPagination>> findBySupplierIgnoreCaseContaining(Pageable pageable, String supplier);
 
     Optional<Page<ProductDtoPagination>> findByCategory(Pageable pageable, Product.Category category);
+
+    boolean existsByTitle(String title);
+
+    boolean existsBySku(String sku);
 }
 

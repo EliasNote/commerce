@@ -4,6 +4,7 @@ import com.esand.products.entity.Product;
 import com.esand.products.web.dto.PageableDto;
 import com.esand.products.web.dto.ProductCreateDto;
 import com.esand.products.web.dto.ProductResponseDto;
+import com.esand.products.web.dto.ProductUpdateDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
@@ -18,7 +19,7 @@ public interface ProductMapper {
 
     ProductResponseDto toDto(Product product);
 
-    void updateProduct(ProductCreateDto dto, @MappingTarget Product product);
+    void updateProduct(ProductUpdateDto dto, @MappingTarget Product product);
 
     PageableDto toPageableDto(Page page);
 }
