@@ -40,9 +40,14 @@ public class OrderService {
 
         try {
             client = clientClient.getClientByCpf(dto.getCpf());
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Erro ao buscar informações do cliente: " + e.getMessage());
+        }
+
+        try {
             product = productClient.getProductBySku(dto.getSku());
         } catch (RuntimeException e) {
-            throw new RuntimeException("Fazer com que seja retornado erro para cada caso usando o e.getMessage(), que deve retornar uma mensagem diferente sendo o erro do client ou do product");
+            throw new RuntimeException("Erro ao buscar informações do produto: " + e.getMessage());
         }
 
         Order order = orderMapper.toOrder(client, product);

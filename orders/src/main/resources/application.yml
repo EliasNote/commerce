@@ -1,8 +1,8 @@
 eureka:
   instance:
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
-    ##### EXCLUIR DEPOIS ESSE NOME FIXO DE LOCALHOST
-    hostname: localhost
+    ##### EXCLUIR DEPOIS ESSE NOME FIXO DE LOCALHOST PARA O DOCKER
+#    hostname: localhost
   client:
     service-url:
       defaultZone: ${DEFAULT_ZONE:http://localhost:8761/eureka}
@@ -11,12 +11,12 @@ eureka:
 clients:
   api:
     # FAZER PARECIDO COM ISSO PARA O DOCKER ${DEFAULT_ZONE:http://localhost:8761/eureka}
-    url: http://localhost:8080/api/v1/clients
+    url: ${CLIENTS_API_URL:http://localhost:8080/api/v1/clients}
 
 products:
   api:
     # FAZER PARECIDO COM ISSO PARA O DOCKER ${DEFAULT_ZONE:http://localhost:8761/eureka}
-    url: http://localhost:8080/api/v1/products
+    url: ${PRODUCTS_API_URL:http://localhost:8080/api/v1/products}
 
 
 spring:

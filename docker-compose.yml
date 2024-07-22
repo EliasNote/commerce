@@ -36,39 +36,80 @@ services:
     environment:
       KAFKA_BROKERCONNECT: kafka:19092
 
-#  server:
-#    image: eliasnote/server:1.0.0
-#    networks:
-#      - broker-kafka
-#    ports:
-#      - "8761:8761"
-#
-#  gateway:
-#    image: eliasnote/gateway:1.0.0
-#    networks:
-#      - broker-kafka
-#    depends_on:
-#      - server
-#    restart: unless-stopped
-#    ports:
-#      - "8080:8080"
-#    environment:
-#      DEFAULT_ZONE: http://server:8761/eureka
-#
-#  orders:
-#    image: eliasnote/orders:1.0.0
-#    networks:
-#      - broker-kafka
-#    depends_on:
-#      - kafka
-#      - server
-#      - gateway
-#    restart: unless-stopped
-#    environment:
-#      KAFKA_HOST: kafka:19092
-#      DEFAULT_ZONE: http://server:8761/eureka
+  server:
+    image: eliasnote/server:1.0.0
+    networks:
+      - broker-kafka
+    ports:
+      - "8761:8761"
 
+  gateway:
+    image: eliasnote/gateway:1.0.0
+    networks:
+      - broker-kafka
+    depends_on:
+      - server
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      DEFAULT_ZONE: http://server:8761/eureka
 
+  products:
+    image: eliasnote/products:1.0.0
+    networks:
+      - broker-kafka
+    depends_on:
+      - server
+      - gateway
+    restart: unless-stopped
+    environment:
+      DEFAULT_ZONE: http://server:8761/eureka
+
+  clients:
+    image: eliasnote/clients:1.0.0
+    networks:
+      - broker-kafka
+    depends_on:
+      - server
+      - gateway
+    restart: unless-stopped
+    environment:
+      DEFAULT_ZONE: http://server:8761/eureka
+
+  delivery:
+    image: eliasnote/delivery:1.0.0
+    networks:
+      - broker-kafka
+    depends_on:
+      - kafka
+      - server
+      - gateway
+      - products
+    restart: unless-stopped
+    environment:
+      KAFKA_HOST: kafka:19092
+      DEFAULT_ZONE: http://server:8761/eureka
+      PRODUCTS_API_URL: http://products:8080/api/v1/products
+
+  orders:
+    image: eliasnote/orders:1.0.0
+    networks:
+      - broker-kafka
+    depends_on:
+      - kafka
+      - server
+      - gateway
+      - products
+      - clients
+      - delivery
+    restart: unless-stopped
+    environment:
+      KAFKA_HOST: kafka:19092
+      DEFAULT_ZONE: http://server:8761/eureka
+      CLIENTS_API_URL: http://clients:8080/api/v1/clients
+      PRODUCTS_API_URL: http://products:8080/api/v1/products
+  
 networks:
   broker-kafka:
     driver: bridge
