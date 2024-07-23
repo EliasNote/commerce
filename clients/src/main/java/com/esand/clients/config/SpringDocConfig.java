@@ -14,7 +14,7 @@ public class SpringDocConfig {
                 .info(
                         new Info()
                                 .title("CLIENTS API")
-                                .description("API for customer management\n")
+                                .description("API for customer management")
                                 .version("v1")
                                 .contact(new Contact().name("Elias Mathias Sand").email("elias.coder1@gmail.com.br"))
                 );
