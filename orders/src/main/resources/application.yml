@@ -44,10 +44,11 @@ spring:
       hibernate:
         format_sql: 'true'
   kafka:
-    producer:
+    bootstrap-servers: ${KAFKA_HOST:localhost:19092}
+#    producer:
       #spring.kafka.producer.bootstrap-servers=localhost:19092
       #spring.kafka.bootstrap-servers=${KAFKA_HOST:localhost:19092}
-      bootstrap-servers: ${KAFKA_HOST:localhost:19092}
+
 
 
 server:

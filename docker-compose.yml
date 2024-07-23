@@ -90,7 +90,7 @@ services:
     environment:
       KAFKA_HOST: kafka:19092
       DEFAULT_ZONE: http://server:8761/eureka
-      PRODUCTS_API_URL: http://products:8080/api/v1/products
+      PRODUCTS_API_URL: http://gateway:8080/api/v1/products
 
   orders:
     image: eliasnote/orders:1.0.0
@@ -102,13 +102,13 @@ services:
       - gateway
       - products
       - clients
-      - delivery
+#      - delivery
     restart: unless-stopped
     environment:
       KAFKA_HOST: kafka:19092
       DEFAULT_ZONE: http://server:8761/eureka
-      CLIENTS_API_URL: http://clients:8080/api/v1/clients
-      PRODUCTS_API_URL: http://products:8080/api/v1/products
+      CLIENTS_API_URL: http://gateway:8080/api/v1/clients
+      PRODUCTS_API_URL: http://gateway:8080/api/v1/products
   
 networks:
   broker-kafka:
