@@ -54,7 +54,7 @@ public interface SpringDoc {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved customers by name",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = PageableDto.class))),
-            @ApiResponse(responseCode = "404", description = "No customers found with the given name",
+            @ApiResponse(responseCode = "404", description = "No customers found by name",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorMessage.class)))
     })
@@ -66,7 +66,7 @@ public interface SpringDoc {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved customer by CPF",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ClientResponseDto.class))),
-            @ApiResponse(responseCode = "404", description = "No customer found with the given CPF",
+            @ApiResponse(responseCode = "404", description = "Customer not found by CPF",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorMessage.class)))
     })
@@ -80,7 +80,7 @@ public interface SpringDoc {
             @ApiResponse(responseCode = "400", description = "Invalid request data",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorMessage.class))),
-            @ApiResponse(responseCode = "404", description = "Customer not found with the given CPF",
+            @ApiResponse(responseCode = "404", description = "Customer not found by CPF",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorMessage.class)))
     })
@@ -92,7 +92,7 @@ public interface SpringDoc {
             @ApiResponse(responseCode = "200", description = "Customer status updated successfully",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = String.class))),
-            @ApiResponse(responseCode = "404", description = "Customer not found with the given CPF",
+            @ApiResponse(responseCode = "404", description = "Customer not found by CPF",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorMessage.class)))
     })
