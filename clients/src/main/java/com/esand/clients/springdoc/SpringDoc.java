@@ -49,7 +49,7 @@ public interface SpringDoc {
     ResponseEntity<PageableDto> findAll(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable);
 
     @Operation(summary = "Search for customers by name",
-            description = "Endpoint to search for customers based on their name.")
+            description = "Endpoint to search for customers by name.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved customers by name",
                     content = @Content(mediaType = "application/json",
@@ -61,7 +61,7 @@ public interface SpringDoc {
     ResponseEntity<PageableDto> findByName(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable, @PathVariable String name);
 
     @Operation(summary = "Search for customer by CPF",
-            description = "Endpoint to search for a customer based on their CPF.")
+            description = "Endpoint to search for a customer by CPF.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved customer by CPF",
                     content = @Content(mediaType = "application/json",
@@ -73,7 +73,7 @@ public interface SpringDoc {
     ResponseEntity<ClientResponseDto> findByCpf(@PathVariable String cpf);
 
     @Operation(summary = "Update a customer's information",
-            description = "Endpoint that updates the information of an existing customer based on their CPF.")
+            description = "Endpoint that updates the information of an existing customer by CPF.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Customer information updated successfully",
                     content = @Content),
@@ -87,7 +87,7 @@ public interface SpringDoc {
     ResponseEntity<Void> update(@PathVariable String cpf, @RequestBody @Valid ClientUpdateDto dto);
 
     @Operation(summary = "Toggle the status of a customer",
-            description = "Endpoint that toggles the status of an existing customer based on their CPF.")
+            description = "Endpoint that toggles the status of an existing customer by CPF.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Customer status updated successfully",
                     content = @Content(mediaType = "application/json",
