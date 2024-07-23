@@ -2,6 +2,7 @@ package com.esand.products.web.controller;
 
 import com.esand.products.entity.Product;
 import com.esand.products.service.ProductService;
+import com.esand.products.springdoc.SpringDoc;
 import com.esand.products.web.dto.PageableDto;
 import com.esand.products.web.dto.ProductCreateDto;
 import com.esand.products.web.dto.ProductResponseDto;
@@ -19,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/products")
-public class ProductController {
+public class ProductController implements SpringDoc {
 
     private final ProductService productService;
 
