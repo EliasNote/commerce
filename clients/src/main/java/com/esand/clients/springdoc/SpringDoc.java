@@ -72,10 +72,10 @@ public interface SpringDoc {
     })
     ResponseEntity<ClientResponseDto> findByCpf(@PathVariable String cpf);
 
-    @Operation(summary = "Update a customer's information",
-            description = "Endpoint that updates the information of an existing customer by CPF.")
+    @Operation(summary = "Update a customer's data",
+            description = "Endpoint that updates the data of an existing customer by CPF.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Customer information updated successfully",
+            @ApiResponse(responseCode = "204", description = "Customer data updated successfully",
                     content = @Content),
             @ApiResponse(responseCode = "400", description = "Invalid request data",
                     content = @Content(mediaType = "application/json",
