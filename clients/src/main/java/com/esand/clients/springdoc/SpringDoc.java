@@ -19,7 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@Tag(name = "Clients", description = "Contains all operations related to resources for registration, searching, correcting data and updating status")
+@Tag(name = "Clients", description = "Contains all operations related to resources for registration, searching, correcting data, and updating status")
 public interface SpringDoc {
     @Operation(summary = "Register a new customer",
             description = "Endpoint that registers a new customer.")
@@ -39,7 +39,7 @@ public interface SpringDoc {
     @Operation(summary = "Search for all customers",
             description = "Endpoint to search for all customers.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully retrieved all customers",
+            @ApiResponse(responseCode = "200", description = "All customers found successfully",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = PageableDto.class))),
             @ApiResponse(responseCode = "404", description = "No customers found",
@@ -51,7 +51,7 @@ public interface SpringDoc {
     @Operation(summary = "Search for customers by name",
             description = "Endpoint to search for customers by name.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully retrieved customers by name",
+            @ApiResponse(responseCode = "200", description = "Customers found successfully by name",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = PageableDto.class))),
             @ApiResponse(responseCode = "404", description = "No customers found by name",
@@ -63,7 +63,7 @@ public interface SpringDoc {
     @Operation(summary = "Search for customer by CPF",
             description = "Endpoint to search for a customer by CPF.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully retrieved customer by CPF",
+            @ApiResponse(responseCode = "200", description = "Customer found successfully by CPF",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ClientResponseDto.class))),
             @ApiResponse(responseCode = "404", description = "Customer not found by CPF",
