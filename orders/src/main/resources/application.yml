@@ -2,7 +2,7 @@ eureka:
   instance:
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
     ##### EXCLUIR DEPOIS ESSE NOME FIXO DE LOCALHOST PARA O DOCKER
-#    hostname: localhost
+    hostname: localhost
   client:
     service-url:
       defaultZone: ${DEFAULT_ZONE:http://localhost:8761/eureka}
@@ -10,12 +10,10 @@ eureka:
 
 clients:
   api:
-    # FAZER PARECIDO COM ISSO PARA O DOCKER ${DEFAULT_ZONE:http://localhost:8761/eureka}
     url: ${CLIENTS_API_URL:http://localhost:8080/api/v1/clients}
 
 products:
   api:
-    # FAZER PARECIDO COM ISSO PARA O DOCKER ${DEFAULT_ZONE:http://localhost:8761/eureka}
     url: ${PRODUCTS_API_URL:http://localhost:8080/api/v1/products}
 
 
@@ -44,10 +42,11 @@ spring:
       hibernate:
         format_sql: 'true'
   kafka:
-    bootstrap-servers: ${KAFKA_HOST:localhost:19092}
-#    producer:
-      #spring.kafka.producer.bootstrap-servers=localhost:19092
-      #spring.kafka.bootstrap-servers=${KAFKA_HOST:localhost:19092}
+    producer:
+      bootstrap-servers: ${KAFKA_HOST:localhost:19092}
+  ########## PARA O DOCKER
+#  kafka:
+#    bootstrap-servers: ${KAFKA_HOST:localhost:19092}
 
 
 
