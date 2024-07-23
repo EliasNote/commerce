@@ -102,7 +102,7 @@ services:
       - gateway
       - products
       - clients
-#      - delivery
+      - delivery
     restart: unless-stopped
     environment:
       KAFKA_HOST: kafka:19092
