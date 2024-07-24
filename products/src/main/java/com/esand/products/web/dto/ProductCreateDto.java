@@ -1,9 +1,6 @@
 package com.esand.products.web.dto;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,6 +25,7 @@ public class ProductCreateDto {
 
     @NotBlank
     @Size(min = 5, max = 50)
+    @Pattern(regexp = "COMPUTERS|SMARTPHONES|HEADPHONES|MOUSES|KEYBOARDS|SCREENS")
     private String category;
 
     @NotNull

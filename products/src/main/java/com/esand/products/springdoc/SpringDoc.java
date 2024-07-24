@@ -97,7 +97,7 @@ public interface SpringDoc {
     ResponseEntity<ProductResponseDto> findBySku(@PathVariable String sku);
 
     @Operation(summary = "Update a product's data",
-            description = "Endpoint that updates the data of an existing product by SKU.")
+            description = "Endpoint to update a product's data by SKU. It's possible to update by specifying only the attribute you want to modify.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Product data updated successfully",
                     content = @Content),

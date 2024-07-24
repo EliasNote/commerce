@@ -1,9 +1,6 @@
 package com.esand.products.web.exception;
 
-import com.esand.products.exception.EntityNotFoundException;
-import com.esand.products.exception.InvalidQuantityException;
-import com.esand.products.exception.SkuUniqueViolationException;
-import com.esand.products.exception.TitleUniqueViolationException;
+import com.esand.products.exception.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -46,6 +43,15 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(InvalidQuantityException.class)
     public final ResponseEntity<ErrorMessage> InvalidQuantityException(InvalidQuantityException ex, HttpServletRequest request) {
+        log.error("API Error", ex);
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidCategoryException.class)
+    public final ResponseEntity<ErrorMessage> InvalidCategoryException(InvalidCategoryException ex, HttpServletRequest request) {
         log.error("API Error", ex);
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)

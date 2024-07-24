@@ -45,7 +45,7 @@ public class ProductController implements SpringDoc {
     }
 
     @GetMapping("/category/{category}")
-    public ResponseEntity<PageableDto> findByCategory(@PageableDefault(size = 10) Pageable pageable, @PathVariable String category) {
+    public ResponseEntity<PageableDto> findByCategory(@PageableDefault(size = 10) Pageable pageable, @PathVariable @Valid String category) {
         return ResponseEntity.ok(productService.findByCategory(pageable, category));
     }
 

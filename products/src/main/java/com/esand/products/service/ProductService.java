@@ -1,10 +1,8 @@
 package com.esand.products.service;
 
+import com.esand.products.ProductsApplication;
 import com.esand.products.entity.Product;
-import com.esand.products.exception.EntityNotFoundException;
-import com.esand.products.exception.InvalidQuantityException;
-import com.esand.products.exception.SkuUniqueViolationException;
-import com.esand.products.exception.TitleUniqueViolationException;
+import com.esand.products.exception.*;
 import com.esand.products.repository.ProductRepository;
 import com.esand.products.web.dto.PageableDto;
 import com.esand.products.web.dto.ProductCreateDto;
@@ -56,7 +54,7 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public PageableDto findBySupplier(Pageable pageable, String supplier) {
-        PageableDto dto = productMapper.toPageableDto(productRepository.findBySupplierIgnoreCaseContaining(pageable, supplier).orElseThrow());
+        PageableDto dto = productMapper.toPageableDto(productRepository.findBySupplierIgnoreCaseContaining(pageable, supplier));
         if (dto.getContent().isEmpty()) {
             throw new EntityNotFoundException("No products found by supplier");
         }
@@ -65,11 +63,15 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public PageableDto findByCategory(Pageable pageable, String category) {
-        PageableDto dto = productMapper.toPageableDto(productRepository.findByCategory(pageable, Product.Category.valueOf(category.toUpperCase())).orElseThrow());
-        if (dto.getContent().isEmpty()) {
-            throw new EntityNotFoundException("No products found by category");
+        try {
+            PageableDto dto = productMapper.toPageableDto(productRepository.findByCategory(pageable, Product.Category.valueOf(category.toUpperCase())));
+            if (dto.getContent().isEmpty()) {
+                throw new EntityNotFoundException("No products found by category");
+            }
+            return dto;
+        } catch(IllegalArgumentException e) {
+            throw new InvalidCategoryException("Category does not exist");
         }
-        return dto;
     }
 
     @Transactional(readOnly = true)
