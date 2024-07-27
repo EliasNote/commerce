@@ -13,5 +13,4 @@ public interface ClientDtoPagination {
     @JsonFormat(pattern = "yyyy/MM/dd")
     LocalDate getBirthDate();
     String getGender();
-    Boolean getStatus();
 }

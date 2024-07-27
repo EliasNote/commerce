@@ -19,5 +19,4 @@ public class Client {
     private String address;
     private LocalDate birthDate;
     private String gender;
-    private Boolean status;
 }

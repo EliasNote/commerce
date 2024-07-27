@@ -60,13 +60,6 @@ public class ClientService {
         clientMapper.updateClient(dto, client);
     }
 
-    @Transactional
-    public String alter(String cpf) {
-        Client client = findClientByCpf(cpf);
-        client.setStatus(!client.getStatus());
-        return client.getStatus().toString();
-    }
-
     private Client findClientByCpf(String cpf) {
         return clientRepository.findByCpf(cpf).orElseThrow(
                 () -> new EntityNotFoundException("Customer not found by CPF")

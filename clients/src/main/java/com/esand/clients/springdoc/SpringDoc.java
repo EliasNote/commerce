@@ -85,16 +85,4 @@ public interface SpringDoc {
                             schema = @Schema(implementation = ErrorMessage.class)))
     })
     ResponseEntity<Void> update(@PathVariable String cpf, @RequestBody @Valid ClientUpdateDto dto);
-
-    @Operation(summary = "Toggle the status of a customer",
-            description = "Endpoint that toggles the status of an existing customer by CPF.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Customer status updated successfully",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = String.class))),
-            @ApiResponse(responseCode = "404", description = "Customer not found by CPF",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorMessage.class)))
-    })
-    ResponseEntity<String> toggleStatus(@PathVariable String cpf);
 }

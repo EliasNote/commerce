@@ -49,9 +49,6 @@ public class Client implements Serializable {
     @Column(name = "create_date")
     private LocalDateTime createDate;
 
-    @Column(name = "active")
-    private Boolean status = true;
-
     public enum Gender {
         M, F
     }

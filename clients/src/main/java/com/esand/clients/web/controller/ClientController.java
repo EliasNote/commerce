@@ -51,10 +51,4 @@ public class ClientController implements SpringDoc {
         clientService.update(cpf, dto);
         return ResponseEntity.noContent().build();
     }
-
-    @Override
-    @PatchMapping("/status/{cpf}")
-    public ResponseEntity<String> toggleStatus(@PathVariable String cpf) {
-        return ResponseEntity.ok("updated status for: " + clientService.alter(cpf));
-    }
 }
