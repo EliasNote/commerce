@@ -103,6 +103,7 @@ public class ProductService {
             updateProductStatus(product);
         }
         product.setQuantity(product.getQuantity() + quantity);
+        updateProductStatus(product);
         return product.getQuantity().toString();
     }
 
