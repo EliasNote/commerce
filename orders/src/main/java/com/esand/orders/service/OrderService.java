@@ -5,11 +5,16 @@ import com.esand.orders.client.clients.ClientClient;
 import com.esand.orders.client.products.Product;
 import com.esand.orders.client.products.ProductClient;
 import com.esand.orders.entity.Order;
+import com.esand.orders.exception.ConnectionException;
+import com.esand.orders.exception.EntityNotFoundException;
+import com.esand.orders.exception.InvalidQuantityException;
+import com.esand.orders.exception.UnavailableProductException;
 import com.esand.orders.repository.OrderRepository;
 import com.esand.orders.web.dto.OrderCreateDto;
 import com.esand.orders.web.dto.OrderResponseDto;
 import com.esand.orders.web.dto.PageableDto;
 import com.esand.orders.web.mapper.OrderMapper;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,26 +40,15 @@ public class OrderService {
 
     @Transactional
     public OrderResponseDto save(OrderCreateDto dto) {
-        Client client;
-        Product product;
+        verifyIfExistsClientAndProductAndConnection(dto.getCpf(), dto.getSku());
+        verifyProduct(dto.getSku(), dto.getQuantity());
 
-        try {
-            client = clientClient.getClientByCpf(dto.getCpf());
-        } catch (RuntimeException e) {
-            throw new RuntimeException("Erro ao buscar informações do cliente: " + e.getMessage());
-        }
-
-        try {
-            product = productClient.getProductBySku(dto.getSku());
-        } catch (RuntimeException e) {
-            throw new RuntimeException("Erro ao buscar informações do produto: " + e.getMessage());
-        }
+        Client client = clientClient.getClientByCpf(dto.getCpf());
+        Product product = productClient.getProductBySku(dto.getSku());
 
         Order order = orderMapper.toOrder(client, product);
         order.setQuantity(dto.getQuantity());
         order.setTotal(dto.getQuantity() * product.getPrice());
-
-        verifyClientAndProduct(order);
 
         return orderMapper.toDto(orderRepository.save(order));
     }
@@ -86,13 +80,14 @@ public class OrderService {
 
     public String sendOrder(Long id) {
         Order order = orderRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("Order nº" + id + " does not exist")
+                () -> new EntityNotFoundException("Order nº" + id + " does not exist")
         );
         if (order.getProcessed()) {
             throw new RuntimeException("Already processed order");
         }
 
-        verifyClientAndProduct(order);
+        verifyIfExistsClientAndProductAndConnection(order.getCpf(), order.getSku());
+        verifyProduct(order.getSku(), order.getQuantity());
 
         order.setProcessed(true);
         productClient.decreaseProductQuantityBySku(order.getSku(), order.getQuantity());
@@ -113,29 +108,34 @@ public class OrderService {
         });
     }
 
-    private void verifyClientAndProduct(Order order) {
-        Client client;
-        Product product;
+    private void verifyIfExistsClientAndProductAndConnection(String cpf, String sku) {
+        try {
+            clientClient.getClientByCpf(cpf);
+        } catch (FeignException.NotFound e) {
+            throw new EntityNotFoundException(e.getMessage());
+        } catch (FeignException.ServiceUnavailable e) {
+            throw new ConnectionException(e.getMessage());
+        }
 
         try {
-            client = clientClient.getClientByCpf(order.getCpf());
-            product = productClient.getProductBySku(order.getSku());
-        } catch (RuntimeException e) {
-            throw new RuntimeException("Fazer com que seja retornado erro para cada caso usando o e.getMessage(), que deve retornar uma mensagem diferente sendo o erro do client ou do product");
+            productClient.getProductBySku(sku);
+        } catch (FeignException.NotFound e) {
+            throw new EntityNotFoundException(e.getMessage());
+        } catch (FeignException.ServiceUnavailable e) {
+            throw new ConnectionException(e.getMessage());
         }
+    }
 
-        if (!client.getStatus()) {
-            throw new RuntimeException("Client deactivated");
+    private void verifyProduct(String sku, Integer quantity) {
+        Product product = productClient.getProductBySku(sku);
+        if (quantity == null || quantity == 0) {
+            throw new InvalidQuantityException("No quantity informed");
         }
-
+        if (quantity > product.getQuantity()) {
+            throw new InvalidQuantityException("The quantity of available products is " + product.getQuantity());
+        }
         if (!product.getStatus()) {
-            throw new RuntimeException("The product is not available");
-        }
-        if (order.getQuantity() == null || order.getQuantity() == 0) {
-            throw new RuntimeException("No quantity informed");
-        }
-        if (order.getQuantity() > product.getQuantity()) {
-            throw new RuntimeException("The quantity of available products is " + product.getQuantity());
+            throw new UnavailableProductException("The product is not available");
         }
     }
 
