@@ -62,3 +62,10 @@ management:
     health:
       enabled: 'true'
       show-details: always
+
+springdoc:
+  api-docs:
+    path: /docs-orders-api
+  packagesToScan: com.esand.orders.web.controller
+  swagger-ui:
+    path: /docs-orders-api.html
