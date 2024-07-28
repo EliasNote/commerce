@@ -28,14 +28,6 @@ public class ExceptionDecoder implements ErrorDecoder {
             return new ConnectionException("Products API not available");
         }
 
-        if (method.contains("decreaseProductQuantityBySku") && response.status() == 400) {
-            if (response.body().toString().contains("The quantity of available products is")) {
-                return new InvalidQuantityException("The quantity of available products is insufficient");
-            }
-        } else if (method.contains("decreaseProductQuantityBySku") && response.status() == 404) {
-            return new EntityNotFoundException("Product not found by sku");
-        }
-
         return new UnknownErrorException();
     }
 }
