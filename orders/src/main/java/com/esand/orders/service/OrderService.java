@@ -5,10 +5,7 @@ import com.esand.orders.client.clients.ClientClient;
 import com.esand.orders.client.products.Product;
 import com.esand.orders.client.products.ProductClient;
 import com.esand.orders.entity.Order;
-import com.esand.orders.exception.ConnectionException;
-import com.esand.orders.exception.EntityNotFoundException;
-import com.esand.orders.exception.InvalidQuantityException;
-import com.esand.orders.exception.UnavailableProductException;
+import com.esand.orders.exception.*;
 import com.esand.orders.repository.OrderRepository;
 import com.esand.orders.web.dto.OrderCreateDto;
 import com.esand.orders.web.dto.OrderResponseDto;
@@ -55,17 +52,29 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public PageableDto findAll(Pageable pageable) {
-        return orderMapper.toPageableDto(orderRepository.findAllPageable(pageable));
+        PageableDto dto = orderMapper.toPageableDto(orderRepository.findAllPageable(pageable));
+        if (dto.getContent().isEmpty()) {
+            throw new EntityNotFoundException("No orders found");
+        }
+        return dto;
     }
 
     @Transactional(readOnly = true)
     public PageableDto findBySku(Pageable pageable, String sku) {
-        return orderMapper.toPageableDto(orderRepository.findBySku(pageable, sku).orElseThrow());
+        PageableDto dto = orderMapper.toPageableDto(orderRepository.findBySku(pageable, sku).orElseThrow());
+        if (dto.getContent().isEmpty()) {
+            throw new EntityNotFoundException("No orders found by sku");
+        }
+        return dto;
     }
 
     @Transactional(readOnly = true)
     public PageableDto findByCpf(Pageable pageable, String cpf) {
-        return orderMapper.toPageableDto(orderRepository.findByCpf(pageable, cpf).orElseThrow());
+        PageableDto dto = orderMapper.toPageableDto(orderRepository.findByCpf(pageable, cpf).orElseThrow());
+        if (dto.getContent().isEmpty()) {
+            throw new EntityNotFoundException("No orders found by cpf");
+        }
+        return dto;
     }
 
     @Transactional
@@ -83,7 +92,7 @@ public class OrderService {
                 () -> new EntityNotFoundException("Order nº" + id + " does not exist")
         );
         if (order.getProcessed()) {
-            throw new RuntimeException("Already processed order");
+            throw new OrderAlreadySentException("Already processed order");
         }
 
         verifyIfExistsClientAndProductAndConnection(order.getCpf(), order.getSku());
@@ -138,6 +147,4 @@ public class OrderService {
             throw new UnavailableProductException("The product is not available");
         }
     }
-
-
 }

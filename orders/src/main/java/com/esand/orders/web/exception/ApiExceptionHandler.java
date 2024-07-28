@@ -1,9 +1,6 @@
 package com.esand.orders.web.exception;
 
-import com.esand.orders.exception.ConnectionException;
-import com.esand.orders.exception.EntityNotFoundException;
-import com.esand.orders.exception.InvalidQuantityException;
-import com.esand.orders.exception.UnavailableProductException;
+import com.esand.orders.exception.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -15,6 +12,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 @RestControllerAdvice
 public class ApiExceptionHandler {
+
+    @ExceptionHandler(OrderAlreadySentException.class)
+    public final ResponseEntity<ErrorMessage> orderAlreadySentException(OrderAlreadySentException ex, HttpServletRequest request) {
+        log.error("API Error", ex);
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.CONFLICT, ex.getMessage()));
+    }
 
     @ExceptionHandler(EntityNotFoundException.class)
     public final ResponseEntity<ErrorMessage> entityNotFoundException(EntityNotFoundException ex, HttpServletRequest request) {
