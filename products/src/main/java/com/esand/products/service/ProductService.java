@@ -89,6 +89,9 @@ public class ProductService {
     @Transactional
     public String alter(String sku) {
         Product product = findProductBySku(sku);
+        if (product.getQuantity() == 0) {
+            throw new InvalidProductStatusException("Cannot alter status when quantity is 0");
+        }
         product.setStatus(!product.getStatus());
         return product.getStatus().toString();
     }
@@ -99,11 +102,10 @@ public class ProductService {
         if (quantity == null || quantity <= 0) {
             throw new InvalidQuantityException("No quantity stated");
         }
-        if (product.getQuantity() - quantity == 0) {
+        product.setQuantity(product.getQuantity() + quantity);
+        if (product.getQuantity() == 0 || product.getQuantity() > 0 && product.getStatus()) {
             updateProductStatus(product);
         }
-        product.setQuantity(product.getQuantity() + quantity);
-        updateProductStatus(product);
         return product.getQuantity().toString();
     }
 

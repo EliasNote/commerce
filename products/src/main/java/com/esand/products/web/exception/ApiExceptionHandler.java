@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ApiExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public final ResponseEntity<ErrorMessage> EntityNotFoundException(EntityNotFoundException ex, HttpServletRequest request) {
+    public final ResponseEntity<ErrorMessage> entityNotFoundException(EntityNotFoundException ex, HttpServletRequest request) {
         log.error("API Error", ex);
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
@@ -24,7 +24,7 @@ public class ApiExceptionHandler {
     }
 
     @ExceptionHandler(SkuUniqueViolationException.class)
-    public final ResponseEntity<ErrorMessage> SkuUniqueViolationException(SkuUniqueViolationException ex, HttpServletRequest request) {
+    public final ResponseEntity<ErrorMessage> skuUniqueViolationException(SkuUniqueViolationException ex, HttpServletRequest request) {
         log.error("API Error", ex);
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
@@ -33,7 +33,7 @@ public class ApiExceptionHandler {
     }
 
     @ExceptionHandler(TitleUniqueViolationException.class)
-    public final ResponseEntity<ErrorMessage> TitleUniqueViolationException(TitleUniqueViolationException ex, HttpServletRequest request) {
+    public final ResponseEntity<ErrorMessage> titleUniqueViolationException(TitleUniqueViolationException ex, HttpServletRequest request) {
         log.error("API Error", ex);
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
@@ -42,7 +42,7 @@ public class ApiExceptionHandler {
     }
 
     @ExceptionHandler(InvalidQuantityException.class)
-    public final ResponseEntity<ErrorMessage> InvalidQuantityException(InvalidQuantityException ex, HttpServletRequest request) {
+    public final ResponseEntity<ErrorMessage> invalidQuantityException(InvalidQuantityException ex, HttpServletRequest request) {
         log.error("API Error", ex);
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
@@ -51,7 +51,16 @@ public class ApiExceptionHandler {
     }
 
     @ExceptionHandler(InvalidCategoryException.class)
-    public final ResponseEntity<ErrorMessage> InvalidCategoryException(InvalidCategoryException ex, HttpServletRequest request) {
+    public final ResponseEntity<ErrorMessage> invalidCategoryException(InvalidCategoryException ex, HttpServletRequest request) {
+        log.error("API Error", ex);
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidProductStatusException.class)
+    public final ResponseEntity<ErrorMessage> invalidProductStatusException(InvalidProductStatusException ex, HttpServletRequest request) {
         log.error("API Error", ex);
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
