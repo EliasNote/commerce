@@ -103,7 +103,7 @@ public class ProductService {
             throw new InvalidQuantityException("No quantity stated");
         }
         product.setQuantity(product.getQuantity() + quantity);
-        if (product.getQuantity() == 0 || product.getQuantity() > 0 && product.getStatus()) {
+        if (product.getQuantity() - quantity == 0 || product.getQuantity() > 0 && product.getStatus()) {
             updateProductStatus(product);
         }
         return product.getQuantity().toString();
