@@ -44,6 +44,16 @@ spring:
 #  kafka:
 #    bootstrap-servers: ${KAFKA_HOST:localhost:19092}
 
-
 server:
   port: '0'
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+    enabled-by-default: 'true'
+  endpoint:
+    health:
+      enabled: 'true'
+      show-details: always
