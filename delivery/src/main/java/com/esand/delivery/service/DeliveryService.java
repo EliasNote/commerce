@@ -5,6 +5,7 @@ import com.esand.delivery.entity.Delivery;
 import com.esand.delivery.exception.ConnectionException;
 import com.esand.delivery.exception.EntityNotFoundException;
 import com.esand.delivery.exception.OrderCanceledException;
+import com.esand.delivery.exception.OrderShippedException;
 import com.esand.delivery.repository.DeliveryRepository;
 import com.esand.delivery.web.dto.DeliveryResponseDto;
 import com.esand.delivery.web.dto.DeliverySaveDto;
@@ -33,22 +34,21 @@ public class DeliveryService {
 
     @Transactional(readOnly = true)
     public PageableDto findAll(Pageable pageable) {
-        return deliveryMapper.toPageableDto(deliveryRepository.findAllPageable(pageable));
+        PageableDto dto =  deliveryMapper.toPageableDto(deliveryRepository.findAllPageable(pageable));
+        if (dto.getContent().isEmpty()) {
+            throw new EntityNotFoundException("No orders found");
+        }
+        return dto;
     }
 
     @Transactional(readOnly = true)
     public DeliveryResponseDto findById(Long id) {
-        Delivery delivery = deliveryRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("Order nº" + id + " does not exist")
-        );
-        return deliveryMapper.toDto(delivery);
+        return deliveryMapper.toDto(findOrderById(id));
     }
 
     @Transactional(noRollbackFor= Exception.class)
     public String cancel(Long id) {
-        Delivery delivery = deliveryRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("Order nº" + id + " does not exist")
-        );
+        Delivery delivery = findOrderById(id);
         if (delivery.getStatus().equals(Delivery.Status.CANCELED)) {
             throw new OrderCanceledException("Order nº" + delivery.getId() + " has already been canceled");
         }
@@ -72,14 +72,12 @@ public class DeliveryService {
 
     @Transactional
     public String statusShipped(Long id) {
-        Delivery delivery = deliveryRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("Order nº" + id + " does not exist")
-        );
+        Delivery delivery = findOrderById(id);
         if (delivery.getStatus().equals(Delivery.Status.SHIPPED)) {
-            throw new RuntimeException("Order nº" + delivery.getId() + " has already been shipped");
+            throw new OrderShippedException("Order nº" + delivery.getId() + " has already been shipped");
         }
         if (delivery.getStatus().equals(Delivery.Status.CANCELED)) {
-            throw new RuntimeException("Order nº" + delivery.getId() + " is canceled");
+            throw new OrderCanceledException("Order nº" + delivery.getId() + " is canceled");
         }
         delivery.setStatus(Delivery.Status.SHIPPED);
         return "Order nº" + delivery.getId() + " status changed to shipped successfully";
@@ -88,5 +86,11 @@ public class DeliveryService {
     @Transactional
     public void deleteAllCanceled() {
         deliveryRepository.deleteAllByStatus(Delivery.Status.CANCELED);
+    }
+
+    private Delivery findOrderById(Long id) {
+        return deliveryRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Order nº" + id + " does not exist")
+        );
     }
 }
