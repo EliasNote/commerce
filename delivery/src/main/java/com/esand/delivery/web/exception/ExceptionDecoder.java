@@ -15,7 +15,7 @@ public class ExceptionDecoder implements ErrorDecoder {
     public Exception decode(String method, Response response) {
         log.info("Exception decoder: {}, {}", method, response);
 
-        if (method.contains("checkStatus()") && response.status() == 503) {
+        if (method.contains("checkStatus") && response.status() == 503) {
             return new ConnectionException("Products API not available");
         }
 
