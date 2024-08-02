@@ -96,6 +96,30 @@ public interface SpringDoc {
     })
     ResponseEntity<ProductResponseDto> findBySku(@PathVariable String sku);
 
+    @Operation(summary = "Search for active products",
+            description = "Endpoint to search for active products.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Active products found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = PageableDto.class))),
+            @ApiResponse(responseCode = "404", description = "Active products not found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorMessage.class)))
+    })
+    ResponseEntity<PageableDto> findAllActived(@PageableDefault(size = 10) Pageable pageable);
+
+    @Operation(summary = "Search for disabled products",
+            description = "Endpoint to search for disabled products.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Disabled products found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = PageableDto.class))),
+            @ApiResponse(responseCode = "404", description = "Disabled products not found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorMessage.class)))
+    })
+    ResponseEntity<PageableDto> findAllDisabled(@PageableDefault(size = 10) Pageable pageable);
+
     @Operation(summary = "Update a product's data",
             description = "Endpoint to update a product's data by SKU. It's possible to update by specifying only the attribute you want to modify.")
     @ApiResponses(value = {

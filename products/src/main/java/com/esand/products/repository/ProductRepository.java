@@ -26,5 +26,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     boolean existsByTitle(String title);
 
     boolean existsBySku(String sku);
+
+    Page<ProductDtoPagination> findAllByStatus(Pageable pageable, boolean b);
 }
 

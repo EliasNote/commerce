@@ -130,7 +130,27 @@ public class ProductService {
         );
     }
 
+    @Transactional(readOnly = true)
+    public PageableDto findAllActived(Pageable pageable) {
+        PageableDto dto = productMapper.toPageableDto(productRepository.findAllByStatus(pageable, true));
+        if (dto.getContent().isEmpty()) {
+            throw new EntityNotFoundException("No active product found");
+        }
+        return dto;
+    }
+
+    @Transactional(readOnly = true)
+    public PageableDto findAllDisabled(Pageable pageable) {
+        PageableDto dto = productMapper.toPageableDto(productRepository.findAllByStatus(pageable, false));
+        if (dto.getContent().isEmpty()) {
+            throw new EntityNotFoundException("No disabled product found");
+        }
+        return dto;
+    }
+
     private void updateProductStatus(Product product) {
         product.setStatus(product.getQuantity() == 0 ? false : true);
     }
+
+
 }
