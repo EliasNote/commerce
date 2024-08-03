@@ -57,3 +57,10 @@ management:
     health:
       enabled: 'true'
       show-details: always
+
+springdoc:
+  api-docs:
+    path: /docs-delivery-api
+  packagesToScan: com.esand.delivery.web.controller
+  swagger-ui:
+    path: /docs-delivery-api.html
