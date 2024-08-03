@@ -5,13 +5,10 @@ import com.esand.delivery.springdoc.SpringDoc;
 import com.esand.delivery.web.dto.DeliveryResponseDto;
 import com.esand.delivery.web.dto.PageableDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -30,6 +27,22 @@ public class DeliveryController implements SpringDoc {
     @GetMapping("/id/{id}")
     public ResponseEntity<DeliveryResponseDto> findById(@PathVariable Long id) {
         return ResponseEntity.ok(deliveryService.findById(id));
+    }
+
+
+    @GetMapping("/shipped")
+    public ResponseEntity<PageableDto> findAllShipped(@PageableDefault(size = 10) Pageable pageable) {
+        return ResponseEntity.ok(deliveryService.findAllShipped(pageable));
+    }
+
+    @GetMapping("/processing")
+    public ResponseEntity<PageableDto> findAllProcessing(@PageableDefault(size = 10) Pageable pageable) {
+        return ResponseEntity.ok(deliveryService.findAllProcessing(pageable));
+    }
+
+    @GetMapping("/canceled")
+    public ResponseEntity<PageableDto> findAllCanceled(@PageableDefault(size = 10) Pageable pageable) {
+        return ResponseEntity.ok(deliveryService.findAllCanceled(pageable));
     }
 
     @Override

@@ -46,6 +46,33 @@ public class DeliveryService {
         return deliveryMapper.toDto(findOrderById(id));
     }
 
+    @Transactional(readOnly = true)
+    public PageableDto findAllShipped(Pageable pageable) {
+        PageableDto dto =  deliveryMapper.toPageableDto(deliveryRepository.findAllByStatus(pageable, Delivery.Status.SHIPPED));
+        if (dto.getContent().isEmpty()) {
+            throw new EntityNotFoundException("No orders found");
+        }
+        return dto;
+    }
+
+    @Transactional(readOnly = true)
+    public PageableDto findAllProcessing(Pageable pageable) {
+        PageableDto dto =  deliveryMapper.toPageableDto(deliveryRepository.findAllByStatus(pageable, Delivery.Status.PROCESSING));
+        if (dto.getContent().isEmpty()) {
+            throw new EntityNotFoundException("No orders found");
+        }
+        return dto;
+    }
+
+    @Transactional(readOnly = true)
+    public PageableDto findAllCanceled(Pageable pageable) {
+        PageableDto dto =  deliveryMapper.toPageableDto(deliveryRepository.findAllByStatus(pageable, Delivery.Status.CANCELED));
+        if (dto.getContent().isEmpty()) {
+            throw new EntityNotFoundException("No orders found");
+        }
+        return dto;
+    }
+
     @Transactional(noRollbackFor= Exception.class)
     public String cancel(Long id) {
         Delivery delivery = findOrderById(id);

@@ -12,4 +12,6 @@ public interface DeliveryRepository extends JpaRepository<Delivery, Long> {
 
     @Query("SELECT p FROM Delivery p")
     Page<DeliveryDtoPagination> findAllPageable(Pageable pageable);
+
+    Page<DeliveryDtoPagination> findAllByStatus(Pageable pageable, Delivery.Status status);
 }
