@@ -17,18 +17,15 @@ public class DeliveryController implements SpringDoc {
 
     private final DeliveryService deliveryService;
 
-    @Override
     @GetMapping
     public ResponseEntity<PageableDto> findAll(@PageableDefault(size = 10) Pageable pageable) {
         return ResponseEntity.ok(deliveryService.findAll(pageable));
     }
 
-    @Override
     @GetMapping("/id/{id}")
     public ResponseEntity<DeliveryResponseDto> findById(@PathVariable Long id) {
         return ResponseEntity.ok(deliveryService.findById(id));
     }
-
 
     @GetMapping("/shipped")
     public ResponseEntity<PageableDto> findAllShipped(@PageableDefault(size = 10) Pageable pageable) {
@@ -45,19 +42,16 @@ public class DeliveryController implements SpringDoc {
         return ResponseEntity.ok(deliveryService.findAllCanceled(pageable));
     }
 
-    @Override
     @PatchMapping("/cancel/{id}")
     public ResponseEntity<String> cancelDelivery(@PathVariable Long id) {
         return ResponseEntity.ok(deliveryService.cancel(id));
     }
 
-    @Override
     @PatchMapping("/status/{id}")
     public ResponseEntity<String> productShipped(@PathVariable Long id) {
         return ResponseEntity.ok(deliveryService.statusShipped(id));
     }
 
-    @Override
     @DeleteMapping("/delete/canceled")
     public ResponseEntity<Void> deleteAllCanceled() {
         deliveryService.deleteAllCanceled();

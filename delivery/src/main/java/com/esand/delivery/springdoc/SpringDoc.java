@@ -42,6 +42,42 @@ public interface SpringDoc {
     })
     ResponseEntity<DeliveryResponseDto> findById(@PathVariable Long id);
 
+    @Operation(summary = "Search for all shipped deliveries",
+            description = "Endpoint to search for all shipped deliveries.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "All shipped deliveries found successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = PageableDto.class))),
+            @ApiResponse(responseCode = "404", description = "No shipped deliveries found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorMessage.class)))
+    })
+    ResponseEntity<PageableDto> findAllShipped(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable);
+
+    @Operation(summary = "Search for all processing deliveries",
+            description = "Endpoint to search for all processing deliveries.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "All processing deliveries found successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = PageableDto.class))),
+            @ApiResponse(responseCode = "404", description = "No processing deliveries found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorMessage.class)))
+    })
+    ResponseEntity<PageableDto> findAllProcessing(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable);
+
+    @Operation(summary = "Search for all canceled deliveries",
+            description = "Endpoint to search for all canceled deliveries.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "All canceled deliveries found successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = PageableDto.class))),
+            @ApiResponse(responseCode = "404", description = "No canceled deliveries found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorMessage.class)))
+    })
+    ResponseEntity<PageableDto> findAllCanceled(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable);
+
     @Operation(summary = "Cancel a delivery",
             description = "Endpoint to cancel a delivery by its ID.")
     @ApiResponses(value = {
