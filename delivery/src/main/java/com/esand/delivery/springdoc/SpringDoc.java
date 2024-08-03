@@ -87,7 +87,13 @@ public interface SpringDoc {
             @ApiResponse(responseCode = "404", description = "Delivery not found by ID",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorMessage.class))),
+            @ApiResponse(responseCode = "404", description = "Product not found by sku, but status has been updated",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorMessage.class))),
             @ApiResponse(responseCode = "409", description = "Delivery already canceled",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorMessage.class))),
+            @ApiResponse(responseCode = "503", description = "Products API not available",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorMessage.class)))
     })
