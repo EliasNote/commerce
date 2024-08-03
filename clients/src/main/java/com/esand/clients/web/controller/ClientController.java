@@ -21,31 +21,26 @@ import org.springframework.web.bind.annotation.*;
 public class ClientController implements SpringDoc {
     private final ClientService clientService;
 
-    @Override
     @PostMapping
     public ResponseEntity<ClientResponseDto> create(@RequestBody @Valid ClientCreateDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(clientService.save(dto));
     }
 
-    @Override
     @GetMapping
     public ResponseEntity<PageableDto> findAll(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable) {
         return ResponseEntity.ok(clientService.findAll(pageable));
     }
 
-    @Override
     @GetMapping("/name/{name}")
     public ResponseEntity<PageableDto> findByName(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable, @PathVariable String name) {
         return ResponseEntity.ok(clientService.findByName(name, pageable));
     }
 
-    @Override
     @GetMapping("/cpf/{cpf}")
     public ResponseEntity<ClientResponseDto> findByCpf(@PathVariable String cpf) {
         return ResponseEntity.ok(clientService.findByCpf(cpf));
     }
 
-    @Override
     @PatchMapping("/edit/{cpf}")
     public ResponseEntity<Void> update(@PathVariable String cpf, @RequestBody @Valid ClientUpdateDto dto) {
         clientService.update(cpf, dto);
