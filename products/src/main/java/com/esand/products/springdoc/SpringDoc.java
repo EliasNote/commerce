@@ -18,6 +18,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "Products", description = "Contains all operations related to resources for registration, searching, correcting data, and updating status")
 public interface SpringDoc {
@@ -119,6 +120,20 @@ public interface SpringDoc {
                             schema = @Schema(implementation = ErrorMessage.class)))
     })
     ResponseEntity<PageableDto> findAllDisabled(@PageableDefault(size = 10) Pageable pageable);
+
+    @Operation(summary = "Search for products by date",
+            description = "Endpoint to search for products by date range.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Products found successfully by date",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = PageableDto.class))),
+            @ApiResponse(responseCode = "404", description = "No products found by date",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorMessage.class)))
+    })
+    ResponseEntity<PageableDto> findByDate(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                           @RequestParam(value = "afterDate", required = false) String afterDate,
+                                           @RequestParam(value = "beforeDate", required = false) String beforeDate);
 
     @Operation(summary = "Update a product's data",
             description = "Endpoint to update a product's data by SKU. It's possible to update by specifying only the attribute you want to modify.")

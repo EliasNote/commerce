@@ -7,6 +7,7 @@ import com.esand.products.web.dto.PageableDto;
 import com.esand.products.web.dto.ProductCreateDto;
 import com.esand.products.web.dto.ProductResponseDto;
 import com.esand.products.web.dto.ProductUpdateDto;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -62,6 +63,13 @@ public class ProductController implements SpringDoc {
     @GetMapping("/disabled")
     public ResponseEntity<PageableDto> findAllDisabled(@PageableDefault(size = 10) Pageable pageable) {
         return ResponseEntity.ok(productService.findAllDisabled(pageable));
+    }
+
+    @GetMapping("/date")
+    public ResponseEntity<PageableDto> findByDate(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                                  @RequestParam(value = "afterDate", required = false) String afterDate,
+                                                  @RequestParam(value = "beforeDate", required = false) String beforeDate) {
+        return ResponseEntity.ok(productService.findProductsByDate(afterDate, beforeDate, pageable));
     }
 
     @PutMapping("/edit/{sku}")

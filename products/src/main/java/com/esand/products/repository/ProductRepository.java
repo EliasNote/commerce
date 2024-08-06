@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 
@@ -28,5 +29,11 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     boolean existsBySku(String sku);
 
     Page<ProductDtoPagination> findAllByStatus(Pageable pageable, boolean b);
+
+    Page<ProductDtoPagination> findByCreateDateAfter(LocalDateTime date, Pageable pageable);
+
+    Page<ProductDtoPagination> findByCreateDateBefore(LocalDateTime date, Pageable pageable);
+
+    Page<ProductDtoPagination> findByCreateDateBetween(LocalDateTime afterDate, LocalDateTime beforeDate, Pageable pageable);
 }
 
