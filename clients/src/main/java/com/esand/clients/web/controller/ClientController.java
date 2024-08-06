@@ -41,6 +41,13 @@ public class ClientController implements SpringDoc {
         return ResponseEntity.ok(clientService.findByCpf(cpf));
     }
 
+    @GetMapping("/date")
+    public ResponseEntity<PageableDto> findByDate(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                              @RequestParam(value = "afterDate", required = false) String afterDate,
+                                              @RequestParam(value = "beforeDate", required = false) String beforeDate) {
+        return ResponseEntity.ok(clientService.findClientsByDate(afterDate, beforeDate, pageable));
+    }
+
     @PatchMapping("/edit/{cpf}")
     public ResponseEntity<Void> update(@PathVariable String cpf, @RequestBody @Valid ClientUpdateDto dto) {
         clientService.update(cpf, dto);

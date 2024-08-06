@@ -15,6 +15,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+
 @RequiredArgsConstructor
 @Service
 public class ClientService {
@@ -58,6 +60,26 @@ public class ClientService {
     public void update(String cpf, ClientUpdateDto dto) {
         Client client = findClientByCpf(cpf);
         clientMapper.updateClient(dto, client);
+    }
+
+    @Transactional(readOnly = true)
+    public PageableDto findClientsByDate(String afterDate, String beforeDate, Pageable pageable) {
+        PageableDto dto;
+        if (afterDate != null && beforeDate != null) {
+            dto = clientMapper.toPageableDto(clientRepository.findByCreateDateBetween(LocalDate.parse(afterDate).atStartOfDay(), LocalDate.parse(beforeDate).atStartOfDay().plusDays(1), pageable));
+        } else if (afterDate != null) {
+            dto = clientMapper.toPageableDto(clientRepository.findByCreateDateAfter(LocalDate.parse(afterDate).atStartOfDay(), pageable));
+        } else if (beforeDate != null) {
+            dto = clientMapper.toPageableDto(clientRepository.findByCreateDateBefore(LocalDate.parse(beforeDate).atStartOfDay().plusDays(1), pageable));
+        } else {
+            throw new EntityNotFoundException("No date parameters provided");
+        }
+
+        if (dto.getContent().isEmpty()) {
+            throw new EntityNotFoundException("No clients found by date(s)");
+        }
+
+        return dto;
     }
 
     private Client findClientByCpf(String cpf) {
