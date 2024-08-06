@@ -7,6 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDateTime;
+
 public interface DeliveryRepository extends JpaRepository<Delivery, Long> {
     void deleteAllByStatus(Delivery.Status status);
 
@@ -14,4 +16,10 @@ public interface DeliveryRepository extends JpaRepository<Delivery, Long> {
     Page<DeliveryDtoPagination> findAllPageable(Pageable pageable);
 
     Page<DeliveryDtoPagination> findAllByStatus(Pageable pageable, Delivery.Status status);
+
+    Page<DeliveryDtoPagination> findByDateAfter(LocalDateTime date, Pageable pageable);
+
+    Page<DeliveryDtoPagination> findByDateBefore(LocalDateTime date, Pageable pageable);
+
+    Page<DeliveryDtoPagination> findByDateBetween(LocalDateTime afterDate, LocalDateTime beforeDate, Pageable pageable);
 }

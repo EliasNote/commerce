@@ -18,6 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+
 @Service
 @Log4j2
 @RequiredArgsConstructor
@@ -70,6 +72,26 @@ public class DeliveryService {
         if (dto.getContent().isEmpty()) {
             throw new EntityNotFoundException("No orders found");
         }
+        return dto;
+    }
+
+    @Transactional(readOnly = true)
+    public PageableDto findDeliveryByDate(String afterDate, String beforeDate, Pageable pageable) {
+        PageableDto dto;
+        if (afterDate != null && beforeDate != null) {
+            dto = deliveryMapper.toPageableDto(deliveryRepository.findByDateBetween(LocalDate.parse(afterDate).atStartOfDay(), LocalDate.parse(beforeDate).atStartOfDay().plusDays(1), pageable));
+        } else if (afterDate != null) {
+            dto = deliveryMapper.toPageableDto(deliveryRepository.findByDateAfter(LocalDate.parse(afterDate).atStartOfDay(), pageable));
+        } else if (beforeDate != null) {
+            dto = deliveryMapper.toPageableDto(deliveryRepository.findByDateBefore(LocalDate.parse(beforeDate).atStartOfDay().plusDays(1), pageable));
+        } else {
+            throw new EntityNotFoundException("No date parameters provided");
+        }
+
+        if (dto.getContent().isEmpty()) {
+            throw new EntityNotFoundException("No orders found by date(s)");
+        }
+
         return dto;
     }
 

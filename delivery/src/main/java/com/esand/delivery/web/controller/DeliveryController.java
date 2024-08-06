@@ -4,6 +4,7 @@ import com.esand.delivery.service.DeliveryService;
 import com.esand.delivery.springdoc.SpringDoc;
 import com.esand.delivery.web.dto.DeliveryResponseDto;
 import com.esand.delivery.web.dto.PageableDto;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -40,6 +41,13 @@ public class DeliveryController implements SpringDoc {
     @GetMapping("/canceled")
     public ResponseEntity<PageableDto> findAllCanceled(@PageableDefault(size = 10) Pageable pageable) {
         return ResponseEntity.ok(deliveryService.findAllCanceled(pageable));
+    }
+
+    @GetMapping("/date")
+    public ResponseEntity<PageableDto> findByDate(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                                  @RequestParam(value = "afterDate", required = false) String afterDate,
+                                                  @RequestParam(value = "beforeDate", required = false) String beforeDate) {
+        return ResponseEntity.ok(deliveryService.findDeliveryByDate(afterDate, beforeDate, pageable));
     }
 
     @PatchMapping("/cancel/{id}")
