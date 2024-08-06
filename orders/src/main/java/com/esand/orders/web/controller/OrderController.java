@@ -5,6 +5,7 @@ import com.esand.orders.springdoc.SpringDoc;
 import com.esand.orders.web.dto.OrderCreateDto;
 import com.esand.orders.web.dto.OrderResponseDto;
 import com.esand.orders.web.dto.PageableDto;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -36,6 +37,13 @@ public class OrderController implements SpringDoc {
     @GetMapping("/cpf/{cpf}")
     public ResponseEntity<PageableDto> findByCpf(@PageableDefault(size = 10) Pageable pageable, @PathVariable String cpf) {
         return ResponseEntity.ok(orderService.findByCpf(pageable, cpf));
+    }
+
+    @GetMapping("/date")
+    public ResponseEntity<PageableDto> findByDate(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                                  @RequestParam(value = "afterDate", required = false) String afterDate,
+                                                  @RequestParam(value = "beforeDate", required = false) String beforeDate) {
+        return ResponseEntity.ok(orderService.findOrdersByDate(afterDate, beforeDate, pageable));
     }
 
     @PatchMapping("/processed/{id}")

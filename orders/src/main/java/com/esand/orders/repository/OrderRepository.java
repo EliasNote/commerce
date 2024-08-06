@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
@@ -18,4 +19,10 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Optional<Page<OrderDtoPagination>> findByCpf(Pageable pageable, String cpf);
 
     void deleteAllByProcessed(Boolean processed);
+
+    Page<OrderDtoPagination> findByDateAfter(LocalDateTime date, Pageable pageable);
+
+    Page<OrderDtoPagination> findByDateBefore(LocalDateTime date, Pageable pageable);
+
+    Page<OrderDtoPagination> findByDateBetween(LocalDateTime afterDate, LocalDateTime beforeDate, Pageable pageable);
 }
