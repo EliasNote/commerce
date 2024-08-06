@@ -18,6 +18,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "Clients", description = "Contains all operations related to resources for registration, searching, correcting data, and updating status")
 public interface SpringDoc {
@@ -71,6 +72,20 @@ public interface SpringDoc {
                             schema = @Schema(implementation = ErrorMessage.class)))
     })
     ResponseEntity<ClientResponseDto> findByCpf(@PathVariable String cpf);
+
+    @Operation(summary = "Search for customers by date",
+            description = "Endpoint to search for customers by date range.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Customers found successfully by date",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = PageableDto.class))),
+            @ApiResponse(responseCode = "404", description = "No customers found by date",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorMessage.class)))
+    })
+    ResponseEntity<PageableDto> findByDate(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                           @RequestParam(value = "afterDate", required = false) String afterDate,
+                                           @RequestParam(value = "beforeDate", required = false) String beforeDate);
 
     @Operation(summary = "Update a customer's data",
             description = "Endpoint that updates the data of an existing customer by CPF.")
