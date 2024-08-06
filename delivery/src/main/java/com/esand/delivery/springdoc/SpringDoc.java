@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "Deliveries", description = "Contains all operations related to delivery management, including searching, updating, and deletion")
 public interface SpringDoc {
@@ -77,6 +78,20 @@ public interface SpringDoc {
                             schema = @Schema(implementation = ErrorMessage.class)))
     })
     ResponseEntity<PageableDto> findAllCanceled(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable);
+
+    @Operation(summary = "Search for deliveries by date",
+            description = "Endpoint to search for deliveries by date range.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Deliveries found successfully by date",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = PageableDto.class))),
+            @ApiResponse(responseCode = "404", description = "No deliveries found by date",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorMessage.class)))
+    })
+    ResponseEntity<PageableDto> findByDate(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                           @RequestParam(value = "afterDate", required = false) String afterDate,
+                                           @RequestParam(value = "beforeDate", required = false) String beforeDate);
 
     @Operation(summary = "Cancel a delivery",
             description = "Endpoint to cancel a delivery by its ID.")

@@ -89,7 +89,7 @@ public class DeliveryService {
         }
 
         if (dto.getContent().isEmpty()) {
-            throw new EntityNotFoundException("No orders found by date(s)");
+            throw new EntityNotFoundException("No deliveries found by date(s)");
         }
 
         return dto;
