@@ -46,7 +46,7 @@ public class OrderController implements SpringDoc {
         return ResponseEntity.ok(orderService.findOrdersByDate(afterDate, beforeDate, pageable));
     }
 
-    @PatchMapping("/processed/{id}")
+    @PatchMapping("/processing/{id}")
     public ResponseEntity<String> processOrder(@PathVariable Long id) {
         return ResponseEntity.ok(orderService.sendOrder(id));
     }

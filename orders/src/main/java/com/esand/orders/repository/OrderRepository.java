@@ -18,7 +18,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     Optional<Page<OrderDtoPagination>> findByCpf(Pageable pageable, String cpf);
 
-    void deleteAllByProcessed(Boolean processed);
+    void deleteAllByProcessing(Boolean processed);
 
     Page<OrderDtoPagination> findByDateAfter(LocalDateTime date, Pageable pageable);
 

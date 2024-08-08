@@ -105,21 +105,21 @@ public class OrderService {
 
     @Transactional
     public void deleteAllProcessed() {
-        orderRepository.deleteAllByProcessed(true);
+        orderRepository.deleteAllByProcessing(true);
     }
 
     public String sendOrder(Long id) {
         Order order = orderRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Order nº" + id + " does not exist")
         );
-        if (order.getProcessed()) {
+        if (order.getProcessing()) {
             throw new OrderAlreadySentException("Already processed order");
         }
 
         verifyIfExistsClientAndProductAndConnection(order.getCpf(), order.getSku());
         verifyProduct(order.getSku(), order.getQuantity());
 
-        order.setProcessed(true);
+        order.setProcessing(true);
         productClient.decreaseProductQuantityBySku(order.getSku(), order.getQuantity());
         OrderResponseDto response = orderMapper.toDto(orderRepository.save(order));
         sendMessage(response);

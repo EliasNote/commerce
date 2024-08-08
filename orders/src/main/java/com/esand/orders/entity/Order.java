@@ -41,7 +41,7 @@ public class Order {
 
     private Double total = 0.00;
 
-    private Boolean processed = false;
+    private Boolean processing = false;
 
     @CreatedDate
     @Column(name = "date", nullable = false)

@@ -14,6 +14,6 @@ public interface OrderDtoPagination {
     Double getPrice();
     Integer getQuantity();
     Double getTotal();
-    Boolean getProcessed();
+    Boolean getProcessing();
     LocalDateTime getDate();
 }
