@@ -55,7 +55,7 @@ public class DeliveryController implements SpringDoc {
         return ResponseEntity.ok(deliveryService.cancel(id));
     }
 
-    @PatchMapping("/status/{id}")
+    @PatchMapping("/shipped/{id}")
     public ResponseEntity<String> productShipped(@PathVariable Long id) {
         return ResponseEntity.ok(deliveryService.statusShipped(id));
     }
