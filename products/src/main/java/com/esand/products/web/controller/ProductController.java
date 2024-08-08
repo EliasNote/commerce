@@ -1,6 +1,5 @@
 package com.esand.products.web.controller;
 
-import com.esand.products.entity.Product;
 import com.esand.products.service.ProductService;
 import com.esand.products.springdoc.SpringDoc;
 import com.esand.products.web.dto.PageableDto;
@@ -16,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -72,7 +70,7 @@ public class ProductController implements SpringDoc {
         return ResponseEntity.ok(productService.findProductsByDate(afterDate, beforeDate, pageable));
     }
 
-    @PutMapping("/edit/{sku}")
+    @PatchMapping("/edit/{sku}")
     public ResponseEntity<Void> update(@PathVariable String sku, @RequestBody @Valid ProductUpdateDto dto) {
         productService.update(sku, dto);
         return ResponseEntity.noContent().build();
