@@ -33,7 +33,7 @@ public class ClientController implements SpringDoc {
 
     @GetMapping("/name/{name}")
     public ResponseEntity<PageableDto> findByName(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable, @PathVariable String name) {
-        return ResponseEntity.ok(clientService.findByName(name, pageable));
+        return ResponseEntity.ok(clientService.findByName(pageable, name));
     }
 
     @GetMapping("/cpf/{cpf}")

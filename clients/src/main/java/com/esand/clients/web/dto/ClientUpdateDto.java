@@ -16,7 +16,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ClientUpdateDto {
-    @Size(min = 5, max = 100)
+    @Size(min = 2, max = 100)
     private String name;
 
     @Size(min = 11, max = 11, message = "the CPF must have 11 characters")
