@@ -56,12 +56,6 @@ public class ClientService {
         return clientMapper.toDto(findClientByCpf(cpf));
     }
 
-    @Transactional
-    public void update(String cpf, ClientUpdateDto dto) {
-        Client client = findClientByCpf(cpf);
-        clientMapper.updateClient(dto, client);
-    }
-
     @Transactional(readOnly = true)
     public PageableDto findClientsByDate(String afterDate, String beforeDate, Pageable pageable) {
         PageableDto dto;
@@ -80,6 +74,12 @@ public class ClientService {
         }
 
         return dto;
+    }
+
+    @Transactional
+    public void update(String cpf, ClientUpdateDto dto) {
+        Client client = findClientByCpf(cpf);
+        clientMapper.updateClient(dto, client);
     }
 
     private Client findClientByCpf(String cpf) {
