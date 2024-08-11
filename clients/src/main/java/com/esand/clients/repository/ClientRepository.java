@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 public interface ClientRepository extends JpaRepository<Client, Long> {
-    Page<ClientDtoPagination> findByNameIgnoreCase(String name, Pageable pageable);
+    Page<ClientDtoPagination> findByNameIgnoreCaseContaining(String name, Pageable pageable);
 
     Optional<Client> findByCpf(String cpf);
 

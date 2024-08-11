@@ -145,7 +145,7 @@ class ClientServiceTest {
         PageableDto pageableDto = new PageableDto();
         pageableDto.setContent(content);
 
-        when(clientRepository.findByNameIgnoreCase(any(String.class), any(Pageable.class))).thenReturn(page);
+        when(clientRepository.findByNameIgnoreCaseContaining(any(String.class), any(Pageable.class))).thenReturn(page);
         when(clientMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
         PageableDto response = clientService.findByName(pageable, "Test");
@@ -165,7 +165,7 @@ class ClientServiceTest {
         PageableDto pageableDto = new PageableDto();
         pageableDto.setContent(content);
 
-        when(clientRepository.findByNameIgnoreCase(any(String.class), any(Pageable.class))).thenReturn(page);
+        when(clientRepository.findByNameIgnoreCaseContaining(any(String.class), any(Pageable.class))).thenReturn(page);
         when(clientMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
         assertThrows(EntityNotFoundException.class, () -> clientService.findByName(pageable, "Test"));

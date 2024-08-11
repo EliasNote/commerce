@@ -44,7 +44,7 @@ public class ClientService {
 
     @Transactional(readOnly = true)
     public PageableDto findByName(Pageable pageable, String name) {
-        PageableDto dto = clientMapper.toPageableDto(clientRepository.findByNameIgnoreCase(name, pageable));
+        PageableDto dto = clientMapper.toPageableDto(clientRepository.findByNameIgnoreCaseContaining(name, pageable));
         if (dto.getContent().isEmpty()) {
             throw new EntityNotFoundException("Customer not found by name");
         }
