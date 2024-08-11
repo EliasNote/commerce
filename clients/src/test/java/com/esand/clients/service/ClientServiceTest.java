@@ -19,12 +19,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -76,7 +73,6 @@ class ClientServiceTest {
     void testSaveClientCpfUniqueViolationException() {
         ClientCreateDto createDto =  new ClientCreateDto("Test", "07021050070", "55210568972", "teste@email.com", "Address1", LocalDate.of(2024, 8, 7), "M");
         Client client = new Client(1L, "Test", "07021050070", "55210568972", "teste@email.com", "Address1", LocalDate.of(2024, 8, 7), Client.Gender.M, LocalDateTime.now());
-        ClientResponseDto responseDto = new ClientResponseDto("Test", "07021050070", "55210568972", "teste@email.com", "Address1", LocalDate.of(2024, 8, 7), "M");
 
         when(clientMapper.toClient(any(ClientCreateDto.class))).thenReturn(client);
         when(clientRepository.save(any(Client.class))).thenThrow(CpfUniqueViolationException.class);

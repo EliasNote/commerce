@@ -41,7 +41,7 @@ class ClientIntegrationTests {
 	}
 
 	@Test
-	void testeCriarClienteSucesso() throws Exception {
+	void testCreateClientSuccess() throws Exception {
 		ClientCreateDto createDto =  new ClientCreateDto("Teste", "07021050070", "55210568972", "teste@email.com", "Address111", LocalDate.of(2024, 8, 7), "M");
 
 		String propostaJson = objectMapper.writeValueAsString(createDto);
@@ -53,7 +53,7 @@ class ClientIntegrationTests {
 	}
 
 	@Test
-	void testeCriarClienteExcecaoDadosInvalidos() throws Exception {
+	void testCreateClientExceptionInvalidData() throws Exception {
 		ClientCreateDto createDto =  new ClientCreateDto("Teste", "07021050071", "55210568972", "teste@email.com", "Address111", LocalDate.of(2024, 8, 7), "M");
 
 		String propostaJson = objectMapper.writeValueAsString(createDto);
@@ -65,8 +65,8 @@ class ClientIntegrationTests {
 	}
 
 	@Test
-	void testeCriarClienteCpfJaCadastrado() throws Exception {
-		testeCriarClienteSucesso();
+	void testeCreateClientCpfUniqueViolationException() throws Exception {
+		testCreateClientSuccess();
 		ClientCreateDto createDto = new ClientCreateDto("Teste", "07021050070", "55210568972", "teste@email.com", "Address111", LocalDate.of(2024, 8, 7), "M");
 
 		String propostaJson = objectMapper.writeValueAsString(createDto);
@@ -78,68 +78,68 @@ class ClientIntegrationTests {
 	}
 
 	@Test
-	void testeBuscarTodosOsClientesSucesso() throws Exception {
-		testeCriarClienteSucesso();
+	void testFindAllClientsSuccess() throws Exception {
+		testCreateClientSuccess();
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/clients")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 	}
 
 	@Test
-	void testeBuscarTodosOsClientesNaoEncontrado() throws Exception {
+	void testFindAllClientsNotFound() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/clients")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
 	}
 
 	@Test
-	void testeBuscarClientePorNomeSucesso() throws Exception {
-		testeCriarClienteSucesso();
+	void testFindClientByNameSuccess() throws Exception {
+		testCreateClientSuccess();
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/clients/name/Teste")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 	}
 
 	@Test
-	void testeBuscarClientePorNomeNaoEncontrado() throws Exception {
+	void testFindClientByNameNotFound() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/clients/name/Teste")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
 	}
 
 	@Test
-	void testeBuscarClientePorCpfSucesso() throws Exception {
-		testeCriarClienteSucesso();
+	void testFindClientByCpfSuccess() throws Exception {
+		testCreateClientSuccess();
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/clients/cpf/07021050070")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 	}
 
 	@Test
-	void testeBuscarClientePorCpfNaoEncontrado() throws Exception {
+	void testFindClientByCpfNotFound() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/clients/cpf/07021050070")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
 	}
 
 	@Test
-	void testeBuscarClientesPorDataSucesso() throws Exception {
-		testeCriarClienteSucesso();
+	void testFindClientsByDateSuccess() throws Exception {
+		testCreateClientSuccess();
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/clients/date?afterDate=2024-08-06")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 	}
 
 	@Test
-	void testeBuscarClientesPorDataNotFound() throws Exception {
+	void testFindClientsByDateNotFound() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/clients/date?afterDate=2024-08-06")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
 	}
 
 	@Test
-	void testeEditarClienteSucesso() throws Exception {
-		testeCriarClienteSucesso();
+	void testEditClientSuccess() throws Exception {
+		testCreateClientSuccess();
 
 		ClientUpdateDto updateDto =  new ClientUpdateDto();
 		updateDto.setName("Novo");
@@ -154,8 +154,8 @@ class ClientIntegrationTests {
 	}
 
 	@Test
-	void testeEditarClienteDadosInvalidos() throws Exception {
-		testeCriarClienteSucesso();
+	void testEditClientInvalidData() throws Exception {
+		testCreateClientSuccess();
 
 		ClientUpdateDto updateDto =  new ClientUpdateDto();
 		updateDto.setName("N");
@@ -170,7 +170,7 @@ class ClientIntegrationTests {
 	}
 
 	@Test
-	void testeEditarClienteNaoEncontrado() throws Exception {
+	void testEditClientNotFound() throws Exception {
 
 		ClientUpdateDto updateDto =  new ClientUpdateDto();
 		updateDto.setName("Novo");
