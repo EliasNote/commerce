@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -75,7 +76,7 @@ class ClientServiceTest {
         Client client = new Client(1L, "Test", "07021050070", "55210568972", "teste@email.com", "Address1", LocalDate.of(2024, 8, 7), Client.Gender.M, LocalDateTime.now());
 
         when(clientMapper.toClient(any(ClientCreateDto.class))).thenReturn(client);
-        when(clientRepository.save(any(Client.class))).thenThrow(CpfUniqueViolationException.class);
+        when(clientRepository.save(any(Client.class))).thenThrow(DataIntegrityViolationException.class);
 
         assertThrows(CpfUniqueViolationException.class, () -> clientService.save(createDto));
     }
@@ -113,8 +114,14 @@ class ClientServiceTest {
     @Test
     void testFindAllClientsEntityNotFoundException() {
         Pageable pageable = PageRequest.of(0, 10);
+        List<ClientDtoPagination> content = List.of();
 
-        when(clientRepository.findAllPageable(any(Pageable.class))).thenThrow(EntityNotFoundException.class);
+        Page<ClientDtoPagination> page = new PageImpl<>(content, pageable, content.size());
+        PageableDto pageableDto = new PageableDto();
+        pageableDto.setContent(content);
+
+        when(clientRepository.findAllPageable(any(Pageable.class))).thenReturn(page);
+        when(clientMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
         assertThrows(EntityNotFoundException.class, () -> clientService.findAll(pageable));
     }
@@ -152,8 +159,14 @@ class ClientServiceTest {
     @Test
     void testFindByNameEntityNotFoundException() {
         Pageable pageable = PageRequest.of(0, 10);
+        List<ClientDtoPagination> content = List.of();
 
-        when(clientRepository.findByNameIgnoreCase(any(String.class), any(Pageable.class))).thenThrow(EntityNotFoundException.class);
+        Page<ClientDtoPagination> page = new PageImpl<>(content, pageable, content.size());
+        PageableDto pageableDto = new PageableDto();
+        pageableDto.setContent(content);
+
+        when(clientRepository.findByNameIgnoreCase(any(String.class), any(Pageable.class))).thenReturn(page);
+        when(clientMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
         assertThrows(EntityNotFoundException.class, () -> clientService.findByName(pageable, "Test"));
     }
@@ -180,7 +193,7 @@ class ClientServiceTest {
 
     @Test
     void testFindByCpfEntityNotFoundException() {
-        when(clientRepository.findByCpf(any(String.class))).thenThrow(EntityNotFoundException.class);
+        when(clientRepository.findByCpf(any(String.class))).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> clientService.findByCpf("07021050070"));
     }
@@ -276,10 +289,25 @@ class ClientServiceTest {
     }
 
     @Test
-    void findClientsByDateEntityNotFoundException() {
+    void testFindClientsByDateNoDateParametersProvided() {
         Pageable pageable = PageRequest.of(0, 10);
 
         assertThrows(EntityNotFoundException.class, () -> clientService.findClientsByDate(null, null, pageable));
+    }
+
+    @Test
+    void findClientsByDateEntityNotFoundException() {
+        Pageable pageable = PageRequest.of(0, 10);
+        List<ClientDtoPagination> content = List.of();
+
+        Page<ClientDtoPagination> page = new PageImpl<>(content, pageable, content.size());
+        PageableDto pageableDto = new PageableDto();
+        pageableDto.setContent(content);
+
+        when(clientRepository.findByCreateDateBefore(any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
+        when(clientMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
+
+        assertThrows(EntityNotFoundException.class, () -> clientService.findClientsByDate(null, LocalDate.now().plusDays(1).toString(), pageable));
     }
 
     @Test
@@ -297,7 +325,7 @@ class ClientServiceTest {
     void testUpdateEntityNotFoundException() {
         ClientUpdateDto updateDto =  new ClientUpdateDto("Test", "07021050070", "55210568972", "teste@email.com", "Address1", LocalDate.of(2024, 8, 7), "M");
 
-        when(clientRepository.findByCpf(any(String.class))).thenThrow(EntityNotFoundException.class);
+        when(clientRepository.findByCpf(any(String.class))).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> clientService.update("07021050070", updateDto));
     }
