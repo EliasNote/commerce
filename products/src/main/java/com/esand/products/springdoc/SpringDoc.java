@@ -59,7 +59,7 @@ public interface SpringDoc {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorMessage.class)))
     })
-    ResponseEntity<ProductResponseDto> findByTitle(@PathVariable String title);
+    ResponseEntity<PageableDto> findByTitle(@PageableDefault(size = 10) Pageable pageable, @PathVariable String title);
 
     @Operation(summary = "Search for products by supplier",
             description = "Endpoint to search for products by supplier.")

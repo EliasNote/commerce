@@ -47,10 +47,12 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public ProductResponseDto findByTitle(String title) {
-        return productMapper.toDto(productRepository.findByTitleIgnoreCase(title).orElseThrow(
-                () -> new EntityNotFoundException("Product not found by title")
-        ));
+    public PageableDto findByTitle(Pageable pageable, String title) {
+        PageableDto dto = productMapper.toPageableDto(productRepository.findByTitleIgnoreCaseContaining(pageable, title));
+        if (dto.getContent().isEmpty()) {
+            throw new EntityNotFoundException("No products found by supplier");
+        }
+        return dto;
     }
 
     @Transactional(readOnly = true)

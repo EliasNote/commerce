@@ -34,8 +34,8 @@ public class ProductController implements SpringDoc {
     }
 
     @GetMapping("/title/{title}")
-    public ResponseEntity<ProductResponseDto> findByTitle(@PathVariable String title) {
-        return ResponseEntity.ok(productService.findByTitle(title));
+    public ResponseEntity<PageableDto> findByTitle(@PageableDefault(size = 10) Pageable pageable, @PathVariable String title) {
+        return ResponseEntity.ok(productService.findByTitle(pageable, title));
     }
 
     @GetMapping("/supplier/{supplier}")

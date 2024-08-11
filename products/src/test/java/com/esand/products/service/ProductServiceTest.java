@@ -192,51 +192,47 @@ class ProductServiceTest {
 
     @Test
     void testFindByTitleSuccess() {
-        Product product = new Product(
-                1L,
-                "Wireless MouseS",
-                "A high precision wireless m",
-                29.99, Product.Category.MOUSES,
-                10,
-                "MOUSE-2024-WL-0010",
-                0.1,
-                10.0,
-                5.0,
-                3.0,
-                "Mach Supplies Inc.",
-                LocalDateTime.now(),
-                true
-        );
-        ProductResponseDto responseDto = new ProductResponseDto(
-                "Wireless MouseS",
-                "A high precision wireless m",
-                29.99,
-                "MOUSES",
-                10,
-                "MOUSE-2024-WL-0010",
-                true
+        Pageable pageable = PageRequest.of(0, 10);
+        List<ProductDtoPagination> content = List.of(
+                new ProductDtoPagination() {
+                    public String getTitle() { return "Wireless MouseS"; }
+                    public String getDescription() { return "A high precision wireless m"; }
+                    public Double getPrice() { return 29.99; }
+                    public String getCategory() { return "MOUSES"; }
+                    public Integer getQuantity() { return 10; }
+                    public String getSku() { return "MOUSE-2024-WL-0010"; }
+                    public Boolean getStatus() { return true; }
+                }
         );
 
-        when(productRepository.findByTitleIgnoreCase(any(String.class))).thenReturn(Optional.of(product));
-        when(productMapper.toDto(any(Product.class))).thenReturn(responseDto);
+        Page<ProductDtoPagination> page = new PageImpl<>(content, pageable, content.size());
+        PageableDto pageableDto = new PageableDto();
+        pageableDto.setContent(content);
 
-        ProductResponseDto response = productService.findByTitle("Wireless MouseS");
+        when(productRepository.findByTitleIgnoreCaseContaining(any(Pageable.class), any(String.class))).thenReturn(page);
+        when(productMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
+
+        PageableDto response = productService.findByTitle(pageable, "Wireless MouseS");
 
         assertNotNull(response);
-        assertEquals("Wireless MouseS", response.getTitle());
-        assertEquals("A high precision wireless m", response.getDescription());
-        assertEquals(29.99, response.getPrice());
-        assertEquals("MOUSES", response.getCategory());
-        assertEquals(10, response.getQuantity());
-        assertEquals("MOUSE-2024-WL-0010", response.getSku());
-        assertTrue(response.getStatus());
+        assertNotNull(response.getContent());
+        assertNotNull(response.getContent().get(0));
+        assertEquals(1, response.getContent().size());
     }
 
     @Test
     void testFindByTitleEntityNotFoundException() {
-        when(productRepository.findByTitleIgnoreCase(any(String.class))).thenReturn(Optional.empty());
+        Pageable pageable = PageRequest.of(0, 10);
+        List<ProductDtoPagination> content = List.of();
 
-        assertThrows(EntityNotFoundException.class, () -> productService.findByTitle("Wireless MouseS"));
+        Page<ProductDtoPagination> page = new PageImpl<>(content, pageable, content.size());
+        PageableDto pageableDto = new PageableDto();
+        pageableDto.setContent(content);
+
+        when(productRepository.findByTitleIgnoreCaseContaining(any(Pageable.class), any(String.class))).thenReturn(page);
+        when(productMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
+
+        assertThrows(EntityNotFoundException.class, () -> productService.findByTitle(pageable, "Wireless MouseS"));
     }
 
     @Test
