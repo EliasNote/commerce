@@ -50,7 +50,7 @@ public class ProductService {
     public PageableDto findByTitle(Pageable pageable, String title) {
         PageableDto dto = productMapper.toPageableDto(productRepository.findByTitleIgnoreCaseContaining(pageable, title));
         if (dto.getContent().isEmpty()) {
-            throw new EntityNotFoundException("No products found by supplier");
+            throw new EntityNotFoundException("No products found by title");
         }
         return dto;
     }
