@@ -43,7 +43,15 @@ class ClientIntegrationTests {
 
 	@Test
 	void testCreateClientSuccess() throws Exception {
-		ClientCreateDto createDto =  new ClientCreateDto("Teste", "07021050070", "55210568972", "teste@email.com", "Address111", LocalDate.of(2024, 8, 7), "M");
+		ClientCreateDto createDto =  new ClientCreateDto(
+				"Teste",
+				"07021050070",
+				"55210568972",
+				"teste@email.com",
+				"Address111",
+				LocalDate.of(2024, 8, 7),
+				"M"
+		);
 
 		String propostaJson = objectMapper.writeValueAsString(createDto);
 
@@ -55,27 +63,46 @@ class ClientIntegrationTests {
 
 	@Test
 	void testCreateClientExceptionInvalidData() throws Exception {
-		ClientCreateDto createDto =  new ClientCreateDto("Teste", "07021050071", "55210568972", "teste@email.com", "Address111", LocalDate.of(2024, 8, 7), "M");
+		ClientCreateDto createDto =  new ClientCreateDto(
+				"Teste",
+				"07021050071",
+				"55210568972",
+				"teste@email.com",
+				"Address111",
+				LocalDate.of(2024, 8, 7),
+				"M"
+		);
 
 		String propostaJson = objectMapper.writeValueAsString(createDto);
 
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/clients")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(propostaJson))
-			.andExpect(status().isBadRequest());
+			.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.message").value("Invalid request content."))
+				.andExpect(jsonPath("$.errors.cpf").value("invalid Brazilian individual taxpayer registry number (CPF)"));
 	}
 
 	@Test
 	void testeCreateClientCpfUniqueViolationException() throws Exception {
 		testCreateClientSuccess();
-		ClientCreateDto createDto = new ClientCreateDto("Teste", "07021050070", "55210568972", "teste@email.com", "Address111", LocalDate.of(2024, 8, 7), "M");
+		ClientCreateDto createDto = new ClientCreateDto(
+				"Teste",
+				"07021050070",
+				"55210568972",
+				"teste@email.com",
+				"Address111",
+				LocalDate.of(2024, 8, 7),
+				"M"
+		);
 
 		String propostaJson = objectMapper.writeValueAsString(createDto);
 
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/clients")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(propostaJson))
-				.andExpect(status().isConflict());
+				.andExpect(status().isConflict())
+				.andExpect(jsonPath("$.message").value("CPF " + createDto.getCpf() +" cannot be registered, there is already a registered customer with an informed CPF"));
 	}
 
 	@Test
@@ -87,10 +114,11 @@ class ClientIntegrationTests {
 	}
 
 	@Test
-	void testFindAllClientsNotFound() throws Exception {
+	void testFindAllClientsEntityNotFoundException() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/clients")
 						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNotFound());
+				.andExpect(status().isNotFound())
+				.andExpect(jsonPath("$.message").value("No customers found"));
 	}
 
 	@Test
@@ -102,10 +130,11 @@ class ClientIntegrationTests {
 	}
 
 	@Test
-	void testFindClientByNameNotFound() throws Exception {
+	void testFindClientByNameEntityNotFoundException() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/clients/name/Teste")
 						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNotFound());
+				.andExpect(status().isNotFound())
+				.andExpect(jsonPath("$.message").value("Customer not found by name"));
 	}
 
 	@Test
@@ -120,26 +149,59 @@ class ClientIntegrationTests {
 	void testFindClientByCpfNotFound() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/clients/cpf/07021050070")
 						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNotFound());
+				.andExpect(status().isNotFound())
+				.andExpect(jsonPath("$.message").value("Customer not found by CPF"));
 	}
 
 	@Test
-	void testFindClientsByDateSuccess() throws Exception {
+	void testFindClientsByDateBetweenSuccess() throws Exception {
 		testCreateClientSuccess();
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/clients/date?afterDate=2024-08-06")
+		String after = LocalDate.now().minusDays(1).toString();
+		String before = LocalDate.now().plusDays(1).toString();
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/clients/date?afterDate=" + after + "&beforeDate=" + before)
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 	}
 
 	@Test
-	void testFindClientsByDateNotFound() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/clients/date?afterDate=2024-08-06")
+	void testFindClientsByDateAfterSuccess() throws Exception {
+		testCreateClientSuccess();
+		String after = LocalDate.now().minusDays(1).toString();
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/clients/date?afterDate=" + after)
 						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNotFound());
+				.andExpect(status().isOk());
 	}
 
 	@Test
-	void testEditClientSuccess() throws Exception {
+	void testFindClientsByDateBeforeSuccess() throws Exception {
+		testCreateClientSuccess();
+		String before = LocalDate.now().plusDays(1).toString();
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/clients/date?beforeDate=" + before)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
+	}
+
+	@Test
+	void testFindClientsByDateNoDateParametersProvided() throws Exception {
+		testCreateClientSuccess();
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/clients/date?")
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNotFound())
+				.andExpect(jsonPath("$.message").value("No date parameters provided"));
+	}
+
+	@Test
+	void testFindClientsByDateEntityNotFoundException() throws Exception {
+		String after = LocalDate.now().minusDays(1).toString();
+		String before = LocalDate.now().plusDays(1).toString();
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/clients/date?afterDate=" + after + "&beforeDate=" + before)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNotFound())
+				.andExpect(jsonPath("$.message").value("No clients found by date(s)"));
+	}
+
+	@Test
+	void testEditClientDataByCpfSuccess() throws Exception {
 		testCreateClientSuccess();
 
 		ClientUpdateDto updateDto =  new ClientUpdateDto();
@@ -147,15 +209,14 @@ class ClientIntegrationTests {
 
 		String updateJson = objectMapper.writeValueAsString(updateDto);
 
-
-		ResultActions result = mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/clients/edit/07021050070")
+		mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/clients/edit/07021050070")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(updateJson));
-		result.andExpect(status().isNoContent());
+				.content(updateJson))
+			.andExpect(status().isNoContent());
 	}
 
 	@Test
-	void testEditClientInvalidData() throws Exception {
+	void testEditClientInvalidDataException() throws Exception {
 		testCreateClientSuccess();
 
 		ClientUpdateDto updateDto =  new ClientUpdateDto();
@@ -164,10 +225,12 @@ class ClientIntegrationTests {
 		String updateJson = objectMapper.writeValueAsString(updateDto);
 
 
-		ResultActions result = mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/clients/edit/07021050070")
+		mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/clients/edit/07021050070")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(updateJson));
-		result.andExpect(status().isBadRequest());
+				.content(updateJson))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.message").value("Invalid request content."))
+			.andExpect(jsonPath("$.errors.name").value("size must be between 2 and 100"));
 	}
 
 	@Test
@@ -179,10 +242,11 @@ class ClientIntegrationTests {
 		String updateJson = objectMapper.writeValueAsString(updateDto);
 
 
-		ResultActions result = mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/clients/edit/07021050070")
+		mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/clients/edit/07021050070")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(updateJson));
-		result.andExpect(status().isNotFound());
+				.content(updateJson))
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.message").value("Customer not found by CPF"));
 	}
 
 	@Test
