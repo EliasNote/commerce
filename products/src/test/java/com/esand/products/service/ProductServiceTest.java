@@ -1,5 +1,6 @@
 package com.esand.products.service;
 
+import com.esand.products.EntityMock;
 import com.esand.products.entity.Product;
 import com.esand.products.exception.*;
 import com.esand.products.repository.ProductRepository;
@@ -15,7 +16,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
@@ -48,44 +48,9 @@ class ProductServiceTest {
 
     @Test
     void testSaveProductSuccess() {
-        ProductCreateDto createDto = new ProductCreateDto(
-                "Wireless MouseS",
-                "A high precision wireless m",
-                29.99,
-                "MOUSES",
-                10,
-                "MOUSE-2024-WL-0010",
-                0.1,
-                10.0,
-                5.0,
-                3.0,
-                "Mach Supplies Inc."
-        );
-        Product product = new Product(
-                1L,
-                "Wireless MouseS",
-                "A high precision wireless m",
-                29.99, Product.Category.MOUSES,
-                10,
-                "MOUSE-2024-WL-0010",
-                0.1,
-                10.0,
-                5.0,
-                3.0,
-                "Mach Supplies Inc.",
-                LocalDateTime.now(),
-                true
-        );
-
-        ProductResponseDto responseDto = new ProductResponseDto(
-                "Wireless MouseS",
-                "A high precision wireless m",
-                29.99,
-                "MOUSES",
-                10,
-                "MOUSE-2024-WL-0010",
-                true
-        );
+        ProductCreateDto createDto = EntityMock.createDto();
+        Product product = EntityMock.product();
+        ProductResponseDto responseDto = EntityMock.productResponseDto();
 
         when(productMapper.toProduct(any(ProductCreateDto.class))).thenReturn(product);
         when(productRepository.save(any(Product.class))).thenReturn(product);
@@ -105,19 +70,7 @@ class ProductServiceTest {
 
     @Test
     void testSaveProductTitleUniqueViolationException() {
-        ProductCreateDto createDto = new ProductCreateDto(
-                "Wireless MouseS",
-                "A high precision wireless m",
-                29.99,
-                "MOUSES",
-                10,
-                "MOUSE-2024-WL-0010",
-                0.1,
-                10.0,
-                5.0,
-                3.0,
-                "Mach Supplies Inc."
-        );
+        ProductCreateDto createDto = EntityMock.createDto();
 
         when(productRepository.existsByTitle(any(String.class))).thenReturn(true);
 
@@ -126,19 +79,7 @@ class ProductServiceTest {
 
     @Test
     void testSaveProductSkuUniqueViolationException() {
-        ProductCreateDto createDto = new ProductCreateDto(
-                "Wireless MouseS",
-                "A high precision wireless m",
-                29.99,
-                "MOUSES",
-                10,
-                "MOUSE-2024-WL-0010",
-                0.1,
-                10.0,
-                5.0,
-                3.0,
-                "Mach Supplies Inc."
-        );
+        ProductCreateDto createDto = EntityMock.createDto();
 
         when(productRepository.existsBySku(any(String.class))).thenReturn(true);
 
@@ -147,27 +88,13 @@ class ProductServiceTest {
 
     @Test
     void testFindAllSuccess() {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<ProductDtoPagination> content = List.of(
-                new ProductDtoPagination() {
-                    public String getTitle() { return "Wireless MouseS"; }
-                    public String getDescription() { return "A high precision wireless m"; }
-                    public Double getPrice() { return 29.99; }
-                    public String getCategory() { return "MOUSES"; }
-                    public Integer getQuantity() { return 10; }
-                    public String getSku() { return "MOUSE-2024-WL-0010"; }
-                    public Boolean getStatus() { return true; }
-                }
-        );
-
-        Page<ProductDtoPagination> page = new PageImpl<>(content, pageable, content.size());
-        PageableDto pageableDto = new PageableDto();
-        pageableDto.setContent(content);
+        Page<ProductDtoPagination> page = EntityMock.page();
+        PageableDto pageableDto = EntityMock.pageableDto();
 
         when(productRepository.findAllPageable(any(Pageable.class))).thenReturn(page);
         when(productMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        PageableDto response = productService.findAll(pageable);
+        PageableDto response = productService.findAll(page.getPageable());
 
         assertNotNull(response);
         assertNotNull(response.getContent());
@@ -177,42 +104,24 @@ class ProductServiceTest {
 
     @Test
     void testFindAllProductsEntityNotFoundException() {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<ProductDtoPagination> content = List.of();
-
-        Page<ProductDtoPagination> page = new PageImpl<>(content, pageable, content.size());
-        PageableDto pageableDto = new PageableDto();
-        pageableDto.setContent(content);
+        Page<ProductDtoPagination> page = EntityMock.pageEmpty();
+        PageableDto pageableDto = EntityMock.pageableDtoEmpty();
 
         when(productRepository.findAllPageable(any(Pageable.class))).thenReturn(page);
         when(productMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        assertThrows(EntityNotFoundException.class, () -> productService.findAll(pageable));
+        assertThrows(EntityNotFoundException.class, () -> productService.findAll(page.getPageable()));
     }
 
     @Test
     void testFindByTitleSuccess() {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<ProductDtoPagination> content = List.of(
-                new ProductDtoPagination() {
-                    public String getTitle() { return "Wireless MouseS"; }
-                    public String getDescription() { return "A high precision wireless m"; }
-                    public Double getPrice() { return 29.99; }
-                    public String getCategory() { return "MOUSES"; }
-                    public Integer getQuantity() { return 10; }
-                    public String getSku() { return "MOUSE-2024-WL-0010"; }
-                    public Boolean getStatus() { return true; }
-                }
-        );
-
-        Page<ProductDtoPagination> page = new PageImpl<>(content, pageable, content.size());
-        PageableDto pageableDto = new PageableDto();
-        pageableDto.setContent(content);
+        Page<ProductDtoPagination> page = EntityMock.page();
+        PageableDto pageableDto = EntityMock.pageableDto();
 
         when(productRepository.findByTitleIgnoreCaseContaining(any(Pageable.class), any(String.class))).thenReturn(page);
         when(productMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        PageableDto response = productService.findByTitle(pageable, "Wireless MouseS");
+        PageableDto response = productService.findByTitle(page.getPageable(), "Wireless MouseS");
 
         assertNotNull(response);
         assertNotNull(response.getContent());
@@ -222,42 +131,24 @@ class ProductServiceTest {
 
     @Test
     void testFindByTitleEntityNotFoundException() {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<ProductDtoPagination> content = List.of();
-
-        Page<ProductDtoPagination> page = new PageImpl<>(content, pageable, content.size());
-        PageableDto pageableDto = new PageableDto();
-        pageableDto.setContent(content);
+        Page<ProductDtoPagination> page = EntityMock.pageEmpty();
+        PageableDto pageableDto = EntityMock.pageableDtoEmpty();
 
         when(productRepository.findByTitleIgnoreCaseContaining(any(Pageable.class), any(String.class))).thenReturn(page);
         when(productMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        assertThrows(EntityNotFoundException.class, () -> productService.findByTitle(pageable, "Wireless MouseS"));
+        assertThrows(EntityNotFoundException.class, () -> productService.findByTitle(page.getPageable(), "Wireless MouseS"));
     }
 
     @Test
     void testFindBySupplierSuccess() {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<ProductDtoPagination> content = List.of(
-                new ProductDtoPagination() {
-                    public String getTitle() { return "Wireless MouseS"; }
-                    public String getDescription() { return "A high precision wireless m"; }
-                    public Double getPrice() { return 29.99; }
-                    public String getCategory() { return "MOUSES"; }
-                    public Integer getQuantity() { return 10; }
-                    public String getSku() { return "MOUSE-2024-WL-0010"; }
-                    public Boolean getStatus() { return true; }
-                }
-        );
-
-        Page<ProductDtoPagination> page = new PageImpl<>(content, pageable, content.size());
-        PageableDto pageableDto = new PageableDto();
-        pageableDto.setContent(content);
+        Page<ProductDtoPagination> page = EntityMock.page();
+        PageableDto pageableDto = EntityMock.pageableDto();
 
         when(productRepository.findBySupplierIgnoreCaseContaining(any(Pageable.class), any(String.class))).thenReturn(page);
         when(productMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        PageableDto response = productService.findBySupplier(pageable, "Wireless MouseS");
+        PageableDto response = productService.findBySupplier(page.getPageable(), "Wireless MouseS");
 
         assertNotNull(response);
         assertNotNull(response.getContent());
@@ -267,42 +158,24 @@ class ProductServiceTest {
 
     @Test
     void testFindBySupplierEntityNotFoundException() {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<ProductDtoPagination> content = List.of();
-
-        Page<ProductDtoPagination> page = new PageImpl<>(content, pageable, content.size());
-        PageableDto pageableDto = new PageableDto();
-        pageableDto.setContent(content);
+        Page<ProductDtoPagination> page = EntityMock.pageEmpty();
+        PageableDto pageableDto = EntityMock.pageableDtoEmpty();
 
         when(productRepository.findBySupplierIgnoreCaseContaining(any(Pageable.class), any(String.class))).thenReturn(page);
         when(productMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        assertThrows(EntityNotFoundException.class, () -> productService.findBySupplier(pageable, "Wireless MouseS"));
+        assertThrows(EntityNotFoundException.class, () -> productService.findBySupplier(page.getPageable(), "Wireless MouseS"));
     }
 
     @Test
     void testFindByCategory() {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<ProductDtoPagination> content = List.of(
-                new ProductDtoPagination() {
-                    public String getTitle() { return "Wireless MouseS"; }
-                    public String getDescription() { return "A high precision wireless m"; }
-                    public Double getPrice() { return 29.99; }
-                    public String getCategory() { return "MOUSES"; }
-                    public Integer getQuantity() { return 10; }
-                    public String getSku() { return "MOUSE-2024-WL-0010"; }
-                    public Boolean getStatus() { return true; }
-                }
-        );
-
-        Page<ProductDtoPagination> page = new PageImpl<>(content, pageable, content.size());
-        PageableDto pageableDto = new PageableDto();
-        pageableDto.setContent(content);
+        Page<ProductDtoPagination> page = EntityMock.page();
+        PageableDto pageableDto = EntityMock.pageableDto();
 
         when(productRepository.findByCategory(any(Pageable.class), any(Product.Category.class))).thenReturn(page);
         when(productMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        PageableDto response = productService.findByCategory(pageable, "MOUSES");
+        PageableDto response = productService.findByCategory(page.getPageable(), "MOUSES");
 
         assertNotNull(response);
         assertNotNull(response.getContent());
@@ -312,17 +185,13 @@ class ProductServiceTest {
 
     @Test
     void testFindByCategoryNotFound() {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<ProductDtoPagination> content = List.of();
-
-        Page<ProductDtoPagination> page = new PageImpl<>(content, pageable, content.size());
-        PageableDto pageableDto = new PageableDto();
-        pageableDto.setContent(content);
+        Page<ProductDtoPagination> page = EntityMock.pageEmpty();
+        PageableDto pageableDto = EntityMock.pageableDtoEmpty();
 
         when(productRepository.findByCategory(any(Pageable.class), any(Product.Category.class))).thenReturn(page);
         when(productMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        assertThrows(EntityNotFoundException.class, () -> productService.findByCategory(pageable, "MOUSES"));
+        assertThrows(EntityNotFoundException.class, () -> productService.findByCategory(page.getPageable(), "MOUSES"));
     }
 
     @Test
@@ -336,28 +205,8 @@ class ProductServiceTest {
 
     @Test
     void testFindBySkuSuccess() {
-        Product product = new Product(
-                1L, "Wireless MouseS",
-                "A high precision wireless m",
-                29.99, Product.Category.MOUSES,
-                10, "MOUSE-2024-WL-0010",
-                0.1,
-                10.0,
-                5.0,
-                3.0,
-                "Mach Supplies Inc.",
-                LocalDateTime.now(),
-                true
-        );
-        ProductResponseDto responseDto = new ProductResponseDto(
-                "Wireless MouseS",
-                "A high precision wireless m",
-                29.99,
-                "MOUSES",
-                10,
-                "MOUSE-2024-WL-0010",
-                true
-        );
+        Product product = EntityMock.product();
+        ProductResponseDto responseDto = EntityMock.productResponseDto();
 
         when(productRepository.findBySku(any(String.class))).thenReturn(Optional.of(product));
         when(productMapper.toDto(any(Product.class))).thenReturn(responseDto);
@@ -383,27 +232,13 @@ class ProductServiceTest {
 
     @Test
     void testFindAllActivedSuccess() {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<ProductDtoPagination> content = List.of(
-                new ProductDtoPagination() {
-                    public String getTitle() { return "Wireless MouseS"; }
-                    public String getDescription() { return "A high precision wireless m"; }
-                    public Double getPrice() { return 29.99; }
-                    public String getCategory() { return "MOUSES"; }
-                    public Integer getQuantity() { return 10; }
-                    public String getSku() { return "MOUSE-2024-WL-0010"; }
-                    public Boolean getStatus() { return true; }
-                }
-        );
-
-        Page<ProductDtoPagination> page = new PageImpl<>(content, pageable, content.size());
-        PageableDto pageableDto = new PageableDto();
-        pageableDto.setContent(content);
+        Page<ProductDtoPagination> page = EntityMock.page();
+        PageableDto pageableDto = EntityMock.pageableDto();
 
         when(productRepository.findAllByStatus(any(Pageable.class), eq(true))).thenReturn(page);
         when(productMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        PageableDto response = productService.findAllActived(pageable);
+        PageableDto response = productService.findAllActived(page.getPageable());
 
         assertNotNull(response);
         assertNotNull(response.getContent());
@@ -413,42 +248,24 @@ class ProductServiceTest {
 
     @Test
     void testFindAllActivedEntityNotFoundException() {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<ProductDtoPagination> content = List.of();
-
-        Page<ProductDtoPagination> page = new PageImpl<>(content, pageable, content.size());
-        PageableDto pageableDto = new PageableDto();
-        pageableDto.setContent(content);
+        Page<ProductDtoPagination> page = EntityMock.pageEmpty();
+        PageableDto pageableDto = EntityMock.pageableDtoEmpty();
 
         when(productRepository.findAllByStatus(any(Pageable.class), eq(true))).thenReturn(page);
         when(productMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        assertThrows(EntityNotFoundException.class, () -> productService.findAllActived(pageable));
+        assertThrows(EntityNotFoundException.class, () -> productService.findAllActived(page.getPageable()));
     }
 
     @Test
     void testFindAllDisabledSuccess() {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<ProductDtoPagination> content = List.of(
-                new ProductDtoPagination() {
-                    public String getTitle() { return "Wireless MouseS"; }
-                    public String getDescription() { return "A high precision wireless m"; }
-                    public Double getPrice() { return 29.99; }
-                    public String getCategory() { return "MOUSES"; }
-                    public Integer getQuantity() { return 10; }
-                    public String getSku() { return "MOUSE-2024-WL-0010"; }
-                    public Boolean getStatus() { return true; }
-                }
-        );
-
-        Page<ProductDtoPagination> page = new PageImpl<>(content, pageable, content.size());
-        PageableDto pageableDto = new PageableDto();
-        pageableDto.setContent(content);
+        Page<ProductDtoPagination> page = EntityMock.page();
+        PageableDto pageableDto = EntityMock.pageableDto();
 
         when(productRepository.findAllByStatus(any(Pageable.class), eq(false))).thenReturn(page);
         when(productMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        PageableDto response = productService.findAllDisabled(pageable);
+        PageableDto response = productService.findAllDisabled(page.getPageable());
 
         assertNotNull(response);
         assertNotNull(response.getContent());
@@ -458,42 +275,24 @@ class ProductServiceTest {
 
     @Test
     void testFindAllDisabledEntityNotFoundException() {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<ProductDtoPagination> content = List.of();
-
-        Page<ProductDtoPagination> page = new PageImpl<>(content, pageable, content.size());
-        PageableDto pageableDto = new PageableDto();
-        pageableDto.setContent(content);
+        Page<ProductDtoPagination> page = EntityMock.pageEmpty();
+        PageableDto pageableDto = EntityMock.pageableDtoEmpty();
 
         when(productRepository.findAllByStatus(any(Pageable.class), eq(false))).thenReturn(page);
         when(productMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        assertThrows(EntityNotFoundException.class, () -> productService.findAllDisabled(pageable));
+        assertThrows(EntityNotFoundException.class, () -> productService.findAllDisabled(page.getPageable()));
     }
 
     @Test
     void testFindProductsByDateBetweenSuccess() {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<ProductDtoPagination> content = List.of(
-                new ProductDtoPagination() {
-                    public String getTitle() { return "Wireless MouseS"; }
-                    public String getDescription() { return "A high precision wireless m"; }
-                    public Double getPrice() { return 29.99; }
-                    public String getCategory() { return "MOUSES"; }
-                    public Integer getQuantity() { return 10; }
-                    public String getSku() { return "MOUSE-2024-WL-0010"; }
-                    public Boolean getStatus() { return true; }
-                }
-        );
-
-        Page<ProductDtoPagination> page = new PageImpl<>(content, pageable, content.size());
-        PageableDto pageableDto = new PageableDto();
-        pageableDto.setContent(content);
+        Page<ProductDtoPagination> page = EntityMock.page();
+        PageableDto pageableDto = EntityMock.pageableDto();
 
         when(productRepository.findByCreateDateBetween(any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
         when(productMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        PageableDto response = productService.findProductsByDate(LocalDate.now().minusDays(1).toString(), LocalDate.now().plusDays(1).toString(), pageable);
+        PageableDto response = productService.findProductsByDate(LocalDate.now().minusDays(1).toString(), LocalDate.now().plusDays(1).toString(), page.getPageable());
 
         assertNotNull(response);
         assertNotNull(response.getContent());
@@ -503,27 +302,13 @@ class ProductServiceTest {
 
     @Test
     void testFindProductsByDateAfterSuccess() {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<ProductDtoPagination> content = List.of(
-                new ProductDtoPagination() {
-                    public String getTitle() { return "Wireless MouseS"; }
-                    public String getDescription() { return "A high precision wireless m"; }
-                    public Double getPrice() { return 29.99; }
-                    public String getCategory() { return "MOUSES"; }
-                    public Integer getQuantity() { return 10; }
-                    public String getSku() { return "MOUSE-2024-WL-0010"; }
-                    public Boolean getStatus() { return true; }
-                }
-        );
-
-        Page<ProductDtoPagination> page = new PageImpl<>(content, pageable, content.size());
-        PageableDto pageableDto = new PageableDto();
-        pageableDto.setContent(content);
+        Page<ProductDtoPagination> page = EntityMock.page();
+        PageableDto pageableDto = EntityMock.pageableDto();
 
         when(productRepository.findByCreateDateAfter(any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
         when(productMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        PageableDto response = productService.findProductsByDate(LocalDate.now().minusDays(1).toString(), null, pageable);
+        PageableDto response = productService.findProductsByDate(LocalDate.now().minusDays(1).toString(), null, page.getPageable());
 
         assertNotNull(response);
         assertNotNull(response.getContent());
@@ -533,27 +318,13 @@ class ProductServiceTest {
 
     @Test
     void testFindProductsByDateBeforeSuccess() {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<ProductDtoPagination> content = List.of(
-                new ProductDtoPagination() {
-                    public String getTitle() { return "Wireless MouseS"; }
-                    public String getDescription() { return "A high precision wireless m"; }
-                    public Double getPrice() { return 29.99; }
-                    public String getCategory() { return "MOUSES"; }
-                    public Integer getQuantity() { return 10; }
-                    public String getSku() { return "MOUSE-2024-WL-0010"; }
-                    public Boolean getStatus() { return true; }
-                }
-        );
-
-        Page<ProductDtoPagination> page = new PageImpl<>(content, pageable, content.size());
-        PageableDto pageableDto = new PageableDto();
-        pageableDto.setContent(content);
+        Page<ProductDtoPagination> page = EntityMock.page();
+        PageableDto pageableDto = EntityMock.pageableDto();
 
         when(productRepository.findByCreateDateBefore(any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
         when(productMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        PageableDto response = productService.findProductsByDate(null, LocalDate.now().plusDays(1).toString(), pageable);
+        PageableDto response = productService.findProductsByDate(null, LocalDate.now().plusDays(1).toString(), page.getPageable());
 
         assertNotNull(response);
         assertNotNull(response.getContent());
@@ -570,48 +341,19 @@ class ProductServiceTest {
 
     @Test
     void testFindProductsByDateEntityNotFoundException() {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<ProductDtoPagination> content = List.of();
-
-        Page<ProductDtoPagination> page = new PageImpl<>(content, pageable, content.size());
-        PageableDto pageableDto = new PageableDto();
-        pageableDto.setContent(content);
+        Page<ProductDtoPagination> page = EntityMock.pageEmpty();
+        PageableDto pageableDto = EntityMock.pageableDtoEmpty();
 
         when(productRepository.findByCreateDateBefore(any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
         when(productMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        assertThrows(EntityNotFoundException.class, () -> productService.findProductsByDate(null, LocalDate.now().plusDays(1).toString(), pageable));
+        assertThrows(EntityNotFoundException.class, () -> productService.findProductsByDate(null, LocalDate.now().plusDays(1).toString(), page.getPageable()));
     }
 
     @Test
     void testUpdateBySkuSuccess() {
-        Product product = new Product(
-                1L,
-                "Wireless MouseS",
-                "A high precision wireless m",
-                29.99, Product.Category.MOUSES,
-                10,
-                "MOUSE-2024-WL-0010",
-                0.1, 10.0,
-                5.0,
-                3.0,
-                "Mach Supplies Inc.",
-                LocalDateTime.now(),
-                true
-        );
-        ProductUpdateDto updateDto = new ProductUpdateDto(
-                "Updated Wireless MouseS",
-                "An updated high precision wireless mouse",
-                39.99,
-                "MOUSES",
-                15,
-                "MOUSE-2024-WL-0010",
-                0.2,
-                12.0,
-                6.0,
-                4.0,
-                "Updated Mach Supplies Inc."
-        );
+        Product product = EntityMock.product();
+        ProductUpdateDto updateDto = EntityMock.productUpdateDto();
 
         when(productRepository.findBySku(any(String.class))).thenReturn(Optional.of(product));
         doNothing().when(productMapper).updateProduct(any(ProductUpdateDto.class), any(Product.class));
@@ -621,19 +363,7 @@ class ProductServiceTest {
 
     @Test
     void testUpdateBySkuEntityNotFoundException() {
-        ProductUpdateDto updateDto = new ProductUpdateDto(
-                "Updated Wireless MouseS",
-                "An updated high precision wireless mouse",
-                39.99,
-                "MOUSES",
-                15,
-                "MOUSE-2024-WL-0010",
-                0.2,
-                12.0,
-                6.0,
-                4.0,
-                "Updated Mach Supplies Inc."
-        );
+        ProductUpdateDto updateDto = EntityMock.productUpdateDto();
 
         when(productRepository.findBySku(any(String.class))).thenReturn(Optional.empty());
 
@@ -642,20 +372,7 @@ class ProductServiceTest {
 
     @Test
     void testAlterStatusBySkuSuccess() {
-        Product product = new Product(
-                1L,
-                "Wireless MouseS",
-                "A high precision wireless m",
-                29.99, Product.Category.MOUSES,
-                10,
-                "MOUSE-2024-WL-0010",
-                0.1, 10.0,
-                5.0,
-                3.0,
-                "Mach Supplies Inc.",
-                LocalDateTime.now(),
-                true
-        );
+        Product product = EntityMock.product();
 
         when(productRepository.findBySku(any(String.class))).thenReturn(Optional.of(product));
 
@@ -667,20 +384,8 @@ class ProductServiceTest {
 
     @Test
     void testAlterStatusBySkuInvalidProductStatusException() {
-        Product product = new Product(
-                1L,
-                "Wireless MouseS",
-                "A high precision wireless m",
-                29.99, Product.Category.MOUSES,
-                0,
-                "MOUSE-2024-WL-0010",
-                0.1, 10.0,
-                5.0,
-                3.0,
-                "Mach Supplies Inc.",
-                LocalDateTime.now(),
-                true
-        );
+        Product product = EntityMock.product();
+        product.setQuantity(0);
 
         when(productRepository.findBySku(any(String.class))).thenReturn(Optional.of(product));
 
@@ -689,20 +394,7 @@ class ProductServiceTest {
 
     @Test
     void testAddProductBySkuSuccess() {
-        Product product = new Product(
-                1L,
-                "Wireless MouseS",
-                "A high precision wireless m",
-                29.99, Product.Category.MOUSES,
-                10,
-                "MOUSE-2024-WL-0010",
-                0.1, 10.0,
-                5.0,
-                3.0,
-                "Mach Supplies Inc.",
-                LocalDateTime.now(),
-                true
-        );
+        Product product = EntityMock.product();
 
         when(productRepository.findBySku(any(String.class))).thenReturn(Optional.of(product));
 
@@ -721,20 +413,7 @@ class ProductServiceTest {
 
     @Test
     void testAddProductBySkuInvalidQuantityException() {
-        Product product = new Product(
-                1L,
-                "Wireless MouseS",
-                "A high precision wireless m",
-                29.99, Product.Category.MOUSES,
-                10,
-                "MOUSE-2024-WL-0010",
-                0.1, 10.0,
-                5.0,
-                3.0,
-                "Mach Supplies Inc.",
-                LocalDateTime.now(),
-                true
-        );
+        Product product = EntityMock.product();
 
         when(productRepository.findBySku(any(String.class))).thenReturn(Optional.of(product));
 
@@ -743,20 +422,7 @@ class ProductServiceTest {
 
     @Test
     void testSubProductBySkuSuccess() {
-        Product product = new Product(
-                1L,
-                "Wireless MouseS",
-                "A high precision wireless m",
-                29.99, Product.Category.MOUSES,
-                10,
-                "MOUSE-2024-WL-0010",
-                0.1, 10.0,
-                5.0,
-                3.0,
-                "Mach Supplies Inc.",
-                LocalDateTime.now(),
-                true
-        );
+        Product product = EntityMock.product();
 
         when(productRepository.findBySku(any(String.class))).thenReturn(Optional.of(product));
 
@@ -775,20 +441,7 @@ class ProductServiceTest {
 
     @Test
     void testSubProductBySkuInvalidQuantityException() {
-        Product product = new Product(
-                1L,
-                "Wireless MouseS",
-                "A high precision wireless m",
-                29.99, Product.Category.MOUSES,
-                10,
-                "MOUSE-2024-WL-0010",
-                0.1, 10.0,
-                5.0,
-                3.0,
-                "Mach Supplies Inc.",
-                LocalDateTime.now(),
-                true
-        );
+        Product product = EntityMock.product();
 
         when(productRepository.findBySku(any(String.class))).thenReturn(Optional.of(product));
 
@@ -797,20 +450,7 @@ class ProductServiceTest {
 
     @Test
     void testSubProductBySkuInvalidQuantityAvailableException() {
-        Product product = new Product(
-                1L,
-                "Wireless MouseS",
-                "A high precision wireless m",
-                29.99, Product.Category.MOUSES,
-                10,
-                "MOUSE-2024-WL-0010",
-                0.1, 10.0,
-                5.0,
-                3.0,
-                "Mach Supplies Inc.",
-                LocalDateTime.now(),
-                true
-        );
+        Product product = EntityMock.product();
 
         when(productRepository.findBySku(any(String.class))).thenReturn(Optional.of(product));
 

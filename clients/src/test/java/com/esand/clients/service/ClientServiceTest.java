@@ -1,6 +1,7 @@
 package com.esand.clients.service;
 
 import com.esand.clients.entity.Client;
+import com.esand.clients.entity.EntityMock;
 import com.esand.clients.exception.CpfUniqueViolationException;
 import com.esand.clients.exception.EntityNotFoundException;
 import com.esand.clients.repository.ClientRepository;
@@ -13,17 +14,13 @@ import com.esand.clients.web.mapper.ClientMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,10 +30,10 @@ import static org.mockito.Mockito.when;
 
 class ClientServiceTest {
 
-    @Mock
+    @org.mockito.Mock
     private ClientRepository clientRepository;
 
-    @Mock
+    @org.mockito.Mock
     private ClientMapper clientMapper;
 
     @InjectMocks
@@ -49,9 +46,9 @@ class ClientServiceTest {
 
     @Test
     void testSaveClientSuccess() {
-        ClientCreateDto createDto =  new ClientCreateDto("Test", "07021050070", "55210568972", "teste@email.com", "Address1", LocalDate.of(2024, 8, 7), "M");
-        Client client = new Client(1L, "Test", "07021050070", "55210568972", "teste@email.com", "Address1", LocalDate.of(2024, 8, 7), Client.Gender.M, LocalDateTime.now());
-        ClientResponseDto responseDto = new ClientResponseDto("Test", "07021050070", "55210568972", "teste@email.com", "Address1", LocalDate.of(2024, 8, 7), "M");
+        ClientCreateDto createDto = EntityMock.createDto();
+        Client client = EntityMock.client();
+        ClientResponseDto responseDto = EntityMock.clientResponseDto();
 
         when(clientMapper.toClient(any(ClientCreateDto.class))).thenReturn(client);
         when(clientRepository.save(any(Client.class))).thenReturn(client);
@@ -72,8 +69,8 @@ class ClientServiceTest {
 
     @Test
     void testSaveClientCpfUniqueViolationException() {
-        ClientCreateDto createDto =  new ClientCreateDto("Test", "07021050070", "55210568972", "teste@email.com", "Address1", LocalDate.of(2024, 8, 7), "M");
-        Client client = new Client(1L, "Test", "07021050070", "55210568972", "teste@email.com", "Address1", LocalDate.of(2024, 8, 7), Client.Gender.M, LocalDateTime.now());
+        ClientCreateDto createDto = EntityMock.createDto();
+        Client client = EntityMock.client();
 
         when(clientMapper.toClient(any(ClientCreateDto.class))).thenReturn(client);
         when(clientRepository.save(any(Client.class))).thenThrow(DataIntegrityViolationException.class);
@@ -83,27 +80,13 @@ class ClientServiceTest {
 
     @Test
     void testFindAllClientsSuccess() {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<ClientDtoPagination> content = List.of(
-                new ClientDtoPagination() {
-                    public String getName() { return "Test"; }
-                    public String getCpf() { return "07021050070"; }
-                    public String getPhone() { return "55210568972"; }
-                    public String getEmail() { return "teste@email.com"; }
-                    public String getAddress() { return "Address1"; }
-                    public LocalDate getBirthDate() { return LocalDate.of(2024, 8, 7); }
-                    public String getGender() { return "M"; }
-                }
-        );
-
-        Page<ClientDtoPagination> page = new PageImpl<>(content, pageable, content.size());
-        PageableDto pageableDto = new PageableDto();
-        pageableDto.setContent(content);
+        Page<ClientDtoPagination> page = EntityMock.page();
+        PageableDto pageableDto = EntityMock.pageableDto();
 
         when(clientRepository.findAllPageable(any(Pageable.class))).thenReturn(page);
         when(clientMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        PageableDto response = clientService.findAll(pageable);
+        PageableDto response = clientService.findAll(page.getPageable());
 
         assertNotNull(response);
         assertNotNull(response.getContent());
@@ -113,42 +96,24 @@ class ClientServiceTest {
 
     @Test
     void testFindAllClientsEntityNotFoundException() {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<ClientDtoPagination> content = List.of();
-
-        Page<ClientDtoPagination> page = new PageImpl<>(content, pageable, content.size());
-        PageableDto pageableDto = new PageableDto();
-        pageableDto.setContent(content);
+        Page<ClientDtoPagination> page = EntityMock.pageEmpty();
+        PageableDto pageableDto = EntityMock.pageableDtoEmpty();
 
         when(clientRepository.findAllPageable(any(Pageable.class))).thenReturn(page);
         when(clientMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        assertThrows(EntityNotFoundException.class, () -> clientService.findAll(pageable));
+        assertThrows(EntityNotFoundException.class, () -> clientService.findAll(page.getPageable()));
     }
 
     @Test
     void testFindByNameSuccess() {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<ClientDtoPagination> content = List.of(
-                new ClientDtoPagination() {
-                    public String getName() { return "Test"; }
-                    public String getCpf() { return "07021050070"; }
-                    public String getPhone() { return "55210568972"; }
-                    public String getEmail() { return "teste@email.com"; }
-                    public String getAddress() { return "Address1"; }
-                    public LocalDate getBirthDate() { return LocalDate.of(2024, 8, 7); }
-                    public String getGender() { return "M"; }
-                }
-        );
-
-        Page<ClientDtoPagination> page = new PageImpl<>(content, pageable, content.size());
-        PageableDto pageableDto = new PageableDto();
-        pageableDto.setContent(content);
+        Page<ClientDtoPagination> page = EntityMock.page();
+        PageableDto pageableDto = EntityMock.pageableDto();
 
         when(clientRepository.findByNameIgnoreCaseContaining(any(String.class), any(Pageable.class))).thenReturn(page);
         when(clientMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        PageableDto response = clientService.findByName(pageable, "Test");
+        PageableDto response = clientService.findByName(page.getPageable(), "Test");
 
         assertNotNull(response);
         assertNotNull(response.getContent());
@@ -158,23 +123,19 @@ class ClientServiceTest {
 
     @Test
     void testFindByNameEntityNotFoundException() {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<ClientDtoPagination> content = List.of();
-
-        Page<ClientDtoPagination> page = new PageImpl<>(content, pageable, content.size());
-        PageableDto pageableDto = new PageableDto();
-        pageableDto.setContent(content);
+        Page<ClientDtoPagination> page = EntityMock.pageEmpty();
+        PageableDto pageableDto = EntityMock.pageableDtoEmpty();
 
         when(clientRepository.findByNameIgnoreCaseContaining(any(String.class), any(Pageable.class))).thenReturn(page);
         when(clientMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        assertThrows(EntityNotFoundException.class, () -> clientService.findByName(pageable, "Test"));
+        assertThrows(EntityNotFoundException.class, () -> clientService.findByName(page.getPageable(), "Test"));
     }
 
     @Test
     void testFindByCpfSuccess() {
-        Client client = new Client(1L, "Test", "07021050070", "55210568972", "teste@email.com", "Address1", LocalDate.of(2024, 8, 7), Client.Gender.M, LocalDateTime.now());
-        ClientResponseDto responseDto = new ClientResponseDto("Test", "07021050070", "55210568972", "teste@email.com", "Address1", LocalDate.of(2024, 8, 7), "M");
+        Client client = EntityMock.client();
+        ClientResponseDto responseDto = EntityMock.clientResponseDto();
 
         when(clientRepository.findByCpf(any(String.class))).thenReturn(Optional.of(client));
         when(clientMapper.toDto(any(Client.class))).thenReturn(responseDto);
@@ -200,27 +161,13 @@ class ClientServiceTest {
 
     @Test
     void findClientsByDateBetweenSuccess() {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<ClientDtoPagination> content = List.of(
-                new ClientDtoPagination() {
-                    public String getName() { return "Test"; }
-                    public String getCpf() { return "07021050070"; }
-                    public String getPhone() { return "55210568972"; }
-                    public String getEmail() { return "teste@email.com"; }
-                    public String getAddress() { return "Address1"; }
-                    public LocalDate getBirthDate() { return LocalDate.of(2024, 8, 7); }
-                    public String getGender() { return "M"; }
-                }
-        );
-
-        Page<ClientDtoPagination> page = new PageImpl<>(content, pageable, content.size());
-        PageableDto pageableDto = new PageableDto();
-        pageableDto.setContent(content);
+        Page<ClientDtoPagination> page = EntityMock.page();
+        PageableDto pageableDto = EntityMock.pageableDto();
 
         when(clientRepository.findByCreateDateBetween(any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
         when(clientMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        PageableDto response = clientService.findClientsByDate(LocalDate.now().minusDays(1).toString(), LocalDate.now().plusDays(1).toString(), pageable);
+        PageableDto response = clientService.findClientsByDate(LocalDate.now().minusDays(1).toString(), LocalDate.now().plusDays(1).toString(), page.getPageable());
 
         assertNotNull(response);
         assertNotNull(response.getContent());
@@ -230,27 +177,13 @@ class ClientServiceTest {
 
     @Test
     void findClientsByDateAfterSuccess() {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<ClientDtoPagination> content = List.of(
-                new ClientDtoPagination() {
-                    public String getName() { return "Test"; }
-                    public String getCpf() { return "07021050070"; }
-                    public String getPhone() { return "55210568972"; }
-                    public String getEmail() { return "teste@email.com"; }
-                    public String getAddress() { return "Address1"; }
-                    public LocalDate getBirthDate() { return LocalDate.of(2024, 8, 7); }
-                    public String getGender() { return "M"; }
-                }
-        );
-
-        Page<ClientDtoPagination> page = new PageImpl<>(content, pageable, content.size());
-        PageableDto pageableDto = new PageableDto();
-        pageableDto.setContent(content);
+        Page<ClientDtoPagination> page = EntityMock.page();
+        PageableDto pageableDto = EntityMock.pageableDto();
 
         when(clientRepository.findByCreateDateAfter(any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
         when(clientMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        PageableDto response = clientService.findClientsByDate(LocalDate.now().minusDays(1).toString(), null, pageable);
+        PageableDto response = clientService.findClientsByDate(LocalDate.now().minusDays(1).toString(), null, page.getPageable());
 
         assertNotNull(response);
         assertNotNull(response.getContent());
@@ -260,27 +193,13 @@ class ClientServiceTest {
 
     @Test
     void findClientsByDateBeforeSuccess() {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<ClientDtoPagination> content = List.of(
-                new ClientDtoPagination() {
-                    public String getName() { return "Test"; }
-                    public String getCpf() { return "07021050070"; }
-                    public String getPhone() { return "55210568972"; }
-                    public String getEmail() { return "teste@email.com"; }
-                    public String getAddress() { return "Address1"; }
-                    public LocalDate getBirthDate() { return LocalDate.of(2024, 8, 7); }
-                    public String getGender() { return "M"; }
-                }
-        );
-
-        Page<ClientDtoPagination> page = new PageImpl<>(content, pageable, content.size());
-        PageableDto pageableDto = new PageableDto();
-        pageableDto.setContent(content);
+        Page<ClientDtoPagination> page = EntityMock.page();
+        PageableDto pageableDto = EntityMock.pageableDto();
 
         when(clientRepository.findByCreateDateBefore(any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
         when(clientMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        PageableDto response = clientService.findClientsByDate(null, LocalDate.now().plusDays(1).toString(), pageable);
+        PageableDto response = clientService.findClientsByDate(null, LocalDate.now().plusDays(1).toString(), page.getPageable());
 
         assertNotNull(response);
         assertNotNull(response.getContent());
@@ -290,30 +209,24 @@ class ClientServiceTest {
 
     @Test
     void testFindClientsByDateNoDateParametersProvided() {
-        Pageable pageable = PageRequest.of(0, 10);
-
-        assertThrows(EntityNotFoundException.class, () -> clientService.findClientsByDate(null, null, pageable));
+        assertThrows(EntityNotFoundException.class, () -> clientService.findClientsByDate(null, null, EntityMock.page().getPageable()));
     }
 
     @Test
     void findClientsByDateEntityNotFoundException() {
-        Pageable pageable = PageRequest.of(0, 10);
-        List<ClientDtoPagination> content = List.of();
-
-        Page<ClientDtoPagination> page = new PageImpl<>(content, pageable, content.size());
-        PageableDto pageableDto = new PageableDto();
-        pageableDto.setContent(content);
+        Page<ClientDtoPagination> page = EntityMock.pageEmpty();
+        PageableDto pageableDto = EntityMock.pageableDtoEmpty();
 
         when(clientRepository.findByCreateDateBefore(any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
         when(clientMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        assertThrows(EntityNotFoundException.class, () -> clientService.findClientsByDate(null, LocalDate.now().plusDays(1).toString(), pageable));
+        assertThrows(EntityNotFoundException.class, () -> clientService.findClientsByDate(null, LocalDate.now().plusDays(1).toString(), page.getPageable()));
     }
 
     @Test
     void testUpdateSuccess() {
-        Client client = new Client(1L, "Test", "07021050070", "55210568972", "teste@email.com", "Address1", LocalDate.of(2024, 8, 7), Client.Gender.M, LocalDateTime.now());
-        ClientUpdateDto updateDto =  new ClientUpdateDto("Test", "07021050070", "55210568972", "teste@email.com", "Address1", LocalDate.of(2024, 8, 7), "M");
+        Client client = EntityMock.client();
+        ClientUpdateDto updateDto =  EntityMock.clientUpdateDto();
 
         when(clientRepository.findByCpf(any(String.class))).thenReturn(Optional.of(client));
         doNothing().when(clientMapper).updateClient(any(ClientUpdateDto.class), any(Client.class));
@@ -323,7 +236,7 @@ class ClientServiceTest {
 
     @Test
     void testUpdateEntityNotFoundException() {
-        ClientUpdateDto updateDto =  new ClientUpdateDto("Test", "07021050070", "55210568972", "teste@email.com", "Address1", LocalDate.of(2024, 8, 7), "M");
+        ClientUpdateDto updateDto =  EntityMock.clientUpdateDto();
 
         when(clientRepository.findByCpf(any(String.class))).thenReturn(Optional.empty());
 

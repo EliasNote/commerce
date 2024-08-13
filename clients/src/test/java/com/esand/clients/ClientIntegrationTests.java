@@ -1,5 +1,6 @@
 package com.esand.clients;
 
+import com.esand.clients.entity.EntityMock;
 import com.esand.clients.repository.ClientRepository;
 import com.esand.clients.web.dto.ClientCreateDto;
 import com.esand.clients.web.dto.ClientUpdateDto;
@@ -12,7 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.http.MediaType;
 
@@ -41,17 +41,13 @@ class ClientIntegrationTests {
 		clientRepository.deleteAll();
 	}
 
+	void createClient() {
+		clientRepository.save(EntityMock.client());
+	}
+
 	@Test
 	void testCreateClientSuccess() throws Exception {
-		ClientCreateDto createDto =  new ClientCreateDto(
-				"Teste",
-				"07021050070",
-				"55210568972",
-				"teste@email.com",
-				"Address111",
-				LocalDate.of(2024, 8, 7),
-				"M"
-		);
+		ClientCreateDto createDto = EntityMock.createDto();
 
 		String propostaJson = objectMapper.writeValueAsString(createDto);
 
@@ -63,15 +59,8 @@ class ClientIntegrationTests {
 
 	@Test
 	void testCreateClientExceptionInvalidData() throws Exception {
-		ClientCreateDto createDto =  new ClientCreateDto(
-				"Teste",
-				"07021050071",
-				"55210568972",
-				"teste@email.com",
-				"Address111",
-				LocalDate.of(2024, 8, 7),
-				"M"
-		);
+		ClientCreateDto createDto = EntityMock.createDto();
+		createDto.setCpf("07021050071");
 
 		String propostaJson = objectMapper.writeValueAsString(createDto);
 
@@ -84,17 +73,9 @@ class ClientIntegrationTests {
 	}
 
 	@Test
-	void testeCreateClientCpfUniqueViolationException() throws Exception {
-		testCreateClientSuccess();
-		ClientCreateDto createDto = new ClientCreateDto(
-				"Teste",
-				"07021050070",
-				"55210568972",
-				"teste@email.com",
-				"Address111",
-				LocalDate.of(2024, 8, 7),
-				"M"
-		);
+	void testCreateClientCpfUniqueViolationException() throws Exception {
+		createClient();
+		ClientCreateDto createDto = EntityMock.createDto();
 
 		String propostaJson = objectMapper.writeValueAsString(createDto);
 
@@ -107,7 +88,7 @@ class ClientIntegrationTests {
 
 	@Test
 	void testFindAllClientsSuccess() throws Exception {
-		testCreateClientSuccess();
+		createClient();
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/clients")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
@@ -123,8 +104,8 @@ class ClientIntegrationTests {
 
 	@Test
 	void testFindClientByNameSuccess() throws Exception {
-		testCreateClientSuccess();
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/clients/name/Teste")
+		createClient();
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/clients/name/" + EntityMock.client().getName())
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 	}
@@ -139,7 +120,7 @@ class ClientIntegrationTests {
 
 	@Test
 	void testFindClientByCpfSuccess() throws Exception {
-		testCreateClientSuccess();
+		createClient();
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/clients/cpf/07021050070")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
@@ -155,7 +136,7 @@ class ClientIntegrationTests {
 
 	@Test
 	void testFindClientsByDateBetweenSuccess() throws Exception {
-		testCreateClientSuccess();
+		createClient();
 		String after = LocalDate.now().minusDays(1).toString();
 		String before = LocalDate.now().plusDays(1).toString();
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/clients/date?afterDate=" + after + "&beforeDate=" + before)
@@ -165,7 +146,7 @@ class ClientIntegrationTests {
 
 	@Test
 	void testFindClientsByDateAfterSuccess() throws Exception {
-		testCreateClientSuccess();
+		createClient();
 		String after = LocalDate.now().minusDays(1).toString();
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/clients/date?afterDate=" + after)
 						.contentType(MediaType.APPLICATION_JSON))
@@ -174,7 +155,7 @@ class ClientIntegrationTests {
 
 	@Test
 	void testFindClientsByDateBeforeSuccess() throws Exception {
-		testCreateClientSuccess();
+		createClient();
 		String before = LocalDate.now().plusDays(1).toString();
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/clients/date?beforeDate=" + before)
 						.contentType(MediaType.APPLICATION_JSON))
@@ -183,7 +164,7 @@ class ClientIntegrationTests {
 
 	@Test
 	void testFindClientsByDateNoDateParametersProvided() throws Exception {
-		testCreateClientSuccess();
+		createClient();
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/clients/date?")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound())
@@ -202,14 +183,14 @@ class ClientIntegrationTests {
 
 	@Test
 	void testEditClientDataByCpfSuccess() throws Exception {
-		testCreateClientSuccess();
+		createClient();
 
-		ClientUpdateDto updateDto =  new ClientUpdateDto();
+		ClientUpdateDto updateDto =  EntityMock.clientUpdateDto();
 		updateDto.setName("Novo");
 
 		String updateJson = objectMapper.writeValueAsString(updateDto);
 
-		mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/clients/edit/07021050070")
+		mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/clients/edit/" + EntityMock.client().getCpf())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(updateJson))
 			.andExpect(status().isNoContent());
@@ -217,9 +198,9 @@ class ClientIntegrationTests {
 
 	@Test
 	void testEditClientInvalidDataException() throws Exception {
-		testCreateClientSuccess();
+		createClient();
 
-		ClientUpdateDto updateDto =  new ClientUpdateDto();
+		ClientUpdateDto updateDto =  EntityMock.clientUpdateDto();
 		updateDto.setName("N");
 
 		String updateJson = objectMapper.writeValueAsString(updateDto);
@@ -235,14 +216,12 @@ class ClientIntegrationTests {
 
 	@Test
 	void testEditClientNotFound() throws Exception {
-
-		ClientUpdateDto updateDto =  new ClientUpdateDto();
+		ClientUpdateDto updateDto =  EntityMock.clientUpdateDto();
 		updateDto.setName("Novo");
 
 		String updateJson = objectMapper.writeValueAsString(updateDto);
 
-
-		mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/clients/edit/07021050070")
+		mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/clients/edit/" + updateDto.getCpf())
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(updateJson))
 			.andExpect(status().isNotFound())
@@ -251,7 +230,7 @@ class ClientIntegrationTests {
 
 	@Test
 	void testDeleteClientSuccess() throws Exception {
-		testCreateClientSuccess();
+		createClient();
 
 		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/clients/delete/cpf/07021050070")
 				.contentType(MediaType.APPLICATION_JSON))

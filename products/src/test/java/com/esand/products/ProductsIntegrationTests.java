@@ -1,5 +1,6 @@
 package com.esand.products;
 
+import com.esand.products.EntityMock;
 import com.esand.products.repository.ProductRepository;
 import com.esand.products.web.dto.ProductCreateDto;
 import com.esand.products.web.dto.ProductUpdateDto;
@@ -42,21 +43,13 @@ class ProductsIntegrationTests {
 		productRepository.deleteAll();
 	}
 
+	void createClient() {
+		productRepository.save(EntityMock.product());
+	}
+
 	@Test
 	void testCreateProductSuccess() throws Exception {
-		ProductCreateDto createDto = new ProductCreateDto(
-				"Wireless MouseS",
-				"A high precision wireless m",
-				29.99,
-				"MOUSES",
-				10,
-				"MOUSE-2024-WL-0010",
-				0.1,
-				10.0,
-				5.0,
-				3.0,
-				"Mach Supplies Inc."
-		);
+		ProductCreateDto createDto = EntityMock.createDto();
 
 		String propostaJson = objectMapper.writeValueAsString(createDto);
 
@@ -68,19 +61,8 @@ class ProductsIntegrationTests {
 
 	@Test
 	void testCreateProductInvalidDataException() throws Exception {
-		ProductCreateDto createDto = new ProductCreateDto(
-				"Wireless MouseS",
-				"A high precision wireless m",
-				29.99,
-				"MOUSESES",
-				10,
-				"MOUSE-2024-WL-0010",
-				0.1,
-				10.0,
-				5.0,
-				3.0,
-				"Mach Supplies Inc."
-		);
+		ProductCreateDto createDto = EntityMock.createDto();
+		createDto.setCategory("MOUSESES");
 
 		String propostaJson = objectMapper.writeValueAsString(createDto);
 
@@ -94,20 +76,8 @@ class ProductsIntegrationTests {
 
 	@Test
 	void testCreateProductTitleUniqueViolationException() throws Exception {
-		testCreateProductSuccess();
-		ProductCreateDto createDto = new ProductCreateDto(
-				"Wireless MouseS",
-				"A high precision wireless m",
-				29.99,
-				"MOUSES",
-				10,
-				"MOUSE-2024-WL-0010",
-				0.1,
-				10.0,
-				5.0,
-				3.0,
-				"Mach Supplies Inc."
-		);
+		createClient();
+		ProductCreateDto createDto = EntityMock.createDto();
 
 		String propostaJson = objectMapper.writeValueAsString(createDto);
 
@@ -120,20 +90,9 @@ class ProductsIntegrationTests {
 
 	@Test
 	void testCreateProductSkuUniqueViolationException() throws Exception {
-		testCreateProductSuccess();
-		ProductCreateDto createDto = new ProductCreateDto(
-				"Wireless MouseSes",
-				"A high precision wireless m",
-				29.99,
-				"MOUSES",
-				10,
-				"MOUSE-2024-WL-0010",
-				0.1,
-				10.0,
-				5.0,
-				3.0,
-				"Mach Supplies Inc."
-		);
+		createClient();
+		ProductCreateDto createDto = EntityMock.createDto();
+		createDto.setTitle("Any Title");
 
 		String propostaJson = objectMapper.writeValueAsString(createDto);
 
@@ -146,7 +105,7 @@ class ProductsIntegrationTests {
 
 	@Test
 	void testFindAllProductsSuccess() throws Exception {
-		testCreateProductSuccess();
+		createClient();
 
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products")
 						.contentType(MediaType.APPLICATION_JSON))
@@ -163,7 +122,7 @@ class ProductsIntegrationTests {
 
 	@Test
 	void testFindProductsByTitleSuccess() throws Exception {
-		testCreateProductSuccess();
+		createClient();
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products/title/Wireless MouseS")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
@@ -179,7 +138,7 @@ class ProductsIntegrationTests {
 
 	@Test
 	void testFindProductsBySupplierSuccess() throws Exception {
-		testCreateProductSuccess();
+		createClient();
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products/supplier/Mach")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
@@ -195,7 +154,7 @@ class ProductsIntegrationTests {
 
 	@Test
 	void testFindProductsByCategorySuccess() throws Exception {
-		testCreateProductSuccess();
+		createClient();
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products/category/mouses")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
@@ -219,7 +178,7 @@ class ProductsIntegrationTests {
 
 	@Test
 	void testFindProductsBySkuSuccess() throws Exception {
-		testCreateProductSuccess();
+		createClient();
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products/sku/MOUSE-2024-WL-0010")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
@@ -235,7 +194,7 @@ class ProductsIntegrationTests {
 
 	@Test
 	void testFindAllActivedSuccess() throws Exception {
-		testCreateProductSuccess();
+		createClient();
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products/actived")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
@@ -267,7 +226,7 @@ class ProductsIntegrationTests {
 
 	@Test
 	void testFindByDateBetweenSuccess() throws Exception {
-		testCreateProductSuccess();
+		createClient();
 		String after = LocalDate.now().minusDays(1).toString();
 		String before = LocalDate.now().plusDays(1).toString();
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products/date?afterDate=" + after + "&beforeDate=" + before)
@@ -277,7 +236,7 @@ class ProductsIntegrationTests {
 
 	@Test
 	void testFindByDateAfterSuccess() throws Exception {
-		testCreateProductSuccess();
+		createClient();
 		String after = LocalDate.now().minusDays(1).toString();
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products/date?afterDate=" + after)
 						.contentType(MediaType.APPLICATION_JSON))
@@ -286,7 +245,7 @@ class ProductsIntegrationTests {
 
 	@Test
 	void testFindByDateBeforeSuccess() throws Exception {
-		testCreateProductSuccess();
+		createClient();
 		String before = LocalDate.now().plusDays(1).toString();
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products/date?beforeDate=" + before)
 						.contentType(MediaType.APPLICATION_JSON))
@@ -295,7 +254,7 @@ class ProductsIntegrationTests {
 
 	@Test
 	void testFindByDateNoDateParametersProvided() throws Exception {
-		testCreateProductSuccess();
+		createClient();
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products/date?")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound())
@@ -314,20 +273,8 @@ class ProductsIntegrationTests {
 
 	@Test
 	void testEditProductDataBySkuSuccess() throws Exception {
-		testCreateProductSuccess();
-		ProductUpdateDto updateDto = new ProductUpdateDto(
-				"Updated Wireless MouseS",
-				"An updated high precision wireless mouse",
-				39.99,
-				"MOUSES",
-				15,
-				"MOUSE-2024-WL-0010",
-				0.2,
-				12.0,
-				6.0,
-				4.0,
-				"Updated Mach Supplies Inc."
-		);
+		createClient();
+		ProductUpdateDto updateDto = EntityMock.productUpdateDto();
 
 		String updateDtoJson = objectMapper.writeValueAsString(updateDto);
 
@@ -339,7 +286,7 @@ class ProductsIntegrationTests {
 
 	@Test
 	void testEditProductDataBySkuInvalidDataException() throws Exception {
-		testCreateProductSuccess();
+		createClient();
 		ProductUpdateDto updateDto = new ProductUpdateDto(
 				"",
 				"An updated high precision wireless mouse",
@@ -366,19 +313,7 @@ class ProductsIntegrationTests {
 
 	@Test
 	void testEditProductDataBySkuEntityNotFoundException() throws Exception {
-		ProductUpdateDto updateDto = new ProductUpdateDto(
-				"Updated Wireless MouseS",
-				"An updated high precision wireless mouse",
-				39.99,
-				"MOUSES",
-				15,
-				"MOUSE-2024-WL-0010",
-				0.2,
-				12.0,
-				6.0,
-				4.0,
-				"Updated Mach Supplies Inc."
-		);
+		ProductUpdateDto updateDto = EntityMock.productUpdateDto();
 
 		String updateDtoJson = objectMapper.writeValueAsString(updateDto);
 
@@ -391,7 +326,7 @@ class ProductsIntegrationTests {
 
 	@Test
 	void testToggleStatusBySkuSuccess() throws Exception {
-		testCreateProductSuccess();
+		createClient();
 		mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/products/status/MOUSE-2024-WL-0010")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -400,19 +335,8 @@ class ProductsIntegrationTests {
 
 	@Test
 	void testToggleStatusBySkuInvalidProductStatusException() throws Exception {
-		ProductCreateDto createDto = new ProductCreateDto(
-				"Wireless MouseS",
-				"A high precision wireless m",
-				29.99,
-				"MOUSES",
-				0,
-				"MOUSE-2024-WL-0010",
-				0.1,
-				10.0,
-				5.0,
-				3.0,
-				"Mach Supplies Inc."
-		);
+		ProductCreateDto createDto = EntityMock.createDto();
+		createDto.setQuantity(0);
 
 		String propostaJson = objectMapper.writeValueAsString(createDto);
 
@@ -437,7 +361,7 @@ class ProductsIntegrationTests {
 
 	@Test
 	void testAddProductBySkuSuccess() throws Exception {
-		testCreateProductSuccess();
+		createClient();
 		mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/products/sku/MOUSE-2024-WL-0010/add/1")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -446,7 +370,7 @@ class ProductsIntegrationTests {
 
 	@Test
 	void testAddProductBySkuInvalidQuantityException() throws Exception {
-		testCreateProductSuccess();
+		createClient();
 		mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/products/sku/MOUSE-2024-WL-0010/add/0")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isBadRequest())
@@ -463,7 +387,7 @@ class ProductsIntegrationTests {
 
 	@Test
 	void testSubProductBySkuSuccess() throws Exception {
-		testCreateProductSuccess();
+		createClient();
 		mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/products/sku/MOUSE-2024-WL-0010/sub/1")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -472,7 +396,7 @@ class ProductsIntegrationTests {
 
 	@Test
 	void testSubProductBySkuInvalidQuantityException() throws Exception {
-		testCreateProductSuccess();
+		createClient();
 		mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/products/sku/MOUSE-2024-WL-0010/sub/0")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isBadRequest())
@@ -481,7 +405,7 @@ class ProductsIntegrationTests {
 
 	@Test
 	void testSubProductBySkuInvalidQuantityAvailableException() throws Exception {
-		testCreateProductSuccess();
+		createClient();
 		mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/products/sku/MOUSE-2024-WL-0010/sub/11")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isBadRequest())
@@ -498,7 +422,7 @@ class ProductsIntegrationTests {
 
 	@Test
 	void testDeleteProductBySkuSuccess() throws Exception {
-		testCreateProductSuccess();
+		createClient();
 		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/products/delete/sku/MOUSE-2024-WL-0010")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNoContent());
