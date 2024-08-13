@@ -816,4 +816,18 @@ class ProductServiceTest {
 
         assertThrows(InvalidQuantityException.class, () -> productService.sub("MOUSE-2024-WL-0010", 11));
     }
+
+    @Test
+    void testDeleteProductBySkuSuccess() {
+        when(productRepository.existsBySku(any(String.class))).thenReturn(true);
+
+        productService.deleteBySku("MOUSE-2024-WL-0010");
+    }
+
+    @Test
+    void testDeleteProductBySkuEntityNotFoundException() {
+        when(productRepository.existsBySku(any(String.class))).thenReturn(false);
+
+        assertThrows(EntityNotFoundException.class, () -> productService.deleteBySku("MOUSE-2024-WL-0010"));
+    }
 }
