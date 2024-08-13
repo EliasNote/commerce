@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.http.MediaType;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
@@ -182,5 +183,22 @@ class ClientIntegrationTests {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(updateJson));
 		result.andExpect(status().isNotFound());
+	}
+
+	@Test
+	void testDeleteClientSuccess() throws Exception {
+		testCreateClientSuccess();
+
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/clients/delete/cpf/07021050070")
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNoContent());
+	}
+
+	@Test
+	void testDeleteClientNotFound() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/clients/delete/cpf/07021050070")
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNotFound())
+				.andExpect(jsonPath("$.message").value("Customer not found by CPF"));
 	}
 }
