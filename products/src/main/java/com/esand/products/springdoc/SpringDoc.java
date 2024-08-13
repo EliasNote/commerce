@@ -190,4 +190,14 @@ public interface SpringDoc {
                             schema = @Schema(implementation = ErrorMessage.class)))
     })
     ResponseEntity<String> decreaseQuantity(@PathVariable String sku, @PathVariable Integer quantity);
+
+    @Operation(summary = "Delete a product by SKU",
+            description = "Endpoint to delete a product by SKU.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Product deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Product not found by SKU",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorMessage.class)))
+    })
+    ResponseEntity<Void> deleteProductBySku(@PathVariable String sku);
 }

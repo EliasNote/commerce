@@ -90,4 +90,10 @@ public class ProductController implements SpringDoc {
     public ResponseEntity<String> decreaseQuantity(@PathVariable String sku, @PathVariable Integer quantity) {
         return ResponseEntity.ok("updated quantity for: " + productService.sub(sku, quantity));
     }
+
+    @DeleteMapping("/delete/sku/{sku}")
+    public ResponseEntity<Void> deleteProductBySku(@PathVariable String sku) {
+        productService.deleteBySku(sku);
+        return ResponseEntity.noContent().build();
+    }
 }

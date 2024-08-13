@@ -164,6 +164,14 @@ public class ProductService {
         return product.getQuantity().toString();
     }
 
+    @Transactional
+    public void deleteBySku(String sku) {
+        if (!productRepository.existsBySku(sku)) {
+            throw new EntityNotFoundException("Product not found by sku");
+        }
+        productRepository.deleteBySku(sku);
+    }
+
     @Transactional(readOnly = true)
     private Product findProductBySku(String sku) {
         return productRepository.findBySku(sku).orElseThrow(

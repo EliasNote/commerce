@@ -35,5 +35,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<ProductDtoPagination> findByCreateDateBefore(LocalDateTime date, Pageable pageable);
 
     Page<ProductDtoPagination> findByCreateDateBetween(LocalDateTime afterDate, LocalDateTime beforeDate, Pageable pageable);
+
+    void deleteBySku(String sku);
 }
 
