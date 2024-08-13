@@ -133,7 +133,10 @@ public interface SpringDoc {
             description = "Endpoint to delete all deliveries that have been canceled.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "All canceled deliveries deleted successfully",
-                    content = @Content)
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "No canceled deliveries found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorMessage.class)))
     })
     ResponseEntity<Void> deleteAllCanceled();
 }

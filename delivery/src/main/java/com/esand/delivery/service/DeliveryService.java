@@ -134,6 +134,9 @@ public class DeliveryService {
 
     @Transactional
     public void deleteAllCanceled() {
+        if (!deliveryRepository.existsByStatus(Delivery.Status.CANCELED)) {
+            throw new EntityNotFoundException("No deliveries canceled found");
+        }
         deliveryRepository.deleteAllByStatus(Delivery.Status.CANCELED);
     }
 

@@ -22,4 +22,6 @@ public interface DeliveryRepository extends JpaRepository<Delivery, Long> {
     Page<DeliveryDtoPagination> findByDateBefore(LocalDateTime date, Pageable pageable);
 
     Page<DeliveryDtoPagination> findByDateBetween(LocalDateTime afterDate, LocalDateTime beforeDate, Pageable pageable);
+
+    boolean existsByStatus(Delivery.Status status);
 }
