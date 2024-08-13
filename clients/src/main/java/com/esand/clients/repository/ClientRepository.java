@@ -25,4 +25,8 @@ public interface ClientRepository extends JpaRepository<Client, Long> {
     Page<ClientDtoPagination> findByCreateDateBefore(LocalDateTime date, Pageable pageable);
 
     Page<ClientDtoPagination> findByCreateDateBetween(LocalDateTime afterDate, LocalDateTime beforeDate, Pageable pageable);
+
+    void deleteByCpf(String cpf);
+
+    boolean existsByCpf(String cpf);
 }

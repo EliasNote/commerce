@@ -82,6 +82,14 @@ public class ClientService {
         clientMapper.updateClient(dto, client);
     }
 
+    @Transactional
+    public void deleteByCpf(String cpf) {
+        if (!clientRepository.existsByCpf(cpf)) {
+            throw new EntityNotFoundException("Customer not found by CPF");
+        }
+        clientRepository.deleteByCpf(cpf);
+    }
+
     private Client findClientByCpf(String cpf) {
         return clientRepository.findByCpf(cpf).orElseThrow(
                 () -> new EntityNotFoundException("Customer not found by CPF")

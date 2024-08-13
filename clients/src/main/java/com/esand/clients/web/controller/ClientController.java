@@ -53,4 +53,10 @@ public class ClientController implements SpringDoc {
         clientService.update(cpf, dto);
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/delete/cpf/{cpf}")
+    public ResponseEntity<Void> deleteClientByCpf(@PathVariable String cpf) {
+        clientService.deleteByCpf(cpf);
+        return ResponseEntity.noContent().build();
+    }
 }

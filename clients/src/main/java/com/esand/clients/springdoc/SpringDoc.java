@@ -100,4 +100,15 @@ public interface SpringDoc {
                             schema = @Schema(implementation = ErrorMessage.class)))
     })
     ResponseEntity<Void> update(@PathVariable String cpf, @RequestBody @Valid ClientUpdateDto dto);
+
+    @Operation(summary = "Delete a customer by CPF",
+            description = "Endpoint that deletes a customer by CPF.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Customer deleted successfully",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "Customer not found by CPF",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorMessage.class)))
+    })
+    ResponseEntity<Void> deleteClientByCpf(@PathVariable String cpf);
 }
