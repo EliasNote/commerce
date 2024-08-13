@@ -495,4 +495,20 @@ class ProductsIntegrationTests {
 				.andExpect(status().isNotFound())
 				.andExpect(jsonPath("$.message").value("Product not found by sku"));
 	}
+
+	@Test
+	void testDeleteProductBySkuSuccess() throws Exception {
+		testCreateProductSuccess();
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/products/delete/sku/MOUSE-2024-WL-0010")
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNoContent());
+	}
+
+	@Test
+	void testDeleteProductBySkuEntityNotFoundException() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/products/delete/sku/MOUSE-2024-WL-0010")
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNotFound())
+				.andExpect(jsonPath("$.message").value("Product not found by sku"));
+	}
 }
