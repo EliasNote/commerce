@@ -100,11 +100,17 @@ public class OrderService {
 
     @Transactional
     public void delete(Long id) {
+        if (!orderRepository.existsById(id)) {
+            throw new EntityNotFoundException("Order not found");
+        }
         orderRepository.deleteById(id);
     }
 
     @Transactional
-    public void deleteAllProcessed() {
+    public void deleteAllProcessing() {
+        if (!orderRepository.existsByProcessing(true)) {
+            throw new EntityNotFoundException("No orders processing found");
+        }
         orderRepository.deleteAllByProcessing(true);
     }
 
@@ -113,7 +119,7 @@ public class OrderService {
                 () -> new EntityNotFoundException("Order nº" + id + " does not exist")
         );
         if (order.getProcessing()) {
-            throw new OrderAlreadySentException("Already processed order");
+            throw new OrderAlreadySentException("Already processing order");
         }
 
         verifyIfExistsClientAndProductAndConnection(order.getCpf(), order.getSku());
@@ -123,7 +129,7 @@ public class OrderService {
         productClient.decreaseProductQuantityBySku(order.getSku(), order.getQuantity());
         OrderResponseDto response = orderMapper.toDto(orderRepository.save(order));
         sendMessage(response);
-        return "Order nº" + id + " processed successfully";
+        return "Order nº" + id + " is processing successfully";
     }
 
     private void sendMessage(OrderResponseDto dto) {

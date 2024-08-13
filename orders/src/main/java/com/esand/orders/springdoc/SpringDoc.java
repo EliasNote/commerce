@@ -99,11 +99,11 @@ public interface SpringDoc {
             @ApiResponse(responseCode = "404", description = "Order not found by ID",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorMessage.class))),
-            @ApiResponse(responseCode = "409", description = "Order already processed",
+            @ApiResponse(responseCode = "409", description = "Order already processing",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorMessage.class)))
     })
-    ResponseEntity<String> processOrder(@PathVariable Long id);
+    ResponseEntity<String> sendOrder(@PathVariable Long id);
 
     @Operation(summary = "Delete an order",
             description = "Endpoint to delete an order by its ID.")
@@ -116,11 +116,14 @@ public interface SpringDoc {
     })
     ResponseEntity<Void> deleteById(@PathVariable Long id);
 
-    @Operation(summary = "Delete all processed orders",
-            description = "Endpoint to delete all orders that have been processed.")
+    @Operation(summary = "Delete all processing orders",
+            description = "Endpoint to delete all orders that have been processing.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "All processed orders deleted successfully",
-                    content = @Content)
+            @ApiResponse(responseCode = "204", description = "All processing orders deleted successfully",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "No processing orders found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorMessage.class)))
     })
-    ResponseEntity<Void> deleteAllProcessed();
+    ResponseEntity<Void> deleteAllProcessing();
 }

@@ -25,4 +25,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Page<OrderDtoPagination> findByDateBefore(LocalDateTime date, Pageable pageable);
 
     Page<OrderDtoPagination> findByDateBetween(LocalDateTime afterDate, LocalDateTime beforeDate, Pageable pageable);
+
+    boolean existsByProcessing(boolean b);
 }

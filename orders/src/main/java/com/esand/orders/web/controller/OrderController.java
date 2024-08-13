@@ -47,7 +47,7 @@ public class OrderController implements SpringDoc {
     }
 
     @PatchMapping("/processing/{id}")
-    public ResponseEntity<String> processOrder(@PathVariable Long id) {
+    public ResponseEntity<String> sendOrder(@PathVariable Long id) {
         return ResponseEntity.ok(orderService.sendOrder(id));
     }
 
@@ -57,9 +57,9 @@ public class OrderController implements SpringDoc {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/delete/processed")
-    public ResponseEntity<Void> deleteAllProcessed() {
-        orderService.deleteAllProcessed();
+    @DeleteMapping("/delete/processing")
+    public ResponseEntity<Void> deleteAllProcessing() {
+        orderService.deleteAllProcessing();
         return ResponseEntity.noContent().build();
     }
 }
