@@ -329,4 +329,18 @@ class ClientServiceTest {
 
         assertThrows(EntityNotFoundException.class, () -> clientService.update("07021050070", updateDto));
     }
+
+    @Test
+    void testDeleteProductByCpfSuccess() {
+        when(clientRepository.existsByCpf(any(String.class))).thenReturn(true);
+
+        clientService.deleteByCpf("07021050070");
+    }
+
+    @Test
+    void testDeleteProductByCpfEntityNotFoundException() {
+        when(clientRepository.existsByCpf(any(String.class))).thenReturn(false);
+
+        assertThrows(EntityNotFoundException.class, () -> clientService.deleteByCpf("07021050070"));
+    }
 }
