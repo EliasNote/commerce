@@ -1,6 +1,6 @@
 package com.esand.products;
 
-import com.esand.products.EntityMock;
+import com.esand.products.entity.EntityMock;
 import com.esand.products.repository.ProductRepository;
 import com.esand.products.web.dto.ProductCreateDto;
 import com.esand.products.web.dto.ProductUpdateDto;
@@ -51,11 +51,11 @@ class ProductsIntegrationTests {
 	void testCreateProductSuccess() throws Exception {
 		ProductCreateDto createDto = EntityMock.createDto();
 
-		String propostaJson = objectMapper.writeValueAsString(createDto);
+		String productJson = objectMapper.writeValueAsString(createDto);
 
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/products")
 						.contentType(MediaType.APPLICATION_JSON)
-						.content(propostaJson))
+						.content(productJson))
 				.andExpect(status().isCreated());
 	}
 
@@ -64,11 +64,11 @@ class ProductsIntegrationTests {
 		ProductCreateDto createDto = EntityMock.createDto();
 		createDto.setCategory("MOUSESES");
 
-		String propostaJson = objectMapper.writeValueAsString(createDto);
+		String productJson = objectMapper.writeValueAsString(createDto);
 
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/products")
 						.contentType(MediaType.APPLICATION_JSON)
-						.content(propostaJson))
+						.content(productJson))
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.message").value("Invalid request content."))
 				.andExpect(jsonPath("$.errors.category").value("must match \"COMPUTERS|SMARTPHONES|HEADPHONES|MOUSES|KEYBOARDS|SCREENS\""));
@@ -79,11 +79,11 @@ class ProductsIntegrationTests {
 		createClient();
 		ProductCreateDto createDto = EntityMock.createDto();
 
-		String propostaJson = objectMapper.writeValueAsString(createDto);
+		String productJson = objectMapper.writeValueAsString(createDto);
 
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/products")
 						.contentType(MediaType.APPLICATION_JSON)
-						.content(propostaJson))
+						.content(productJson))
 				.andExpect(status().isConflict())
 				.andExpect(jsonPath("$.message").value("There is already a product registered with this title"));
 	}
@@ -94,11 +94,11 @@ class ProductsIntegrationTests {
 		ProductCreateDto createDto = EntityMock.createDto();
 		createDto.setTitle("Any Title");
 
-		String propostaJson = objectMapper.writeValueAsString(createDto);
+		String productJson = objectMapper.writeValueAsString(createDto);
 
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/products")
 						.contentType(MediaType.APPLICATION_JSON)
-						.content(propostaJson))
+						.content(productJson))
 				.andExpect(status().isConflict())
 				.andExpect(jsonPath("$.message").value("There is already a product registered with this sku"));
 	}
@@ -338,11 +338,11 @@ class ProductsIntegrationTests {
 		ProductCreateDto createDto = EntityMock.createDto();
 		createDto.setQuantity(0);
 
-		String propostaJson = objectMapper.writeValueAsString(createDto);
+		String productJson = objectMapper.writeValueAsString(createDto);
 
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/products")
 						.contentType(MediaType.APPLICATION_JSON)
-						.content(propostaJson))
+						.content(productJson))
 				.andExpect(status().isCreated());
 
 		mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/products/status/MOUSE-2024-WL-0010")

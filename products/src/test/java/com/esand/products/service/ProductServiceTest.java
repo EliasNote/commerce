@@ -1,6 +1,6 @@
 package com.esand.products.service;
 
-import com.esand.products.EntityMock;
+import com.esand.products.entity.EntityMock;
 import com.esand.products.entity.Product;
 import com.esand.products.exception.*;
 import com.esand.products.repository.ProductRepository;
@@ -21,7 +21,6 @@ import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;

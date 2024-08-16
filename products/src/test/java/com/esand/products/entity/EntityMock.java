@@ -1,6 +1,5 @@
-package com.esand.products;
+package com.esand.products.entity;
 
-import com.esand.products.entity.Product;
 import com.esand.products.repository.pagination.ProductDtoPagination;
 import com.esand.products.web.dto.PageableDto;
 import com.esand.products.web.dto.ProductCreateDto;
