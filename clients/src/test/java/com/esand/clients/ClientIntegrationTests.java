@@ -49,11 +49,11 @@ class ClientIntegrationTests {
 	void testCreateClientSuccess() throws Exception {
 		ClientCreateDto createDto = EntityMock.createDto();
 
-		String propostaJson = objectMapper.writeValueAsString(createDto);
+		String json = objectMapper.writeValueAsString(createDto);
 
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/clients")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(propostaJson))
+				.content(json))
 			.andExpect(status().isCreated());
 	}
 
@@ -62,11 +62,11 @@ class ClientIntegrationTests {
 		ClientCreateDto createDto = EntityMock.createDto();
 		createDto.setCpf("07021050071");
 
-		String propostaJson = objectMapper.writeValueAsString(createDto);
+		String json = objectMapper.writeValueAsString(createDto);
 
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/clients")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(propostaJson))
+				.content(json))
 			.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.message").value("Invalid request content."))
 				.andExpect(jsonPath("$.errors.cpf").value("invalid Brazilian individual taxpayer registry number (CPF)"));
@@ -77,11 +77,11 @@ class ClientIntegrationTests {
 		createClient();
 		ClientCreateDto createDto = EntityMock.createDto();
 
-		String propostaJson = objectMapper.writeValueAsString(createDto);
+		String json = objectMapper.writeValueAsString(createDto);
 
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/clients")
 						.contentType(MediaType.APPLICATION_JSON)
-						.content(propostaJson))
+						.content(json))
 				.andExpect(status().isConflict())
 				.andExpect(jsonPath("$.message").value("CPF " + createDto.getCpf() +" cannot be registered, there is already a registered customer with an informed CPF"));
 	}
