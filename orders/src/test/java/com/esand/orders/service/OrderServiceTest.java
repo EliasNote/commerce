@@ -26,10 +26,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -448,27 +451,4 @@ public class OrderServiceTest {
 
         assertThrows(EntityNotFoundException.class, () -> orderService.deleteAllProcessing());
     }
-
-//    @Test
-//    void testSendOrderSuccess() {
-//        Order order = EntityMock.order();
-//        order.setProcessing(false);
-//        Client client = EntityMock.client();
-//        Product product = EntityMock.product();
-//        OrderResponseDto orderResponseDto = EntityMock.responseDto();
-//
-//        when(orderRepository.findById(any(Long.class))).thenReturn(Optional.of(order));
-//        when(clientClient.getClientByCpf(any(String.class))).thenReturn(client);
-//        when(productClient.getProductBySku(any(String.class))).thenReturn(product);
-//        doNothing().when(productClient).decreaseProductQuantityBySku(any(String.class), any(Integer.class));
-//        when(orderMapper.toDto(any(Order.class))).thenReturn(orderResponseDto);
-//
-//        // Simular o comportamento do kafkaTemplate.send para retornar um CompletableFuture válido
-//        CompletableFuture<SendResult<String, Serializable>> future = CompletableFuture.completedFuture(mock(SendResult.class));
-//        when(kafkaTemplate.send(any(String.class), any(OrderResponseDto.class))).thenReturn(future);
-//
-//        orderService.sendOrder(1L);
-//
-//        verify(kafkaTemplate).send(eq(topicName), eq(orderResponseDto));
-//    }
 }
