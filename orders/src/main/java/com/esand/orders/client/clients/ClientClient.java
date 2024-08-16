@@ -8,5 +8,5 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface ClientClient {
 
     @GetMapping("/cpf/{cpf}")
-    Client getClientByCpf(@PathVariable String cpf);
+    Client getClientByCpf(@PathVariable("cpf") String cpf);
 }

@@ -62,7 +62,7 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public PageableDto findBySku(Pageable pageable, String sku) {
-        PageableDto dto = orderMapper.toPageableDto(orderRepository.findBySku(pageable, sku).orElseThrow());
+        PageableDto dto = orderMapper.toPageableDto(orderRepository.findBySku(pageable, sku));
         if (dto.getContent().isEmpty()) {
             throw new EntityNotFoundException("No orders found by sku");
         }
@@ -71,7 +71,7 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public PageableDto findByCpf(Pageable pageable, String cpf) {
-        PageableDto dto = orderMapper.toPageableDto(orderRepository.findByCpf(pageable, cpf).orElseThrow());
+        PageableDto dto = orderMapper.toPageableDto(orderRepository.findByCpf(pageable, cpf));
         if (dto.getContent().isEmpty()) {
             throw new EntityNotFoundException("No orders found by cpf");
         }
@@ -165,7 +165,7 @@ public class OrderService {
     private void verifyProduct(String sku, Integer quantity) {
         Product product = productClient.getProductBySku(sku);
         if (quantity == null || quantity == 0) {
-            throw new InvalidQuantityException("No quantity informed");
+            throw new InvalidQuantityException("No quantity stated");
         }
         if (quantity > product.getQuantity()) {
             throw new InvalidQuantityException("The quantity of available products is " + product.getQuantity());

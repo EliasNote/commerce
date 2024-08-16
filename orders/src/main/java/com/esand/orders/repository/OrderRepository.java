@@ -14,9 +14,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("SELECT p FROM Order p")
     Page<OrderDtoPagination> findAllPageable(Pageable pageable);
 
-    Optional<Page<OrderDtoPagination>> findBySku(Pageable pageable, String sku);
+    Page<OrderDtoPagination> findBySku(Pageable pageable, String sku);
 
-    Optional<Page<OrderDtoPagination>> findByCpf(Pageable pageable, String cpf);
+    Page<OrderDtoPagination> findByCpf(Pageable pageable, String cpf);
 
     void deleteAllByProcessing(Boolean processed);
 
