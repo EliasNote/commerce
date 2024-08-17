@@ -36,7 +36,7 @@ public class DeliveryService {
 
     @Transactional(readOnly = true)
     public PageableDto findAll(Pageable pageable) {
-        PageableDto dto =  deliveryMapper.toPageableDto(deliveryRepository.findAllPageable(pageable));
+        PageableDto dto = deliveryMapper.toPageableDto(deliveryRepository.findAllPageable(pageable));
         if (dto.getContent().isEmpty()) {
             throw new EntityNotFoundException("No orders found");
         }
