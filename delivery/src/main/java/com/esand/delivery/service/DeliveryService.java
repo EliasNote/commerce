@@ -4,8 +4,8 @@ import com.esand.delivery.client.products.ProductClient;
 import com.esand.delivery.entity.Delivery;
 import com.esand.delivery.exception.ConnectionException;
 import com.esand.delivery.exception.EntityNotFoundException;
-import com.esand.delivery.exception.OrderCanceledException;
-import com.esand.delivery.exception.OrderShippedException;
+import com.esand.delivery.exception.DeliveryCanceledException;
+import com.esand.delivery.exception.DeliveryShippedException;
 import com.esand.delivery.repository.DeliveryRepository;
 import com.esand.delivery.web.dto.DeliveryResponseDto;
 import com.esand.delivery.web.dto.DeliverySaveDto;
@@ -99,7 +99,7 @@ public class DeliveryService {
     public String cancel(Long id) {
         Delivery delivery = findOrderById(id);
         if (delivery.getStatus().equals(Delivery.Status.CANCELED)) {
-            throw new OrderCanceledException("Order nº" + delivery.getId() + " has already been canceled");
+            throw new DeliveryCanceledException("Order nº" + delivery.getId() + " has already been canceled");
         }
 
         try {
@@ -123,10 +123,10 @@ public class DeliveryService {
     public String statusShipped(Long id) {
         Delivery delivery = findOrderById(id);
         if (delivery.getStatus().equals(Delivery.Status.SHIPPED)) {
-            throw new OrderShippedException("Order nº" + delivery.getId() + " has already been shipped");
+            throw new DeliveryShippedException("Order nº" + delivery.getId() + " has already been shipped");
         }
         if (delivery.getStatus().equals(Delivery.Status.CANCELED)) {
-            throw new OrderCanceledException("Order nº" + delivery.getId() + " is canceled");
+            throw new DeliveryCanceledException("Order nº" + delivery.getId() + " is canceled");
         }
         delivery.setStatus(Delivery.Status.SHIPPED);
         return "Order nº" + delivery.getId() + " status changed to shipped successfully";

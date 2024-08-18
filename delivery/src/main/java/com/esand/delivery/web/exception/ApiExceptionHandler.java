@@ -2,8 +2,8 @@ package com.esand.delivery.web.exception;
 
 import com.esand.delivery.exception.ConnectionException;
 import com.esand.delivery.exception.EntityNotFoundException;
-import com.esand.delivery.exception.OrderCanceledException;
-import com.esand.delivery.exception.OrderShippedException;
+import com.esand.delivery.exception.DeliveryCanceledException;
+import com.esand.delivery.exception.DeliveryShippedException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ApiExceptionHandler {
 
-    @ExceptionHandler(OrderShippedException.class)
-    public final ResponseEntity<ErrorMessage> orderCancelledException(OrderShippedException ex, HttpServletRequest request) {
+    @ExceptionHandler(DeliveryShippedException.class)
+    public final ResponseEntity<ErrorMessage> orderCancelledException(DeliveryShippedException ex, HttpServletRequest request) {
         log.error("API Error", ex);
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
@@ -25,8 +25,8 @@ public class ApiExceptionHandler {
                 .body(new ErrorMessage(request, HttpStatus.CONFLICT, ex.getMessage()));
     }
 
-    @ExceptionHandler(OrderCanceledException.class)
-    public final ResponseEntity<ErrorMessage> orderCancelledException(OrderCanceledException ex, HttpServletRequest request) {
+    @ExceptionHandler(DeliveryCanceledException.class)
+    public final ResponseEntity<ErrorMessage> orderCancelledException(DeliveryCanceledException ex, HttpServletRequest request) {
         log.error("API Error", ex);
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)

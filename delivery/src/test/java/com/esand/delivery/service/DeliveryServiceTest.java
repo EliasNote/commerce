@@ -5,8 +5,8 @@ import com.esand.delivery.entity.Delivery;
 import com.esand.delivery.entity.EntityMock;
 import com.esand.delivery.exception.ConnectionException;
 import com.esand.delivery.exception.EntityNotFoundException;
-import com.esand.delivery.exception.OrderCanceledException;
-import com.esand.delivery.exception.OrderShippedException;
+import com.esand.delivery.exception.DeliveryCanceledException;
+import com.esand.delivery.exception.DeliveryShippedException;
 import com.esand.delivery.repository.DeliveryRepository;
 import com.esand.delivery.repository.pagination.DeliveryDtoPagination;
 import com.esand.delivery.web.dto.DeliveryResponseDto;
@@ -364,7 +364,7 @@ class DeliveryServiceTest {
 
         when(deliveryRepository.findById(any(Long.class))).thenReturn(Optional.of(delivery));
 
-        assertThrows(OrderCanceledException.class, () -> deliveryService.cancel(delivery.getId()));
+        assertThrows(DeliveryCanceledException.class, () -> deliveryService.cancel(delivery.getId()));
     }
 
     @Test
@@ -417,7 +417,7 @@ class DeliveryServiceTest {
 
         when(deliveryRepository.findById(any(Long.class))).thenReturn(Optional.of(delivery));
 
-        assertThrows(OrderShippedException.class, () -> deliveryService.statusShipped(delivery.getId()));
+        assertThrows(DeliveryShippedException.class, () -> deliveryService.statusShipped(delivery.getId()));
     }
 
     @Test
@@ -427,7 +427,7 @@ class DeliveryServiceTest {
 
         when(deliveryRepository.findById(any(Long.class))).thenReturn(Optional.of(delivery));
 
-        assertThrows(OrderCanceledException.class, () -> deliveryService.statusShipped(delivery.getId()));
+        assertThrows(DeliveryCanceledException.class, () -> deliveryService.statusShipped(delivery.getId()));
     }
 
     @Test
