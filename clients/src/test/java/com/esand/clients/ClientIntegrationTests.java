@@ -239,7 +239,7 @@ class ClientIntegrationTests {
 
 	@Test
 	void testDeleteClientNotFound() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/clients/delete/cpf/07021050070")
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/clients/delete/07021050070")
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound())
 				.andExpect(jsonPath("$.message").value("Customer not found by CPF"));
