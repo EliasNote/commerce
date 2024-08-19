@@ -232,7 +232,7 @@ class ClientIntegrationTests {
 	void testDeleteClientSuccess() throws Exception {
 		createClient();
 
-		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/clients/delete/cpf/07021050070")
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/clients/delete/07021050070")
 				.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNoContent());
 	}
