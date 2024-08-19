@@ -37,14 +37,18 @@ services:
       KAFKA_BROKERCONNECT: kafka:19092
 
   server:
-    image: eliasnote/server:1.0.0
+    build:
+      context: ./server
+      dockerfile: Dockerfile
     networks:
       - broker-kafka
     ports:
       - "8761:8761"
 
   gateway:
-    image: eliasnote/gateway:1.0.0
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
     networks:
       - broker-kafka
     depends_on:
@@ -56,7 +60,9 @@ services:
       DEFAULT_ZONE: http://server:8761/eureka
 
   products:
-    image: eliasnote/products:1.0.0
+    build:
+      context: ./products
+      dockerfile: Dockerfile
     networks:
       - broker-kafka
     depends_on:
@@ -68,7 +74,9 @@ services:
       SPRING_PROFILES_ACTIVE: docker
 
   clients:
-    image: eliasnote/clients:1.0.0
+    build:
+      context: ./clients
+      dockerfile: Dockerfile
     networks:
       - broker-kafka
     depends_on:
@@ -80,7 +88,9 @@ services:
       SPRING_PROFILES_ACTIVE: docker
 
   delivery:
-    image: eliasnote/delivery:1.0.0
+    build:
+      context: ./delivery
+      dockerfile: Dockerfile
     networks:
       - broker-kafka
     depends_on:
@@ -96,7 +106,9 @@ services:
       SPRING_PROFILES_ACTIVE: docker
 
   orders:
-    image: eliasnote/orders:1.0.0
+    build:
+      context: ./orders
+      dockerfile: Dockerfile
     networks:
       - broker-kafka
     depends_on:
