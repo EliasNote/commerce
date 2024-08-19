@@ -91,7 +91,7 @@ public class ProductController implements SpringDoc {
         return ResponseEntity.ok("updated quantity for: " + productService.sub(sku, quantity));
     }
 
-    @DeleteMapping("/delete/sku/{sku}")
+    @DeleteMapping("/delete/{sku}")
     public ResponseEntity<Void> deleteProductBySku(@PathVariable String sku) {
         productService.deleteBySku(sku);
         return ResponseEntity.noContent().build();
