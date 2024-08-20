@@ -85,7 +85,7 @@ E pronto, o projeto já está em funcionamento
 
 - Endereço para acesso do Eureka Server: http://localhost:8761
 - Endereço para acesso do Actuator: http://localhost:{porta}/actuator
-- Endereço para acesso do Swagger: http://localhost:{porta}/swagger-ui/index.html
+- Endereço para acesso do Swagger: http://localhost:{porta}/docs-ui.html
 - Endereço para acesso do Kafdrop: http://localhost:19000
 
 **H2 API Clients**
