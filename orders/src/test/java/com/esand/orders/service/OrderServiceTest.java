@@ -92,7 +92,7 @@ public class OrderServiceTest {
         assertEquals(29.99, response.getPrice());
         assertEquals(10, response.getQuantity());
         assertEquals(299.9, response.getTotal());
-        assertFalse(response.getProcessed());
+        assertFalse(response.getProcessing());
         assertNotNull(response.getDate());
     }
 

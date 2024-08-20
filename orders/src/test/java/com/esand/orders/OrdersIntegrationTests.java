@@ -260,7 +260,7 @@ class OrdersIntegrationTests {
 				.andExpect(jsonPath("$.content[0].price").value(orderResponseDto.getPrice()))
 				.andExpect(jsonPath("$.content[0].quantity").value(orderResponseDto.getQuantity()))
 				.andExpect(jsonPath("$.content[0].total").value(orderResponseDto.getTotal()))
-				.andExpect(jsonPath("$.content[0].processing").value(orderResponseDto.getProcessed()))
+				.andExpect(jsonPath("$.content[0].processing").value(orderResponseDto.getProcessing()))
 				.andExpect(jsonPath("$.content[0].date").isNotEmpty()
 				);
 	}
@@ -290,7 +290,7 @@ class OrdersIntegrationTests {
 				.andExpect(jsonPath("$.content[0].price").value(orderResponseDto.getPrice()))
 				.andExpect(jsonPath("$.content[0].quantity").value(orderResponseDto.getQuantity()))
 				.andExpect(jsonPath("$.content[0].total").value(orderResponseDto.getTotal()))
-				.andExpect(jsonPath("$.content[0].processing").value(orderResponseDto.getProcessed()))
+				.andExpect(jsonPath("$.content[0].processing").value(orderResponseDto.getProcessing()))
 				.andExpect(jsonPath("$.content[0].date").isNotEmpty()
 				);
 	}
@@ -320,7 +320,7 @@ class OrdersIntegrationTests {
 				.andExpect(jsonPath("$.content[0].price").value(orderResponseDto.getPrice()))
 				.andExpect(jsonPath("$.content[0].quantity").value(orderResponseDto.getQuantity()))
 				.andExpect(jsonPath("$.content[0].total").value(orderResponseDto.getTotal()))
-				.andExpect(jsonPath("$.content[0].processing").value(orderResponseDto.getProcessed()))
+				.andExpect(jsonPath("$.content[0].processing").value(orderResponseDto.getProcessing()))
 				.andExpect(jsonPath("$.content[0].date").isNotEmpty()
 				);
 	}
@@ -352,7 +352,7 @@ class OrdersIntegrationTests {
 				.andExpect(jsonPath("$.content[0].price").value(orderResponseDto.getPrice()))
 				.andExpect(jsonPath("$.content[0].quantity").value(orderResponseDto.getQuantity()))
 				.andExpect(jsonPath("$.content[0].total").value(orderResponseDto.getTotal()))
-				.andExpect(jsonPath("$.content[0].processing").value(orderResponseDto.getProcessed()))
+				.andExpect(jsonPath("$.content[0].processing").value(orderResponseDto.getProcessing()))
 				.andExpect(jsonPath("$.content[0].date").isNotEmpty()
 				);
 	}
@@ -373,7 +373,7 @@ class OrdersIntegrationTests {
 				.andExpect(jsonPath("$.content[0].price").value(orderResponseDto.getPrice()))
 				.andExpect(jsonPath("$.content[0].quantity").value(orderResponseDto.getQuantity()))
 				.andExpect(jsonPath("$.content[0].total").value(orderResponseDto.getTotal()))
-				.andExpect(jsonPath("$.content[0].processing").value(orderResponseDto.getProcessed()))
+				.andExpect(jsonPath("$.content[0].processing").value(orderResponseDto.getProcessing()))
 				.andExpect(jsonPath("$.content[0].date").isNotEmpty()
 				);
 	}
@@ -394,7 +394,7 @@ class OrdersIntegrationTests {
 				.andExpect(jsonPath("$.content[0].price").value(orderResponseDto.getPrice()))
 				.andExpect(jsonPath("$.content[0].quantity").value(orderResponseDto.getQuantity()))
 				.andExpect(jsonPath("$.content[0].total").value(orderResponseDto.getTotal()))
-				.andExpect(jsonPath("$.content[0].processing").value(orderResponseDto.getProcessed()))
+				.andExpect(jsonPath("$.content[0].processing").value(orderResponseDto.getProcessing()))
 				.andExpect(jsonPath("$.content[0].date").isNotEmpty()
 				);
 	}

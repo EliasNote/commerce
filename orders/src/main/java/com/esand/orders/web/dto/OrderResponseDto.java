@@ -22,6 +22,6 @@ public class OrderResponseDto implements Serializable {
     private Double price;
     private Integer quantity;
     private Double total;
-    private Boolean processed;
+    private Boolean processing;
     private LocalDateTime date;
 }
