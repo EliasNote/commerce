@@ -72,8 +72,8 @@ cd commerce
 ```
 docker-compose -f docker-compose-kafka.yml up
 ```
-### Etapas de Inicialização
-1. Executar o container gerado no Docker Desktop;
+#### Etapas de Inicialização
+1. Executar o container do Kafka no Docker Desktop;
 2. Server;
 3. Microsserviços clients, products, orders e delivery;
 4. Gateway.
