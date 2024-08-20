@@ -73,7 +73,7 @@ cd commerce
 docker-compose -f docker-compose-kafka.yml up
 ```
 ### Etapas de Inicialização
-1. Executar o container do Kafka no Docker Desktop;
+1. Executar o container gerado no Docker Desktop;
 2. Server;
 3. Microsserviços clients, products, orders e delivery;
 4. Gateway.
@@ -106,7 +106,7 @@ E pronto, o projeto já está em funcionamento
 - User Name: `root`;
 - Password: `1234`;
 
-  **H2 API Delivery**
+**H2 API Delivery**
 - Endereço: http://localhost:{porta}/h2-delivery
 - JDBC URL: `jdbc:h2:file:./delivery`;
 - User Name: `root`;
