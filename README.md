@@ -129,6 +129,16 @@ E pronto, o projeto já está em funcionamento
 
 ### Products
 
+#### Categorias de produtos para cadastro
+```
+COMPUTERS,
+SMARTPHONES,
+HEADPHONES,
+MOUSES,
+KEYBOARDS,
+SCREENS
+```
+
 | Rota                                                                                        | Método | Descrição                                       |
 |---------------------------------------------------------------------------------------------|:------:|-------------------------------------------------|
 | `http://localhost:8080/api/v1/products`                                                     |  POST  | Cadastrar um produto                            |
@@ -162,6 +172,13 @@ E pronto, o projeto já está em funcionamento
 
 
 ### Delivery
+
+#### Status dos pedidos para entrega
+```
+PROCESSING,
+SHIPPED,
+CANCELED
+```
 
 | Rota                                                                 | Método | Descrição                                                       |
 |----------------------------------------------------------------------|:------:|-----------------------------------------------------------------|
