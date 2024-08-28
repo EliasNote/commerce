@@ -35,6 +35,20 @@ services:
       - "19000:9000"
     environment:
       KAFKA_BROKERCONNECT: kafka:19092
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    networks:
+      - broker-kafka
+    depends_on:
+      - kafka
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8081:8080"
+    command: start-dev
   
 networks:
   broker-kafka:
