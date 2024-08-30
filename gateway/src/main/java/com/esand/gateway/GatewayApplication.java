@@ -18,6 +18,9 @@ public class GatewayApplication {
 		SpringApplication.run(GatewayApplication.class, args);
 	}
 
+	private final String[] freeResourceUrls = {"/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**",
+			"/swagger-resources/**", "/api-docs/**", "/aggregate/**"};
+
 	@Bean
 	public RouteLocator routes(RouteLocatorBuilder builder) {
 		return builder
@@ -31,14 +34,11 @@ public class GatewayApplication {
 
 	@Bean
 	public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
-		http
-				.authorizeExchange(exchanges -> exchanges
-						.pathMatchers("/api/**").authenticated()
-						.anyExchange().permitAll()
-				)
-				.oauth2ResourceServer((oauth2) -> oauth2
-						.jwt((Customizer.withDefaults()))
-				);
-		return http.build();
+		return http.authorizeExchange(authorize -> authorize
+						.pathMatchers(freeResourceUrls).permitAll()
+						.anyExchange().authenticated())
+				.oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
+				.build();
+
 	}
 }
