@@ -36,21 +36,6 @@ services:
     environment:
       KAFKA_BROKERCONNECT: kafka:19092
 
-  keycloak:
-    image: quay.io/keycloak/keycloak:latest
-    networks:
-      - broker-kafka
-    depends_on:
-      - kafka
-    environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
-    volumes:
-      - ./realms/:/opt/keycloak/data/import/
-    ports:
-      - "8081:8081"
-    command: ["start-dev", "--import-realm", "--http-port=8081"]
-
   server:
     build:
       context: ./server
@@ -68,13 +53,11 @@ services:
       - broker-kafka
     depends_on:
       - server
-      - keycloak
     restart: unless-stopped
     ports:
       - "8080:8080"
     environment:
       DEFAULT_ZONE: http://server:8761/eureka
-      DEFAULT_KEYCLOAK: http://keycloak:8081/realms/commerce
 
   products:
     build:

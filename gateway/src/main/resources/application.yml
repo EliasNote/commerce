@@ -7,11 +7,6 @@ spring:
         locator:
           enabled: true
           lower-case-service-id: true
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: ${DEFAULT_KEYCLOAK:http://localhost:8081/realms/commerce}
 eureka:
   client:
     fetch-registry: true
