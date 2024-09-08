@@ -40,8 +40,6 @@ services:
     image: quay.io/keycloak/keycloak:latest
     networks:
       - broker-kafka
-    depends_on:
-      - kafka
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
@@ -74,7 +72,7 @@ services:
       - "8080:8080"
     environment:
       DEFAULT_ZONE: http://server:8761/eureka
-      DEFAULT_KEYCLOAK: http://keycloak:8081/realms/commerce
+      KEYCLOAK_DEFAULT_URL: http://keycloak:8081
 
   products:
     build:
@@ -89,6 +87,7 @@ services:
     environment:
       DEFAULT_ZONE: http://server:8761/eureka
       SPRING_PROFILES_ACTIVE: docker
+      KEYCLOAK_DEFAULT_URL: http://keycloak:8081
 
   clients:
     build:
