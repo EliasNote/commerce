@@ -11,7 +11,22 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${DEFAULT_KEYCLOAK:http://localhost:8081/realms/commerce}
+          jwk-set-uri: ${KEYCLOAK_DEFAULT_URL:http://localhost:8081}/realms/commerce/protocol/openid-connect/certs
+      client:
+        registration:
+          keycloak:
+            client-id: gateway
+            authorization-grant-type: password
+            scope: openid
+            redirect-uri: http://localhost:8081
+            client-authentication-method: post
+        provider:
+          keycloak:
+            authorization-uri: ${KEYCLOAK_DEFAULT_URL:http://localhost:8081}/realms/commerce/protocol/openid-connect/auth
+            user-info-uri: ${KEYCLOAK_DEFAULT_URL:http://localhost:8081}/realms/commerce/protocol/openid-connect/userinfo
+            jwk-set-uri: ${KEYCLOAK_DEFAULT_URL:http://localhost:8081}/realms/commerce/protocol/openid-connect/certs
+            token-uri: ${KEYCLOAK_DEFAULT_URL:http://localhost:8081}/realms/commerce/protocol/openid-connect/token
+
 eureka:
   client:
     fetch-registry: true
