@@ -17,7 +17,7 @@ spring:
           keycloak:
             client-id: gateway
             authorization-grant-type: password
-            scope: openid
+            scope: openid, profile, email, roles
             redirect-uri: http://localhost:8081
             client-authentication-method: post
         provider:
