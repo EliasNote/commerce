@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -23,6 +24,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<ProductDtoPagination> findBySupplierIgnoreCaseContaining(Pageable pageable, String supplier);
 
     Page<Product> findByCategoriesName(Pageable pageable, String category);
+
+    boolean existsByCategoriesName(String upperCase);
 
     boolean existsByTitle(String title);
 

@@ -36,7 +36,7 @@ public class ProductService {
         }
 
         if (!categoryRepository.existsByName(dto.getCategory().toUpperCase())) {
-            throw new RuntimeException("Categoria não existe");
+            throw new EntityNotFoundException("Category does not exist");
         }
 
         dto.setCategories(List.of(categoryRepository.findByName(dto.getCategory().toUpperCase())));

@@ -41,6 +41,15 @@ public class ApiExceptionHandler {
                 .body(new ErrorMessage(request, HttpStatus.CONFLICT, ex.getMessage()));
     }
 
+    @ExceptionHandler(CategoryUniqueViolationException.class)
+    public final ResponseEntity<ErrorMessage> categoryUniqueViolationException(CategoryUniqueViolationException ex, HttpServletRequest request) {
+        log.error("API Error", ex);
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.CONFLICT, ex.getMessage()));
+    }
+
     @ExceptionHandler(InvalidQuantityException.class)
     public final ResponseEntity<ErrorMessage> invalidQuantityException(InvalidQuantityException ex, HttpServletRequest request) {
         log.error("API Error", ex);
@@ -61,6 +70,15 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(InvalidProductStatusException.class)
     public final ResponseEntity<ErrorMessage> invalidProductStatusException(InvalidProductStatusException ex, HttpServletRequest request) {
+        log.error("API Error", ex);
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
+
+    @ExceptionHandler(ReferentialIntegrityException.class)
+    public final ResponseEntity<ErrorMessage> referentialIntegrityException(ReferentialIntegrityException ex, HttpServletRequest request) {
         log.error("API Error", ex);
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
