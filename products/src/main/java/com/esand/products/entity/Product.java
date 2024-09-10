@@ -10,6 +10,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -32,9 +36,13 @@ public class Product implements Serializable {
     @Column(name = "price", nullable = false)
     private Double price = 0.00;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "category", nullable = false, length = 50)
-    private Category category;
+    @ManyToMany
+    @JoinTable(
+            name = "product_category",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private List<Category> categories = new ArrayList<>();
 
     @Column(name = "quantity", nullable = false)
     private Integer quantity = 0;
@@ -59,13 +67,4 @@ public class Product implements Serializable {
 
     @Column(name = "active", nullable = false)
     private Boolean status = true;
-
-    public enum Category {
-        COMPUTERS,
-        SMARTPHONES,
-        HEADPHONES,
-        MOUSES,
-        KEYBOARDS,
-        SCREENS
-    }
 }

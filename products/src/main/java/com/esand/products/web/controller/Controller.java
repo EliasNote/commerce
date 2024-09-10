@@ -1,5 +1,6 @@
 package com.esand.products.web.controller;
 
+import com.esand.products.service.CategoryService;
 import com.esand.products.service.ProductService;
 import com.esand.products.springdoc.SpringDoc;
 import com.esand.products.web.dto.PageableDto;
@@ -19,9 +20,10 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/products")
-public class ProductController implements SpringDoc {
+public class Controller implements SpringDoc {
 
     private final ProductService productService;
+    private final CategoryService categoryService;
 
     @PostMapping
     public ResponseEntity<ProductResponseDto> create(@RequestBody @Valid ProductCreateDto dto) {
@@ -95,5 +97,26 @@ public class ProductController implements SpringDoc {
     public ResponseEntity<Void> deleteProductBySku(@PathVariable String sku) {
         productService.deleteBySku(sku);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/category/{category}")
+    public ResponseEntity<String> addCategory(@PathVariable String category) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.create(category));
+    }
+
+    @GetMapping("/category")
+    public ResponseEntity<PageableDto> getCategories(@PageableDefault(size = 10) Pageable pageable) {
+        return ResponseEntity.ok(categoryService.findAll(pageable));
+    }
+
+    @DeleteMapping("/category/{category}")
+    public ResponseEntity<Void> removeCategory(@PathVariable String category) {
+        categoryService.deleteCategory(category);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/category/{category}/name/{newName}")
+    public ResponseEntity<String> editCategory(@PathVariable String category, @PathVariable String newName) {
+        return ResponseEntity.ok(categoryService.editCategory(category, newName));
     }
 }

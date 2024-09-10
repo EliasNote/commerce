@@ -2,6 +2,7 @@ package com.esand.products.service;
 
 import com.esand.products.entity.Product;
 import com.esand.products.exception.*;
+import com.esand.products.repository.CategoryRepository;
 import com.esand.products.repository.ProductRepository;
 import com.esand.products.web.dto.PageableDto;
 import com.esand.products.web.dto.ProductCreateDto;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +23,7 @@ public class ProductService {
 
     private final ProductMapper productMapper;
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
 
     @Transactional
     public ProductResponseDto save(ProductCreateDto dto) {
@@ -32,6 +35,11 @@ public class ProductService {
             throw new SkuUniqueViolationException("There is already a product registered with this sku");
         }
 
+        if (!categoryRepository.existsByName(dto.getCategory().toUpperCase())) {
+            throw new RuntimeException("Categoria não existe");
+        }
+
+        dto.setCategories(List.of(categoryRepository.findByName(dto.getCategory().toUpperCase())));
         Product product = productRepository.save(productMapper.toProduct(dto));
         updateProductStatus(product);
         return productMapper.toDto(product);
@@ -67,7 +75,7 @@ public class ProductService {
     @Transactional(readOnly = true)
     public PageableDto findByCategory(Pageable pageable, String category) {
         try {
-            PageableDto dto = productMapper.toPageableDto(productRepository.findByCategory(pageable, Product.Category.valueOf(category.toUpperCase())));
+            PageableDto dto = productMapper.toPageableDto(productRepository.findByCategoriesName(pageable, category.toUpperCase()));
             if (dto.getContent().isEmpty()) {
                 throw new EntityNotFoundException("No products found by category");
             }

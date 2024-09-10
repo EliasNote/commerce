@@ -1,17 +1,21 @@
 package com.esand.products.web.dto;
 
+import com.esand.products.entity.Category;
+import com.esand.products.entity.Product;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.validator.constraints.UniqueElements;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductCreateDto {
+
     @NotBlank
     @Size(min = 5, max = 200)
     private String title;
@@ -25,7 +29,6 @@ public class ProductCreateDto {
 
     @NotBlank
     @Size(min = 5, max = 50)
-    @Pattern(regexp = "COMPUTERS|SMARTPHONES|HEADPHONES|MOUSES|KEYBOARDS|SCREENS")
     private String category;
 
     @NotNull
@@ -49,4 +52,7 @@ public class ProductCreateDto {
 
     @Size(min = 5, max = 100)
     private String supplier;
+
+    @JsonIgnore
+    private List<Category> categories = new ArrayList<>();
 }
