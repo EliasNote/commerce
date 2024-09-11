@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -13,7 +15,7 @@ public class Product {
     private String title;
     private String description;
     private Double price;
-    private String category;
+    private List<Category> categories;
     private Integer quantity;
     private String sku;
     private Boolean status;

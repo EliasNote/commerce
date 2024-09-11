@@ -65,3 +65,16 @@ springdoc:
   packagesToScan: com.esand.orders.web.controller
   swagger-ui:
     path: /docs-ui.html
+
+keycloak:
+  username: auth
+  client-id: gateway
+  client-realm: commerce
+  client-secret: ouQ5I1dghJBhO9UlS3WGC1Mz7GRpMK5Tj
+  password: 123
+  token:
+    url: http://localhost:8081/realms/commerce/protocol/openid-connect/token
+
+feign:
+  httpclient:
+    enabled: 'true'
