@@ -6,7 +6,6 @@ eureka:
     service-url:
       defaultZone: ${DEFAULT_ZONE:http://localhost:8761/eureka}
 
-
 clients:
   api:
     url: ${CLIENTS_API_URL:http://localhost:8080/api/v1/clients}
@@ -15,31 +14,28 @@ products:
   api:
     url: ${PRODUCTS_API_URL:http://localhost:8080/api/v1/products}
 
-
 spring:
   application:
     name: orders
   datasource:
-    driverClassName: org.h2.Driver
-    password: '1234'
-    username: root
-    url: jdbc:h2:file:./orders
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/commerce
+    username: postgres
+    password: root
   mvc:
     locale-resolver: fixed
     locale: pt_BR
-  h2:
-    console:
-      path: /h2-orders
-      enabled: 'true'
   jpa:
     defer-datasource-initialization: 'true'
     show-sql: 'true'
     hibernate:
       ddl-auto: update
-    database-platform: org.hibernate.dialect.H2Dialect
     properties:
       hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: 'true'
+        boot:
+          allow_jdbc_metadata_access: 'false'
   kafka:
     producer:
       bootstrap-servers: ${KAFKA_HOST:localhost:19092}
@@ -67,14 +63,9 @@ springdoc:
     path: /docs-ui.html
 
 keycloak:
-  username: auth
+  server-url: http://localhost:8081
+  realm: commerce
   client-id: gateway
-  client-realm: commerce
-  client-secret: ouQ5I1dghJBhO9UlS3WGC1Mz7GRpMK5Tj
+  client-secret: ouQ51dghJBhO9UIS3WGC1Mz7GRpMK5Tj
+  username: auth
   password: 123
-  token:
-    url: http://localhost:8081/realms/commerce/protocol/openid-connect/token
-
-feign:
-  httpclient:
-    enabled: 'true'

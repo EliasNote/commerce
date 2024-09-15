@@ -11,7 +11,6 @@ import com.esand.orders.web.dto.OrderCreateDto;
 import com.esand.orders.web.dto.OrderResponseDto;
 import com.esand.orders.web.dto.PageableDto;
 import com.esand.orders.web.mapper.OrderMapper;
-import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +18,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.ResourceAccessException;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -33,7 +36,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     private final ProductClient productClient;
-    private final ClientClient clientClient;
+    private final ClientClient clientCliente;
     private final KafkaTemplate<String, Serializable> kafkaTemplate;
 
     @Transactional
@@ -41,7 +44,7 @@ public class OrderService {
         verifyIfExistsClientAndProductAndConnection(dto.getCpf(), dto.getSku());
         verifyProduct(dto.getSku(), dto.getQuantity());
 
-        Client client = clientClient.getClientByCpf(dto.getCpf());
+        Client client = clientCliente.getClientByCpf(dto.getCpf());
         Product product = productClient.getProductBySku(dto.getSku());
 
         Order order = orderMapper.toOrder(client, product);
@@ -146,19 +149,23 @@ public class OrderService {
 
     private void verifyIfExistsClientAndProductAndConnection(String cpf, String sku) {
         try {
-            clientClient.getClientByCpf(cpf);
-        } catch (FeignException.NotFound e) {
-            throw new EntityNotFoundException(e.getMessage());
-        } catch (FeignException.ServiceUnavailable e) {
-            throw new ConnectionException(e.getMessage());
+            clientCliente.getClientByCpf(cpf);
+        } catch (HttpClientErrorException.NotFound e) {
+            throw new EntityNotFoundException("Customer not found by CPF");
+        } catch (HttpServerErrorException.ServiceUnavailable e) {
+            throw new ConnectionException("Clients API not available");
+        } catch (RestClientException e) {
+            throw new UnknownErrorException("Error fetching client by CPF: " + e.getMessage());
         }
 
         try {
             productClient.getProductBySku(sku);
-        } catch (FeignException.NotFound e) {
-            throw new EntityNotFoundException(e.getMessage());
-        } catch (FeignException.ServiceUnavailable e) {
-            throw new ConnectionException(e.getMessage());
+        } catch (HttpClientErrorException.NotFound e) {
+            throw new EntityNotFoundException("Product not found by SKU");
+        } catch (HttpServerErrorException.ServiceUnavailable e) {
+            throw new ConnectionException("Products API not available");
+        } catch (RestClientException e) {
+            throw new UnknownErrorException("Error fetching product by SKU: " + e.getMessage());
         }
     }
 

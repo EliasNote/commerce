@@ -1,15 +1,16 @@
 package com.esand.orders.client.products;
 
-import com.esand.orders.client.FeignConfig;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.service.annotation.GetExchange;
+import org.springframework.web.service.annotation.HttpExchange;
+import org.springframework.web.service.annotation.PatchExchange;
 
-@FeignClient(name = "products", url = "${products.api.url}", configuration = FeignConfig.class)
+@HttpExchange
 public interface ProductClient {
 
-    @GetMapping("/sku/{sku}")
+    @GetExchange("/sku/{sku}")
     Product getProductBySku(@PathVariable String sku);
 
-    @PatchMapping("/sku/{sku}/sub/{quantity}")
+    @PatchExchange("/sku/{sku}/sub/{quantity}")
     void decreaseProductQuantityBySku(@PathVariable String sku, @PathVariable Integer quantity);
 }

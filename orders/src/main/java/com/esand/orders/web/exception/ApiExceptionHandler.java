@@ -58,4 +58,13 @@ public class ApiExceptionHandler {
                 .body(new ErrorMessage(request, HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage()));
     }
 
+    @ExceptionHandler(UnknownErrorException.class)
+    public final ResponseEntity<ErrorMessage> unknownErrorException(UnknownErrorException ex, HttpServletRequest request) {
+        log.error("API Error", ex);
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage()));
+    }
+
 }
