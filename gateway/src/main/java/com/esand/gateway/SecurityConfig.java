@@ -22,7 +22,6 @@ public class SecurityConfig {
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(authorize -> authorize
                         .pathMatchers(freeResourceUrls).permitAll()
-                        .pathMatchers(HttpMethod.GET, "/api/v1/products/sku/**").hasRole("ADMIN")
                         .anyExchange().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(Customizer.withDefaults()))
@@ -36,3 +35,5 @@ public class SecurityConfig {
         return jwtAuthenticationConverter;
     }
 }
+
+//.pathMatchers(HttpMethod.GET, "/api/v1/products/sku/**").hasRole("ADMIN")
