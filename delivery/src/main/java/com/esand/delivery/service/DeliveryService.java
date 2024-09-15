@@ -11,12 +11,13 @@ import com.esand.delivery.web.dto.DeliveryResponseDto;
 import com.esand.delivery.web.dto.DeliverySaveDto;
 import com.esand.delivery.web.dto.PageableDto;
 import com.esand.delivery.web.mapper.DeliveryMapper;
-import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 
 import java.time.LocalDate;
 
@@ -104,16 +105,16 @@ public class DeliveryService {
 
         try {
             productClient.checkStatus();
-        } catch (FeignException.ServiceUnavailable e) {
-            throw new ConnectionException(e.getMessage());
+        } catch (HttpServerErrorException.ServiceUnavailable e) {
+            throw new ConnectionException("Customers API not available");
         }
 
         delivery.setStatus(Delivery.Status.CANCELED);
 
         try {
             productClient.addProductQuantityBySku(delivery.getSku(), delivery.getQuantity());
-        } catch (FeignException.NotFound e) {
-            throw new EntityNotFoundException(e.getMessage());
+        } catch (HttpClientErrorException.NotFound e) {
+            throw new EntityNotFoundException("Customer not found by CPF");
         }
 
         return "Order nº" + delivery.getId() + " status changed to canceled successfully";
