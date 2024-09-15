@@ -20,6 +20,8 @@ public class RestConfig {
 
     private final Keycloak keycloak;
 
+    private final KeycloakTokenInterceptor tokenInterceptor;
+
     @Value("${products.api.url}")
     private String productUrl;
 
@@ -28,13 +30,10 @@ public class RestConfig {
 
     @Bean
     public ProductClient productClient() {
-        Consumer<HttpHeaders> consumer = headers -> headers.add(
-                "Authorization",
-                keycloak.tokenManager().getAccessToken().getTokenType() + " " + keycloak.tokenManager().getAccessToken().getToken());
-
+        System.out.println("--------------------------------------TOKEN NORMAL--------------------------------------");
         var client = RestClient.builder()
                 .baseUrl(productUrl)
-                .defaultHeaders(consumer)
+                .requestInterceptor(tokenInterceptor)
                 .build();
 
         RestClientAdapter adapter = RestClientAdapter.create(client);
@@ -44,13 +43,10 @@ public class RestConfig {
 
     @Bean
     public CustomerClient customerClient() {
-        Consumer<HttpHeaders> consumer = headers -> headers.add(
-                "Authorization",
-                keycloak.tokenManager().getAccessToken().getTokenType() + " " + keycloak.tokenManager().getAccessToken().getToken());
-
+        System.out.println("--------------------------------------TOKEN NORMAL--------------------------------------");
         var client = RestClient.builder()
                 .baseUrl(customersUrl)
-                .defaultHeaders(consumer)
+                .requestInterceptor(tokenInterceptor)
                 .build();
 
         RestClientAdapter adapter = RestClientAdapter.create(client);
