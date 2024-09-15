@@ -56,3 +56,11 @@ springdoc:
   packagesToScan: com.esand.delivery.web.controller
   swagger-ui:
     path: /docs-ui.html
+
+keycloak:
+  server-url: http://localhost:8081
+  realm: commerce
+  client-id: gateway
+  client-secret: ouQ51dghJBhO9UIS3WGC1Mz7GRpMK5Tj
+  username: auth
+  password: 123
