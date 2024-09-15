@@ -69,7 +69,3 @@ keycloak:
   client-secret: ouQ51dghJBhO9UIS3WGC1Mz7GRpMK5Tj
   username: auth
   password: 123
-
-feign:
-  httpclient:
-    enabled: 'true'

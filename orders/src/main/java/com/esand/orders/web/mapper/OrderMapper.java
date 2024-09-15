@@ -1,6 +1,6 @@
 package com.esand.orders.web.mapper;
 
-import com.esand.orders.client.clients.Customer;
+import com.esand.orders.client.customers.Customer;
 import com.esand.orders.client.products.Product;
 import com.esand.orders.entity.Order;
 import com.esand.orders.web.dto.OrderResponseDto;
