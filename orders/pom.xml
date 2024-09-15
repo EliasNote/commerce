@@ -52,7 +52,7 @@
 
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+			<artifactId>spring-cloud-starter-netflix-eureka-customer</artifactId>
 		</dependency>
 
 		<dependency>
@@ -106,7 +106,7 @@
 
 		<dependency>
 			<groupId>org.keycloak</groupId>
-			<artifactId>keycloak-admin-client</artifactId>
+			<artifactId>keycloak-admin-customer</artifactId>
 			<version>25.0.4</version>
 		</dependency>
 

@@ -1,7 +1,7 @@
 package com.esand.orders.service;
 
-import com.esand.orders.client.clients.Client;
-import com.esand.orders.client.clients.ClientClient;
+import com.esand.orders.client.clients.Customer;
+import com.esand.orders.client.clients.CustomerClient;
 import com.esand.orders.client.products.Product;
 import com.esand.orders.client.products.ProductClient;
 import com.esand.orders.entity.Order;
@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.ResourceAccessException;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -33,10 +32,11 @@ public class OrderService {
 
     @Value("${topic_name}")
     private String topicName;
+
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     private final ProductClient productClient;
-    private final ClientClient clientCliente;
+    private final CustomerClient clientCliente;
     private final KafkaTemplate<String, Serializable> kafkaTemplate;
 
     @Transactional
@@ -44,10 +44,10 @@ public class OrderService {
         verifyIfExistsClientAndProductAndConnection(dto.getCpf(), dto.getSku());
         verifyProduct(dto.getSku(), dto.getQuantity());
 
-        Client client = clientCliente.getClientByCpf(dto.getCpf());
+        Customer customer = clientCliente.getClientByCpf(dto.getCpf());
         Product product = productClient.getProductBySku(dto.getSku());
 
-        Order order = orderMapper.toOrder(client, product);
+        Order order = orderMapper.toOrder(customer, product);
         order.setQuantity(dto.getQuantity());
         order.setTotal(dto.getQuantity() * product.getPrice());
 

@@ -1,6 +1,6 @@
 package com.esand.orders.client;
 
-import com.esand.orders.client.clients.ClientClient;
+import com.esand.orders.client.clients.CustomerClient;
 import com.esand.orders.client.products.ProductClient;
 import lombok.RequiredArgsConstructor;
 import org.keycloak.admin.client.Keycloak;
@@ -43,7 +43,7 @@ public class RestConfig {
     }
 
     @Bean
-    public ClientClient clientClient() {
+    public CustomerClient clientClient() {
         Consumer<HttpHeaders> consumer = headers -> headers.add(
                 "Authorization",
                 keycloak.tokenManager().getAccessToken().getTokenType() + " " + keycloak.tokenManager().getAccessToken().getToken());
@@ -55,6 +55,6 @@ public class RestConfig {
 
         RestClientAdapter adapter = RestClientAdapter.create(client);
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
-        return factory.createClient(ClientClient.class);
+        return factory.createClient(CustomerClient.class);
     }
 }
