@@ -36,7 +36,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     private final ProductClient productClient;
-    private final CustomerClient clientCliente;
+    private final CustomerClient customerClient;
     private final KafkaTemplate<String, Serializable> kafkaTemplate;
 
     @Transactional
@@ -44,7 +44,7 @@ public class OrderService {
         verifyIfExistsClientAndProductAndConnection(dto.getCpf(), dto.getSku());
         verifyProduct(dto.getSku(), dto.getQuantity());
 
-        Customer customer = clientCliente.getCustomerByCpf(dto.getCpf());
+        Customer customer = customerClient.getCustomerByCpf(dto.getCpf());
         Product product = productClient.getProductBySku(dto.getSku());
 
         Order order = orderMapper.toOrder(customer, product);
@@ -149,11 +149,11 @@ public class OrderService {
 
     private void verifyIfExistsClientAndProductAndConnection(String cpf, String sku) {
         try {
-            clientCliente.getCustomerByCpf(cpf);
+            customerClient.getCustomerByCpf(cpf);
         } catch (HttpClientErrorException.NotFound e) {
             throw new EntityNotFoundException("Customer not found by CPF");
         } catch (HttpServerErrorException.ServiceUnavailable e) {
-            throw new ConnectionException("Clients API not available");
+            throw new ConnectionException("Customers API not available");
         } catch (RestClientException e) {
             throw new UnknownErrorException("Error fetching client by CPF: " + e.getMessage());
         }

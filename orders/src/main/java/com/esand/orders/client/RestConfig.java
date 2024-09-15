@@ -23,8 +23,8 @@ public class RestConfig {
     @Value("${products.api.url}")
     private String productUrl;
 
-    @Value("${clients.api.url}")
-    private String clientsUrl;
+    @Value("${customers.api.url}")
+    private String customersUrl;
 
     @Bean
     public ProductClient productClient() {
@@ -43,13 +43,13 @@ public class RestConfig {
     }
 
     @Bean
-    public CustomerClient clientClient() {
+    public CustomerClient customerClient() {
         Consumer<HttpHeaders> consumer = headers -> headers.add(
                 "Authorization",
                 keycloak.tokenManager().getAccessToken().getTokenType() + " " + keycloak.tokenManager().getAccessToken().getToken());
 
         var client = RestClient.builder()
-                .baseUrl(clientsUrl)
+                .baseUrl(customersUrl)
                 .defaultHeaders(consumer)
                 .build();
 
