@@ -1,6 +1,19 @@
 {
   "id": "d9f4909e-27bc-4db8-96b0-329a1d9470f3",
   "realm": "commerce",
+  "users": [
+    {
+      "username": "auth",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "123",
+          "temporary": false
+        }
+      ]
+    }
+  ],
   "notBefore": 0,
   "defaultSignatureAlgorithm": "RS256",
   "revokeRefreshToken": false,
