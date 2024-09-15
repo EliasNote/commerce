@@ -36,6 +36,32 @@ services:
     environment:
       KAFKA_BROKERCONNECT: kafka:19092
 
+  postgres:
+    image: postgres:16
+    networks:
+      - broker-kafka
+    environment:
+      POSTGRES_DB: commerce
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+
+  pgadmin:
+    image: dpage/pgadmin4
+    networks:
+      - broker-kafka
+    ports:
+      - "8082:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    depends_on:
+      - postgres
+
   keycloak:
     image: quay.io/keycloak/keycloak:latest
     networks:
@@ -43,8 +69,14 @@ services:
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres/keycloak
+      KC_DB_USERNAME: root
+      KC_DB_PASSWORD: root
     volumes:
       - ./realms/:/opt/keycloak/data/import/
+    depends_on:
+      - postgres
     ports:
       - "8081:8081"
     command: ["start-dev", "--import-realm", "--http-port=8081"]
@@ -89,9 +121,9 @@ services:
       SPRING_PROFILES_ACTIVE: docker
       KEYCLOAK_DEFAULT_URL: http://keycloak:8081
 
-  clients:
+  customers:
     build:
-      context: ./clients
+      context: ./customers
       dockerfile: Dockerfile
     networks:
       - broker-kafka
@@ -132,16 +164,20 @@ services:
       - server
       - gateway
       - products
-      - clients
+      - customers
       - delivery
+      - postgres
     restart: unless-stopped
     environment:
       KAFKA_HOST: kafka:19092
       DEFAULT_ZONE: http://server:8761/eureka
-      CLIENTS_API_URL: http://gateway:8080/api/v1/clients
+      CUSTOMERS_API_URL: http://gateway:8080/api/v1/customers
       PRODUCTS_API_URL: http://gateway:8080/api/v1/products
       SPRING_PROFILES_ACTIVE: docker
 
 networks:
   broker-kafka:
     driver: bridge
+
+volumes:
+  pgdata:
