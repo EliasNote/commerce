@@ -8,5 +8,5 @@ import org.springframework.web.service.annotation.HttpExchange;
 public interface CustomerClient {
 
     @GetExchange("/cpf/{cpf}")
-    Customer getClientByCpf(@PathVariable("cpf") String cpf);
+    Customer getCustomerByCpf(@PathVariable("cpf") String cpf);
 }

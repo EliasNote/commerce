@@ -44,7 +44,7 @@ public class OrderService {
         verifyIfExistsClientAndProductAndConnection(dto.getCpf(), dto.getSku());
         verifyProduct(dto.getSku(), dto.getQuantity());
 
-        Customer customer = clientCliente.getClientByCpf(dto.getCpf());
+        Customer customer = clientCliente.getCustomerByCpf(dto.getCpf());
         Product product = productClient.getProductBySku(dto.getSku());
 
         Order order = orderMapper.toOrder(customer, product);
@@ -149,7 +149,7 @@ public class OrderService {
 
     private void verifyIfExistsClientAndProductAndConnection(String cpf, String sku) {
         try {
-            clientCliente.getClientByCpf(cpf);
+            clientCliente.getCustomerByCpf(cpf);
         } catch (HttpClientErrorException.NotFound e) {
             throw new EntityNotFoundException("Customer not found by CPF");
         } catch (HttpServerErrorException.ServiceUnavailable e) {
