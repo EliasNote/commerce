@@ -90,22 +90,6 @@ services:
     ports:
       - "8761:8761"
 
-  gateway:
-    build:
-      context: ./gateway
-      dockerfile: Dockerfile
-    networks:
-      - broker-kafka
-    depends_on:
-      - server
-      - keycloak
-    restart: unless-stopped
-    ports:
-      - "8080:8080"
-    environment:
-      DEFAULT_ZONE: http://server:8761/eureka
-      KEYCLOAK_DEFAULT_URL: http://keycloak:8081
-
   products:
     build:
       context: ./products
@@ -114,7 +98,7 @@ services:
       - broker-kafka
     depends_on:
       - server
-      - gateway
+      - postgres
     restart: unless-stopped
     environment:
       DEFAULT_ZONE: http://server:8761/eureka
@@ -129,7 +113,7 @@ services:
       - broker-kafka
     depends_on:
       - server
-      - gateway
+      - postgres
     restart: unless-stopped
     environment:
       DEFAULT_ZONE: http://server:8761/eureka
@@ -144,8 +128,8 @@ services:
     depends_on:
       - kafka
       - server
-      - gateway
       - products
+      - postgres
     restart: unless-stopped
     environment:
       KAFKA_HOST: kafka:19092
@@ -162,7 +146,6 @@ services:
     depends_on:
       - kafka
       - server
-      - gateway
       - products
       - customers
       - delivery
@@ -174,6 +157,25 @@ services:
       CUSTOMERS_API_URL: http://gateway:8080/api/v1/customers
       PRODUCTS_API_URL: http://gateway:8080/api/v1/products
       SPRING_PROFILES_ACTIVE: docker
+
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    networks:
+      - broker-kafka
+    depends_on:
+      - server
+      - products
+      - customers
+      - delivery
+      - orders
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      DEFAULT_ZONE: http://server:8761/eureka
+      KEYCLOAK_DEFAULT_URL: http://keycloak:8081
 
 networks:
   broker-kafka:
