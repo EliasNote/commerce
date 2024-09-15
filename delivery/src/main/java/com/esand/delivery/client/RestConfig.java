@@ -26,7 +26,6 @@ public class RestConfig {
 
     @Bean
     public ProductClient productClient() {
-        System.out.println("--------------------------------------TOKEN NORMAL--------------------------------------");
         var client = RestClient.builder()
                 .baseUrl(productUrl)
                 .requestInterceptor(tokenInterceptor)
