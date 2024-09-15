@@ -1,4 +1,4 @@
-package com.esand.orders.client.clients;
+package com.esand.orders.client.customers;
 
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.service.annotation.GetExchange;

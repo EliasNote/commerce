@@ -1,6 +1,6 @@
 package com.esand.orders.client;
 
-import com.esand.orders.client.clients.CustomerClient;
+import com.esand.orders.client.customers.CustomerClient;
 import com.esand.orders.client.products.ProductClient;
 import lombok.RequiredArgsConstructor;
 import org.keycloak.admin.client.Keycloak;

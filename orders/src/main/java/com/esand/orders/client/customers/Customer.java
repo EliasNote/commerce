@@ -1,4 +1,4 @@
-package com.esand.orders.client.clients;
+package com.esand.orders.client.customers;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

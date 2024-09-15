@@ -1,7 +1,7 @@
 package com.esand.orders.service;
 
-import com.esand.orders.client.clients.Customer;
-import com.esand.orders.client.clients.CustomerClient;
+import com.esand.orders.client.customers.Customer;
+import com.esand.orders.client.customers.CustomerClient;
 import com.esand.orders.client.products.Product;
 import com.esand.orders.client.products.ProductClient;
 import com.esand.orders.entity.Order;
