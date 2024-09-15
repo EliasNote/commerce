@@ -44,6 +44,6 @@ management:
 springdoc:
   api-docs:
     path: /docs-api
-  packagesToScan: com.esand.clients.web.controller
+  packagesToScan: com.esand.customers.web.controller
   swagger-ui:
     path: /docs-ui.html
