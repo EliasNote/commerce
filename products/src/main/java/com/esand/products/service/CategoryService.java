@@ -9,13 +9,10 @@ import com.esand.products.repository.ProductRepository;
 import com.esand.products.web.dto.PageableDto;
 import com.esand.products.web.mapper.ProductMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import org.springframework.data.domain.Pageable;
-
-import java.sql.SQLIntegrityConstraintViolationException;
 
 @Service
 @RequiredArgsConstructor

@@ -8,26 +8,24 @@ spring:
   application:
     name: products
   datasource:
-    driverClassName: org.h2.Driver
-    password: '1234'
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://postgres:5432/commerce
     username: root
-    url: jdbc:h2:file:./products
+    password: root
   mvc:
     locale-resolver: fixed
     locale: pt_BR
-  h2:
-    console:
-      path: /h2-products
-      enabled: 'true'
   jpa:
     defer-datasource-initialization: 'true'
     show-sql: 'true'
     hibernate:
       ddl-auto: update
-    database-platform: org.hibernate.dialect.H2Dialect
     properties:
       hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: 'true'
+        boot:
+          allow_jdbc_metadata_access: 'false'
 
 server:
   port: '0'
