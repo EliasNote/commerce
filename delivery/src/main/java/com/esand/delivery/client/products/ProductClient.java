@@ -1,14 +1,16 @@
 package com.esand.delivery.client.products;
 
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.service.annotation.GetExchange;
+import org.springframework.web.service.annotation.HttpExchange;
+import org.springframework.web.service.annotation.PatchExchange;
 
-@FeignClient(name = "products", url = "${products.api.url}")
+@HttpExchange
 public interface ProductClient {
 
-    @GetMapping
+    @GetExchange
     void checkStatus();
 
-    @PatchMapping("/sku/{sku}/add/{quantity}")
+    @PatchExchange("/sku/{sku}/add/{quantity}")
     void addProductQuantityBySku(@PathVariable String sku, @PathVariable Integer quantity);
 }
