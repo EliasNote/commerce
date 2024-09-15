@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "orders")
 public class Delivery {
     @Id
     @Column(name = "id", nullable = false)
