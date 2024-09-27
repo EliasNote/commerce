@@ -1,13 +1,17 @@
-#spring:
-#  datasource:
-#    url: jdbc:h2:mem:testdb
-#
-#clients:
-#  api:
-#    url: ${CLIENTS_API_URL:http://localhost:8080/api/v1/clients}
-#
-#products:
-#  api:
-#    url: ${PRODUCTS_API_URL:http://localhost:8080/api/v1/products}
-#
-#topic_name: Orders
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/commerce_test
+    username: root
+    password: root
+  jpa:
+    defer-datasource-initialization: 'true'
+    show-sql: 'true'
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: 'true'
+        boot:
+          allow_jdbc_metadata_access: 'false'
