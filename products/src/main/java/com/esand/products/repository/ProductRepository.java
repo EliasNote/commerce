@@ -23,7 +23,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     Page<ProductDtoPagination> findBySupplierIgnoreCaseContaining(Pageable pageable, String supplier);
 
-    Page<Product> findByCategoriesName(Pageable pageable, String category);
+    Page<ProductDtoPagination> findByCategoriesName(Pageable pageable, String category);
 
     boolean existsByCategoriesName(String upperCase);
 

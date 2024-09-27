@@ -2,7 +2,6 @@ package com.esand.products.service;
 
 import com.esand.products.entity.Product;
 import com.esand.products.exception.*;
-import com.esand.products.repository.CategoryRepository;
 import com.esand.products.repository.ProductRepository;
 import com.esand.products.web.dto.PageableDto;
 import com.esand.products.web.dto.ProductCreateDto;
@@ -23,7 +22,7 @@ public class ProductService {
 
     private final ProductMapper productMapper;
     private final ProductRepository productRepository;
-    private final CategoryRepository categoryRepository;
+    private final CategoryService categoryService;
 
     @Transactional
     public ProductResponseDto save(ProductCreateDto dto) {
@@ -35,11 +34,7 @@ public class ProductService {
             throw new SkuUniqueViolationException("There is already a product registered with this sku");
         }
 
-        if (!categoryRepository.existsByName(dto.getCategory().toUpperCase())) {
-            throw new EntityNotFoundException("Category does not exist");
-        }
-
-        dto.setCategories(List.of(categoryRepository.findByName(dto.getCategory().toUpperCase())));
+        dto.setCategories(List.of(categoryService.findByName(dto.getCategory())));
         Product product = productRepository.save(productMapper.toProduct(dto));
         updateProductStatus(product);
         return productMapper.toDto(product);

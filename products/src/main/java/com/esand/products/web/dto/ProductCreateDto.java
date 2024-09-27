@@ -28,7 +28,7 @@ public class ProductCreateDto {
     private Double price;
 
     @NotBlank
-    @Size(min = 5, max = 50)
+    @Size(min = 3, max = 50)
     private String category;
 
     @NotNull
@@ -50,7 +50,7 @@ public class ProductCreateDto {
     @Min(0)
     private Double height;
 
-    @Size(min = 5, max = 100)
+    @Size(min = 3, max = 100)
     private String supplier;
 
     @JsonIgnore

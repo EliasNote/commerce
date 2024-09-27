@@ -3,6 +3,7 @@ package com.esand.products.service;
 import com.esand.products.entity.Category;
 import com.esand.products.exception.CategoryUniqueViolationException;
 import com.esand.products.exception.EntityNotFoundException;
+import com.esand.products.exception.InvalidCategoryException;
 import com.esand.products.exception.ReferentialIntegrityException;
 import com.esand.products.repository.CategoryRepository;
 import com.esand.products.repository.ProductRepository;
@@ -46,10 +47,7 @@ public class CategoryService {
 
     @Transactional
     public String editCategory(String name, String newName) {
-        if (!categoryRepository.existsByName(name.toUpperCase())) {
-            throw new EntityNotFoundException("Category not found");
-        }
-        Category category = categoryRepository.findByName(name.toUpperCase());
+        Category category = findByName(name);
         category.setName(newName.toUpperCase());
         return "Category updated successfully";
     }
@@ -58,8 +56,14 @@ public class CategoryService {
     public PageableDto findAll(Pageable pageable) {
         PageableDto dto = productMapper.toPageableDto(categoryRepository.findAllPageable(pageable));
         if (dto.getContent().isEmpty()) {
-            throw new EntityNotFoundException("No products found");
+            throw new EntityNotFoundException("No categories found");
         }
         return dto;
+    }
+
+    @Transactional(readOnly = true)
+    public Category findByName(String category) {
+            return categoryRepository.findByName(category.toUpperCase())
+                    .orElseThrow(() -> new EntityNotFoundException("Category not found"));
     }
 }
