@@ -67,12 +67,12 @@ class ProductServiceTest {
         ProductResponseDto response = productService.save(createDto);
 
         assertNotNull(response);
-        assertEquals("Wireless MouseS", response.getTitle());
-        assertEquals("A high precision wireless m", response.getDescription());
-        assertEquals(29.99, response.getPrice());
-        assertEquals("MOUSES", response.getCategories().getFirst().getName());
-        assertEquals(10, response.getQuantity());
-        assertEquals("MOUSE-2024-WL-0010", response.getSku());
+        assertEquals(EntityMock.PRODUCT_TITLE, response.getTitle());
+        assertEquals(EntityMock.PRODUCT_DESCRIPTION, response.getDescription());
+        assertEquals(EntityMock.PRICE, response.getPrice());
+        assertEquals(EntityMock.CATEGORY, response.getCategories().getFirst().getName());
+        assertEquals(EntityMock.QUANTITY, response.getQuantity());
+        assertEquals(EntityMock.SKU, response.getSku());
         assertTrue(response.getStatus());
     }
 
@@ -138,7 +138,7 @@ class ProductServiceTest {
         when(productRepository.findByTitleIgnoreCaseContaining(any(Pageable.class), any(String.class))).thenReturn(page);
         when(productMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        PageableDto response = productService.findByTitle(page.getPageable(), "Wireless MouseS");
+        PageableDto response = productService.findByTitle(page.getPageable(), EntityMock.PRODUCT_TITLE);
 
         assertNotNull(response);
         assertNotNull(response.getContent());
@@ -154,7 +154,7 @@ class ProductServiceTest {
         when(productRepository.findByTitleIgnoreCaseContaining(any(Pageable.class), any(String.class))).thenReturn(page);
         when(productMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        assertThrows(EntityNotFoundException.class, () -> productService.findByTitle(page.getPageable(), "Wireless MouseS"));
+        assertThrows(EntityNotFoundException.class, () -> productService.findByTitle(page.getPageable(), EntityMock.PRODUCT_TITLE));
     }
 
     @Test
@@ -165,7 +165,7 @@ class ProductServiceTest {
         when(productRepository.findBySupplierIgnoreCaseContaining(any(Pageable.class), any(String.class))).thenReturn(page);
         when(productMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        PageableDto response = productService.findBySupplier(page.getPageable(), "Wireless MouseS");
+        PageableDto response = productService.findBySupplier(page.getPageable(), EntityMock.PRODUCT_TITLE);
 
         assertNotNull(response);
         assertNotNull(response.getContent());
@@ -181,7 +181,7 @@ class ProductServiceTest {
         when(productRepository.findBySupplierIgnoreCaseContaining(any(Pageable.class), any(String.class))).thenReturn(page);
         when(productMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        assertThrows(EntityNotFoundException.class, () -> productService.findBySupplier(page.getPageable(), "Wireless MouseS"));
+        assertThrows(EntityNotFoundException.class, () -> productService.findBySupplier(page.getPageable(), EntityMock.PRODUCT_TITLE));
     }
 
     @Test
@@ -192,7 +192,7 @@ class ProductServiceTest {
         when(productRepository.findByCategoriesName(any(Pageable.class), any(String.class))).thenReturn(page);
         when(productMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        PageableDto response = productService.findByCategory(page.getPageable(), "MOUSES");
+        PageableDto response = productService.findByCategory(page.getPageable(), EntityMock.CATEGORY);
 
         assertNotNull(response);
         assertNotNull(response.getContent());
@@ -208,7 +208,7 @@ class ProductServiceTest {
         when(productRepository.findByCategoriesName(any(Pageable.class), any(String.class))).thenReturn(page);
         when(productMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        assertThrows(EntityNotFoundException.class, () -> productService.findByCategory(page.getPageable(), "MOUSES"));
+        assertThrows(EntityNotFoundException.class, () -> productService.findByCategory(page.getPageable(), EntityMock.CATEGORY));
     }
 
     @Test
@@ -232,15 +232,15 @@ class ProductServiceTest {
         when(productRepository.findBySku(any(String.class))).thenReturn(Optional.of(product));
         when(productMapper.toDto(any(Product.class))).thenReturn(responseDto);
 
-        ProductResponseDto response = productService.findBySku("MOUSE-2024-WL-0010");
+        ProductResponseDto response = productService.findBySku(EntityMock.SKU);
 
         assertNotNull(response);
-        assertEquals("Wireless MouseS", response.getTitle());
-        assertEquals("A high precision wireless m", response.getDescription());
-        assertEquals(29.99, response.getPrice());
-        assertEquals("MOUSES", response.getCategories().get(0).getName());
-        assertEquals(10, response.getQuantity());
-        assertEquals("MOUSE-2024-WL-0010", response.getSku());
+        assertEquals(EntityMock.PRODUCT_TITLE, response.getTitle());
+        assertEquals(EntityMock.PRODUCT_DESCRIPTION, response.getDescription());
+        assertEquals(EntityMock.PRICE, response.getPrice());
+        assertEquals(EntityMock.CATEGORY, response.getCategories().get(0).getName());
+        assertEquals(EntityMock.QUANTITY, response.getQuantity());
+        assertEquals(EntityMock.SKU, response.getSku());
         assertTrue(response.getStatus());
     }
 
@@ -248,7 +248,7 @@ class ProductServiceTest {
     void testFindBySkuEntityNotFoundException() {
         when(productRepository.findBySku(any(String.class))).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> productService.findBySku("MOUSE-2024-WL-0010"));
+        assertThrows(EntityNotFoundException.class, () -> productService.findBySku(EntityMock.SKU));
     }
 
     @Test
@@ -379,7 +379,7 @@ class ProductServiceTest {
         when(productRepository.findBySku(any(String.class))).thenReturn(Optional.of(product));
         doNothing().when(productMapper).updateProduct(any(ProductUpdateDto.class), any(Product.class));
 
-        productService.update("MOUSE-2024-WL-0010", updateDto);
+        productService.update(EntityMock.SKU, updateDto);
     }
 
     @Test
@@ -388,7 +388,7 @@ class ProductServiceTest {
 
         when(productRepository.findBySku(any(String.class))).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> productService.update("MOUSE-2024-WL-0010", updateDto));
+        assertThrows(EntityNotFoundException.class, () -> productService.update(EntityMock.SKU, updateDto));
     }
 
     @Test
@@ -397,7 +397,7 @@ class ProductServiceTest {
 
         when(productRepository.findBySku(any(String.class))).thenReturn(Optional.of(product));
 
-        String response = productService.alter("MOUSE-2024-WL-0010");
+        String response = productService.alter(EntityMock.SKU);
 
         assertNotNull(response);
         assertEquals("false", response);
@@ -410,7 +410,7 @@ class ProductServiceTest {
 
         when(productRepository.findBySku(any(String.class))).thenReturn(Optional.of(product));
 
-        assertThrows(InvalidProductStatusException.class, () -> productService.alter("MOUSE-2024-WL-0010"));
+        assertThrows(InvalidProductStatusException.class, () -> productService.alter(EntityMock.SKU));
     }
 
     @Test
@@ -419,7 +419,7 @@ class ProductServiceTest {
 
         when(productRepository.findBySku(any(String.class))).thenReturn(Optional.of(product));
 
-        String response = productService.add("MOUSE-2024-WL-0010", 1);
+        String response = productService.add(EntityMock.SKU, 1);
 
         assertNotNull(response);
         assertEquals("11", response);
@@ -429,7 +429,7 @@ class ProductServiceTest {
     void testAddProductBySkuEntityNotFoundException() {
         when(productRepository.findBySku(any(String.class))).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> productService.add("MOUSE-2024-WL-0010", 1));
+        assertThrows(EntityNotFoundException.class, () -> productService.add(EntityMock.SKU, 1));
     }
 
     @Test
@@ -438,7 +438,7 @@ class ProductServiceTest {
 
         when(productRepository.findBySku(any(String.class))).thenReturn(Optional.of(product));
 
-        assertThrows(InvalidQuantityException.class, () -> productService.add("MOUSE-2024-WL-0010", 0));
+        assertThrows(InvalidQuantityException.class, () -> productService.add(EntityMock.SKU, 0));
     }
 
     @Test
@@ -447,7 +447,7 @@ class ProductServiceTest {
 
         when(productRepository.findBySku(any(String.class))).thenReturn(Optional.of(product));
 
-        String response = productService.sub("MOUSE-2024-WL-0010", 1);
+        String response = productService.sub(EntityMock.SKU, 1);
 
         assertNotNull(response);
         assertEquals("9", response);
@@ -457,7 +457,7 @@ class ProductServiceTest {
     void testSubProductBySkuEntityNotFoundException() {
         when(productRepository.findBySku(any(String.class))).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> productService.sub("MOUSE-2024-WL-0010", 1));
+        assertThrows(EntityNotFoundException.class, () -> productService.sub(EntityMock.SKU, 1));
     }
 
     @Test
@@ -466,7 +466,7 @@ class ProductServiceTest {
 
         when(productRepository.findBySku(any(String.class))).thenReturn(Optional.of(product));
 
-        assertThrows(InvalidQuantityException.class, () -> productService.sub("MOUSE-2024-WL-0010", 0));
+        assertThrows(InvalidQuantityException.class, () -> productService.sub(EntityMock.SKU, 0));
     }
 
     @Test
@@ -475,20 +475,20 @@ class ProductServiceTest {
 
         when(productRepository.findBySku(any(String.class))).thenReturn(Optional.of(product));
 
-        assertThrows(InvalidQuantityException.class, () -> productService.sub("MOUSE-2024-WL-0010", 11));
+        assertThrows(InvalidQuantityException.class, () -> productService.sub(EntityMock.SKU, 11));
     }
 
     @Test
     void testDeleteProductBySkuSuccess() {
         when(productRepository.existsBySku(any(String.class))).thenReturn(true);
 
-        productService.deleteBySku("MOUSE-2024-WL-0010");
+        productService.deleteBySku(EntityMock.SKU);
     }
 
     @Test
     void testDeleteProductBySkuEntityNotFoundException() {
         when(productRepository.existsBySku(any(String.class))).thenReturn(false);
 
-        assertThrows(EntityNotFoundException.class, () -> productService.deleteBySku("MOUSE-2024-WL-0010"));
+        assertThrows(EntityNotFoundException.class, () -> productService.deleteBySku(EntityMock.SKU));
     }
 }
