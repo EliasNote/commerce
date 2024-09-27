@@ -5,7 +5,6 @@ import com.esand.products.web.dto.PageableDto;
 import com.esand.products.web.dto.ProductCreateDto;
 import com.esand.products.web.dto.ProductResponseDto;
 import com.esand.products.web.dto.ProductUpdateDto;
-import org.junit.Ignore;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +20,13 @@ public class EntityMock {
     public static final String PRODUCT_TITLE = "Wireless MouseS";
     public static final String PRODUCT_DESCRIPTION = "A high precision wireless m";
     public static final String SKU = "MOUSE-2024-WL-0010";
+    public static final Double PRICE = 29.99;
+    public static final Integer QUANTITY = 10;
+    public static final Double WEIGHT = 0.1;
+    public static final Double LENGTH = 10.0;
+    public static final Double WIDTH = 5.0;
+    public static final Double HEIGHT = 3.0;
+    public static final String SUPPLIER = "Mach Supplies Inc.";
 
     public static Category category(){
         return new Category(1L, CATEGORY);
@@ -30,15 +36,15 @@ public class EntityMock {
         return new ProductCreateDto(
                 PRODUCT_TITLE,
                 PRODUCT_DESCRIPTION,
-                29.99,
+                PRICE,
                 CATEGORY,
-                10,
+                QUANTITY,
                 SKU,
-                0.1,
-                10.0,
-                5.0,
-                3.0,
-                "Mach Supplies Inc.",
+                WEIGHT,
+                LENGTH,
+                WIDTH,
+                HEIGHT,
+                SUPPLIER,
                 new ArrayList<>()
         );
     }
@@ -48,14 +54,14 @@ public class EntityMock {
                 null,
                 PRODUCT_TITLE,
                 PRODUCT_DESCRIPTION,
-                29.99,
+                PRICE,
                 List.of(new Category(1L, CATEGORY)),
-                10,
+                QUANTITY,
                 SKU,
-                0.1, 10.0,
-                5.0,
-                3.0,
-                "Mach Supplies Inc.",
+                WEIGHT, LENGTH,
+                WIDTH,
+                HEIGHT,
+                SUPPLIER,
                 LocalDateTime.now(),
                 true
         );
@@ -65,9 +71,9 @@ public class EntityMock {
         return new ProductResponseDto(
                 PRODUCT_TITLE,
                 PRODUCT_DESCRIPTION,
-                29.99,
+                PRICE,
                 List.of(new Category(1L, CATEGORY)),
-                10,
+                QUANTITY,
                 SKU,
                 true
         );
@@ -79,9 +85,9 @@ public class EntityMock {
                 new ProductDtoPagination() {
                     public String getTitle() { return PRODUCT_TITLE; }
                     public String getDescription() { return PRODUCT_DESCRIPTION; }
-                    public Double getPrice() { return 29.99; }
+                    public Double getPrice() { return PRICE; }
                     public List<Category> getCategories() { return List.of(new Category(1L, CATEGORY)); }
-                    public Integer getQuantity() { return 10; }
+                    public Integer getQuantity() { return QUANTITY; }
                     public String getSku() { return SKU; }
                     public Boolean getStatus() { return true; }
                 }
@@ -94,9 +100,9 @@ public class EntityMock {
                 new ProductDtoPagination() {
                     public String getTitle() { return PRODUCT_TITLE; }
                     public String getDescription() { return PRODUCT_DESCRIPTION; }
-                    public Double getPrice() { return 29.99; }
+                    public Double getPrice() { return PRICE; }
                     public List<Category> getCategories() { return List.of(new Category(1L, CATEGORY)); }
-                    public Integer getQuantity() { return 10; }
+                    public Integer getQuantity() { return QUANTITY; }
                     public String getSku() { return SKU; }
                     public Boolean getStatus() { return true; }
                 }
@@ -125,7 +131,7 @@ public class EntityMock {
                 "An updated high precision wireless mouse",
                 39.99,
                 CATEGORY,
-                15,
+                QUANTITY,
                 SKU,
                 0.2,
                 12.0,
