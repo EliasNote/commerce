@@ -126,7 +126,7 @@ public class EntityMock {
         );
     }
 
-    public static Customer client() {
+    public static Customer customer() {
         return new Customer(
                 CUSTOMER_NAME,
                 CUSTOMER_CPF,
