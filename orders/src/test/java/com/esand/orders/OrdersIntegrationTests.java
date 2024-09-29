@@ -84,7 +84,6 @@ class OrdersIntegrationTests {
 		tokenResponse.setTokenType("Bearer");
 
 		when(tokenManager.getAccessToken()).thenReturn(tokenResponse);
-
 		when(keycloak.tokenManager()).thenReturn(tokenManager);
 	}
 
