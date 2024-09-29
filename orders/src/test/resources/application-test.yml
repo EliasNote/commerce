@@ -23,3 +23,13 @@ keycloak:
   client-secret: ouQ51dghJBhO9UIS3WGC1Mz7GRpMK5Tj
   username: auth
   password: 123
+
+customers:
+  api:
+    url: ${CUSTOMERS_API_URL:http://localhost:8080/api/v1/customers}
+
+products:
+  api:
+    url: ${PRODUCTS_API_URL:http://localhost:8080/api/v1/products}
+
+topic_name: Orders
