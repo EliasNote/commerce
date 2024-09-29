@@ -1,7 +1,29 @@
-#spring:
-#  datasource:
-#    url: jdbc:h2:mem:testdb
-#
-#products:
-#  api:
-#    url: ${PRODUCTS_API_URL:http://localhost:8080/api/v1/products}
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/commerce_test
+    username: root
+    password: root
+  jpa:
+    defer-datasource-initialization: 'true'
+    show-sql: 'true'
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: 'true'
+        boot:
+          allow_jdbc_metadata_access: 'false'
+
+keycloak:
+  server-url: http://localhost:8081
+  realm: commerce
+  client-id: gateway
+  client-secret: ouQ51dghJBhO9UIS3WGC1Mz7GRpMK5Tj
+  username: auth
+  password: 123
+
+products:
+  api:
+    url: ${PRODUCTS_API_URL:http://localhost:8080/api/v1/products}
