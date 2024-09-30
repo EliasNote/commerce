@@ -19,8 +19,10 @@ public class DeliveryController implements SpringDoc {
     private final DeliveryService deliveryService;
 
     @GetMapping
-    public ResponseEntity<PageableDto> findAll(@PageableDefault(size = 10) Pageable pageable) {
-        return ResponseEntity.ok(deliveryService.findAll(pageable));
+    public ResponseEntity<PageableDto> findAll(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                               @RequestParam(value = "afterDate", required = false) String afterDate,
+                                               @RequestParam(value = "beforeDate", required = false) String beforeDate) {
+        return ResponseEntity.ok(deliveryService.findAll(afterDate, beforeDate, pageable));
     }
 
     @GetMapping("/id/{id}")
@@ -29,25 +31,27 @@ public class DeliveryController implements SpringDoc {
     }
 
     @GetMapping("/shipped")
-    public ResponseEntity<PageableDto> findAllShipped(@PageableDefault(size = 10) Pageable pageable) {
-        return ResponseEntity.ok(deliveryService.findAllShipped(pageable));
+    public ResponseEntity<PageableDto> findAllShipped(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                                      @RequestParam(value = "afterDate", required = false) String afterDate,
+                                                      @RequestParam(value = "beforeDate", required = false) String beforeDate) {
+        return ResponseEntity.ok(deliveryService.findAllShipped(afterDate, beforeDate, pageable));
     }
 
+
     @GetMapping("/processing")
-    public ResponseEntity<PageableDto> findAllProcessing(@PageableDefault(size = 10) Pageable pageable) {
-        return ResponseEntity.ok(deliveryService.findAllProcessing(pageable));
+    public ResponseEntity<PageableDto> findAllProcessing(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                                         @RequestParam(value = "afterDate", required = false) String afterDate,
+                                                         @RequestParam(value = "beforeDate", required = false) String beforeDate) {
+        return ResponseEntity.ok(deliveryService.findAllProcessing(afterDate, beforeDate, pageable));
     }
 
     @GetMapping("/canceled")
-    public ResponseEntity<PageableDto> findAllCanceled(@PageableDefault(size = 10) Pageable pageable) {
-        return ResponseEntity.ok(deliveryService.findAllCanceled(pageable));
+    public ResponseEntity<PageableDto> findAllCanceled(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                                       @RequestParam(value = "afterDate", required = false) String afterDate,
+                                                       @RequestParam(value = "beforeDate", required = false) String beforeDate) {
+        return ResponseEntity.ok(deliveryService.findAllCanceled(afterDate, beforeDate, pageable));
     }
 
-    @GetMapping("/date")
-    public ResponseEntity<PageableDto> findByDate(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
-                                                  @RequestParam(value = "afterDate", required = false) String afterDate,
-                                                  @RequestParam(value = "beforeDate", required = false) String beforeDate) {
-        return ResponseEntity.ok(deliveryService.findDeliveryByDate(afterDate, beforeDate, pageable));
     @GetMapping("/top-shipped-customers")
     public ResponseEntity<String> findTopShippedCustomers(@RequestParam(value = "afterDate", required = false) String afterDate,
                                                           @RequestParam(value = "beforeDate", required = false) String beforeDate) {
