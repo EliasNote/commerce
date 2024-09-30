@@ -16,7 +16,7 @@ spring:
     name: delivery
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://postgres:5432/commerce
+    url: jdbc:postgresql://postgres:5432/delivery
     username: root
     password: root
   mvc:
