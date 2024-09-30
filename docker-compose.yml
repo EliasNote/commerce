@@ -41,7 +41,7 @@ services:
     networks:
       - broker-kafka
     environment:
-      POSTGRES_DB: commerce
+      POSTGRES_DB: keycloak
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
     volumes:

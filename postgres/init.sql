@@ -1,2 +1,5 @@
-CREATE DATABASE keycloak;
+CREATE DATABASE customer;
+CREATE DATABASE product;
+CREATE DATABASE orders;
+CREATE DATABASE delivery;
 CREATE DATABASE commerce_test;
