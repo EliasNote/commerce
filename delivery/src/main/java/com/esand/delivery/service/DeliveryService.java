@@ -36,11 +36,23 @@ public class DeliveryService {
     }
 
     @Transactional(readOnly = true)
-    public PageableDto findAll(Pageable pageable) {
-        PageableDto dto = deliveryMapper.toPageableDto(deliveryRepository.findAllPageable(pageable));
+    public PageableDto findAll(String afterDate, String beforeDate, Pageable pageable) {
+        PageableDto dto;
+
+        if (afterDate != null && beforeDate != null) {
+            dto = deliveryMapper.toPageableDto(deliveryRepository.findAllByDateBetween(LocalDate.parse(afterDate).atStartOfDay(), LocalDate.parse(beforeDate).atStartOfDay().plusDays(1), pageable));
+        } else if (afterDate != null) {
+            dto = deliveryMapper.toPageableDto(deliveryRepository.findAllByDateAfter(LocalDate.parse(afterDate).atStartOfDay(), pageable));
+        } else if (beforeDate != null) {
+            dto = deliveryMapper.toPageableDto(deliveryRepository.findAllByDateBefore(LocalDate.parse(beforeDate).atStartOfDay().plusDays(1), pageable));
+        } else {
+            dto = deliveryMapper.toPageableDto(deliveryRepository.findAllPageable(pageable));
+        }
+
         if (dto.getContent().isEmpty()) {
             throw new EntityNotFoundException("No orders found");
         }
+
         return dto;
     }
 
@@ -50,50 +62,18 @@ public class DeliveryService {
     }
 
     @Transactional(readOnly = true)
-    public PageableDto findAllShipped(Pageable pageable) {
-        PageableDto dto =  deliveryMapper.toPageableDto(deliveryRepository.findAllByStatus(pageable, Delivery.Status.SHIPPED));
-        if (dto.getContent().isEmpty()) {
-            throw new EntityNotFoundException("No orders found");
-        }
-        return dto;
+    public PageableDto findAllShipped(String afterDate, String beforeDate, Pageable pageable) {
+        return findByStatusAndDate(afterDate, beforeDate, Delivery.Status.SHIPPED, pageable);
     }
 
     @Transactional(readOnly = true)
-    public PageableDto findAllProcessing(Pageable pageable) {
-        PageableDto dto =  deliveryMapper.toPageableDto(deliveryRepository.findAllByStatus(pageable, Delivery.Status.PROCESSING));
-        if (dto.getContent().isEmpty()) {
-            throw new EntityNotFoundException("No orders found");
-        }
-        return dto;
+    public PageableDto findAllProcessing(String afterDate, String beforeDate, Pageable pageable) {
+        return findByStatusAndDate(afterDate, beforeDate, Delivery.Status.PROCESSING, pageable);
     }
 
     @Transactional(readOnly = true)
-    public PageableDto findAllCanceled(Pageable pageable) {
-        PageableDto dto =  deliveryMapper.toPageableDto(deliveryRepository.findAllByStatus(pageable, Delivery.Status.CANCELED));
-        if (dto.getContent().isEmpty()) {
-            throw new EntityNotFoundException("No orders found");
-        }
-        return dto;
-    }
-
-    @Transactional(readOnly = true)
-    public PageableDto findDeliveryByDate(String afterDate, String beforeDate, Pageable pageable) {
-        PageableDto dto;
-        if (afterDate != null && beforeDate != null) {
-            dto = deliveryMapper.toPageableDto(deliveryRepository.findByDateBetween(LocalDate.parse(afterDate).atStartOfDay(), LocalDate.parse(beforeDate).atStartOfDay().plusDays(1), pageable));
-        } else if (afterDate != null) {
-            dto = deliveryMapper.toPageableDto(deliveryRepository.findByDateAfter(LocalDate.parse(afterDate).atStartOfDay(), pageable));
-        } else if (beforeDate != null) {
-            dto = deliveryMapper.toPageableDto(deliveryRepository.findByDateBefore(LocalDate.parse(beforeDate).atStartOfDay().plusDays(1), pageable));
-        } else {
-            throw new EntityNotFoundException("No date parameters provided");
-        }
-
-        if (dto.getContent().isEmpty()) {
-            throw new EntityNotFoundException("No deliveries found by date(s)");
-        }
-
-        return dto;
+    public PageableDto findAllCanceled(String afterDate, String beforeDate, Pageable pageable) {
+        return findByStatusAndDate(afterDate, beforeDate, Delivery.Status.CANCELED, pageable);
     }
 
     @Transactional(noRollbackFor= Exception.class)
@@ -141,9 +121,49 @@ public class DeliveryService {
         deliveryRepository.deleteAllByStatus(Delivery.Status.CANCELED);
     }
 
+    @Transactional(readOnly = true)
     private Delivery findOrderById(Long id) {
         return deliveryRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Order nº" + id + " does not exist")
         );
     }
+
+    @Transactional(readOnly = true)
+    private PageableDto findByStatusAndDate(String afterDate, String beforeDate, Delivery.Status status, Pageable pageable) {
+        PageableDto dto = null;
+        
+        if (afterDate != null && beforeDate != null) {
+            dto = deliveryMapper.toPageableDto(deliveryRepository.findAllByStatusAndDateBetween(status, LocalDate.parse(afterDate).atStartOfDay(), LocalDate.parse(beforeDate).atStartOfDay().plusDays(1), pageable));
+        } else if (afterDate != null) {
+            dto = deliveryMapper.toPageableDto(deliveryRepository.findAllByStatusAndDateAfter(status, LocalDate.parse(afterDate).atStartOfDay(), pageable));
+        } else if (beforeDate != null) {
+            dto = deliveryMapper.toPageableDto(deliveryRepository.findAllByStatusAndDateBefore(status, LocalDate.parse(beforeDate).atStartOfDay().plusDays(1), pageable));
+        } else {
+            dto = deliveryMapper.toPageableDto(deliveryRepository.findAllByStatus(pageable, status));
+        }
+
+        if (dto.getContent().isEmpty()) {
+            throw new EntityNotFoundException("No orders found");
+        }
+        
+        return dto;
+    }
+
+    @Transactional(readOnly = true)
+    private List<Delivery> findAllByDate(String afterDate, String beforeDate) {
+        List<Delivery> deliveries = null;
+
+        if (afterDate != null && beforeDate != null) {
+            deliveries = deliveryRepository.findAllByStatusAndDateBetween(Delivery.Status.SHIPPED, LocalDate.parse(afterDate).atStartOfDay(), LocalDate.parse(beforeDate).atStartOfDay().plusDays(1));
+        } else if (afterDate != null) {
+            deliveries = deliveryRepository.findAllByStatusAndDateAfter(Delivery.Status.SHIPPED, LocalDate.parse(afterDate).atStartOfDay());
+        } else if (beforeDate != null) {
+            deliveries = deliveryRepository.findAllByStatusAndDateBefore(Delivery.Status.SHIPPED, LocalDate.parse(beforeDate).atStartOfDay().plusDays(1));
+        } else {
+            deliveries = deliveryRepository.findAllByStatus(Delivery.Status.SHIPPED);
+        }
+
+        return deliveries;
+    }
+
 }
