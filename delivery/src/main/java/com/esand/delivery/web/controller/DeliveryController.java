@@ -48,6 +48,16 @@ public class DeliveryController implements SpringDoc {
                                                   @RequestParam(value = "afterDate", required = false) String afterDate,
                                                   @RequestParam(value = "beforeDate", required = false) String beforeDate) {
         return ResponseEntity.ok(deliveryService.findDeliveryByDate(afterDate, beforeDate, pageable));
+    @GetMapping("/top-shipped-customers")
+    public ResponseEntity<String> findTopShippedCustomers(@RequestParam(value = "afterDate", required = false) String afterDate,
+                                                          @RequestParam(value = "beforeDate", required = false) String beforeDate) {
+        return ResponseEntity.ok(deliveryService.findTopShippedByCustomers(afterDate, beforeDate));
+    }
+
+    @GetMapping("/top-shipped-products")
+    public ResponseEntity<String> findTopShippedProducts(@RequestParam(value = "afterDate", required = false) String afterDate,
+                                                         @RequestParam(value = "beforeDate", required = false) String beforeDate) {
+        return ResponseEntity.ok(deliveryService.findTopShippedByProducts(afterDate, beforeDate));
     }
 
     @PatchMapping("/cancel/{id}")

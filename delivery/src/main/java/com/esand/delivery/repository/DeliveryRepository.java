@@ -17,11 +17,11 @@ public interface DeliveryRepository extends JpaRepository<Delivery, Long> {
 
     Page<DeliveryDtoPagination> findAllByStatus(Pageable pageable, Delivery.Status status);
 
-    Page<DeliveryDtoPagination> findByDateAfter(LocalDateTime date, Pageable pageable);
+    List<Delivery> findAllByStatusAndDateBetween(Delivery.Status status, LocalDateTime localDateTime, LocalDateTime localDateTime1);
 
-    Page<DeliveryDtoPagination> findByDateBefore(LocalDateTime date, Pageable pageable);
+    List<Delivery> findAllByStatusAndDateAfter(Delivery.Status status, LocalDateTime localDateTime);
 
-    Page<DeliveryDtoPagination> findByDateBetween(LocalDateTime afterDate, LocalDateTime beforeDate, Pageable pageable);
+    List<Delivery> findAllByStatusAndDateBefore(Delivery.Status status, LocalDateTime localDateTime);
 
-    boolean existsByStatus(Delivery.Status status);
+    List<Delivery> findAllByStatus(Delivery.Status status);
 }

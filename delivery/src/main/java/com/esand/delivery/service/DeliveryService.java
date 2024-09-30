@@ -20,6 +20,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
 import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Log4j2
@@ -164,6 +166,80 @@ public class DeliveryService {
         }
 
         return deliveries;
+    }
+
+    public String findTopShippedByCustomers(String afterDate, String beforeDate) {
+        StringBuilder sb = new StringBuilder();
+
+        List<Delivery> shippeds = findAllByDate(afterDate, beforeDate);
+
+        Map<String, Map<String, Object>> customerData = shippeds.stream()
+                .collect(Collectors.groupingBy(Delivery::getCpf,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                deliveries -> {
+                                    Map<String, Object> data = new HashMap<>();
+                                    data.put("customerName", deliveries.stream().findFirst().map(Delivery::getName).orElse("Name not found"));
+                                    data.put("totalQuantity", deliveries.stream().mapToLong(Delivery::getQuantity).sum());
+                                    data.put("totalSpent", deliveries.stream().mapToDouble(Delivery::getTotal).sum());
+                                    return data;
+                                }
+                        )
+                ));
+
+        List<Map.Entry<String, Map<String, Object>>> sortedCustomers = customerData.entrySet().stream()
+                .sorted((e1, e2) -> Double.compare((Double) e2.getValue().get("totalSpent"), (Double) e1.getValue().get("totalSpent")))
+                .toList();
+
+        int count = 1;
+        for (Map.Entry<String, Map<String, Object>> entry : sortedCustomers) {
+            sb.append(count++)
+                    .append(" - Customer: " + entry.getValue().get("customerName"))
+                    .append(", CPF: " + entry.getKey())
+                    .append(", Products Purchased: " + entry.getValue().get("totalQuantity"))
+                    .append(", Total Spent: $" + entry.getValue().get("totalSpent"))
+                    .append("\n");
+        }
+
+        return sb.toString();
+    }
+
+
+
+    public String findTopShippedByProducts(String afterDate, String beforeDate) {
+        StringBuilder sb = new StringBuilder();
+
+        List<Delivery> shippeds = findAllByDate(afterDate, beforeDate);
+
+        Map<String, Map<String, Object>> productData = shippeds.stream()
+                .collect(Collectors.groupingBy(Delivery::getSku,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                deliveries -> {
+                                    Map<String, Object> data = new HashMap<>();
+                                    data.put("productTitle", deliveries.stream().findFirst().map(Delivery::getTitle).orElse("Product not found"));
+                                    data.put("totalQuantity", deliveries.stream().mapToLong(Delivery::getQuantity).sum());
+                                    data.put("totalRevenue", deliveries.stream().mapToDouble(Delivery::getTotal).sum());
+                                    return data;
+                                }
+                        )
+                ));
+
+        List<Map.Entry<String, Map<String, Object>>> sortedProducts = productData.entrySet().stream()
+                .sorted((e1, e2) -> Double.compare((Double) e2.getValue().get("totalRevenue"), (Double) e1.getValue().get("totalRevenue")))
+                .toList();
+
+        int count = 1;
+        for (Map.Entry<String, Map<String, Object>> entry : sortedProducts) {
+            sb.append(count++)
+                    .append(" - Product: " + entry.getValue().get("productTitle"))
+                    .append(", Sku: " + entry.getKey())
+                    .append(", Total Sold: " + entry.getValue().get("totalQuantity"))
+                    .append(", Total Revenue: $" + entry.getValue().get("totalRevenue"))
+                    .append("\n");
+        }
+
+        return sb.toString();
     }
 
 }
