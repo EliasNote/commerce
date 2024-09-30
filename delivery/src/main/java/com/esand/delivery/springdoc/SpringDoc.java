@@ -29,7 +29,9 @@ public interface SpringDoc {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorMessage.class)))
     })
-    ResponseEntity<PageableDto> findAll(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable);
+    ResponseEntity<PageableDto> findAll(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                        @RequestParam(value = "afterDate", required = false) String afterDate,
+                                        @RequestParam(value = "beforeDate", required = false) String beforeDate);
 
     @Operation(summary = "Search for delivery by ID",
             description = "Endpoint to search for a delivery by ID.")
@@ -53,7 +55,9 @@ public interface SpringDoc {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorMessage.class)))
     })
-    ResponseEntity<PageableDto> findAllShipped(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable);
+    ResponseEntity<PageableDto> findAllShipped(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                               @RequestParam(value = "afterDate", required = false) String afterDate,
+                                               @RequestParam(value = "beforeDate", required = false) String beforeDate);
 
     @Operation(summary = "Search for all processing deliveries",
             description = "Endpoint to search for all processing deliveries.")
@@ -65,7 +69,9 @@ public interface SpringDoc {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorMessage.class)))
     })
-    ResponseEntity<PageableDto> findAllProcessing(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable);
+    ResponseEntity<PageableDto> findAllProcessing(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                                  @RequestParam(value = "afterDate", required = false) String afterDate,
+                                                  @RequestParam(value = "beforeDate", required = false) String beforeDate);
 
     @Operation(summary = "Search for all canceled deliveries",
             description = "Endpoint to search for all canceled deliveries.")
@@ -77,21 +83,9 @@ public interface SpringDoc {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorMessage.class)))
     })
-    ResponseEntity<PageableDto> findAllCanceled(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable);
-
-    @Operation(summary = "Search for deliveries by date",
-            description = "Endpoint to search for deliveries by date range.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Deliveries found successfully by date",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = PageableDto.class))),
-            @ApiResponse(responseCode = "404", description = "No deliveries found by date",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorMessage.class)))
-    })
-    ResponseEntity<PageableDto> findByDate(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
-                                           @RequestParam(value = "afterDate", required = false) String afterDate,
-                                           @RequestParam(value = "beforeDate", required = false) String beforeDate);
+    ResponseEntity<PageableDto> findAllCanceled(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                                @RequestParam(value = "afterDate", required = false) String afterDate,
+                                                @RequestParam(value = "beforeDate", required = false) String beforeDate);
 
     @Operation(summary = "Cancel a delivery",
             description = "Endpoint to cancel a delivery by its ID.")
