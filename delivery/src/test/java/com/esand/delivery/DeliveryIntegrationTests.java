@@ -115,6 +115,73 @@ public class DeliveryIntegrationTests {
     }
 
     @Test
+    void testFindAllDeliveryByDateBetweenSuccess() throws Exception{
+        createDelivery();
+        String afterDate = LocalDate.now().minusDays(1).toString();
+        String beforeDate = LocalDate.now().plusDays(1).toString();
+
+        DeliveryResponseDto responseDto = EntityMock.responseDto();
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries?" + "afterDate=" + afterDate + "&" + "beforeDate=" + beforeDate)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].purchaser").value(responseDto.getName()))
+                .andExpect(jsonPath("$.content[0].CPF").value(responseDto.getCpf()))
+                .andExpect(jsonPath("$.content[0]['product name']").value(responseDto.getTitle()))
+                .andExpect(jsonPath("$.content[0].SKU").value(responseDto.getSku()))
+                .andExpect(jsonPath("$.content[0]['unit price']").value(responseDto.getPrice()))
+                .andExpect(jsonPath("$.content[0].quantity").value(responseDto.getQuantity()))
+                .andExpect(jsonPath("$.content[0]['total price']").value(responseDto.getTotal()))
+                .andExpect(jsonPath("$.content[0].status").value(responseDto.getStatus()))
+                .andExpect(jsonPath("$.content[0]['purchase date']").isNotEmpty()
+                );
+    }
+
+    @Test
+    void testFindAllDeliveryByDateAfterSuccess() throws Exception{
+        createDelivery();
+        String afterDate = LocalDate.now().minusDays(1).toString();
+
+        DeliveryResponseDto responseDto = EntityMock.responseDto();
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries?" + "afterDate=" + afterDate)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].purchaser").value(responseDto.getName()))
+                .andExpect(jsonPath("$.content[0].CPF").value(responseDto.getCpf()))
+                .andExpect(jsonPath("$.content[0]['product name']").value(responseDto.getTitle()))
+                .andExpect(jsonPath("$.content[0].SKU").value(responseDto.getSku()))
+                .andExpect(jsonPath("$.content[0]['unit price']").value(responseDto.getPrice()))
+                .andExpect(jsonPath("$.content[0].quantity").value(responseDto.getQuantity()))
+                .andExpect(jsonPath("$.content[0]['total price']").value(responseDto.getTotal()))
+                .andExpect(jsonPath("$.content[0].status").value(responseDto.getStatus()))
+                .andExpect(jsonPath("$.content[0]['purchase date']").isNotEmpty()
+                );
+    }
+
+    @Test
+    void testFindAllDeliveryByDateBeforeSuccess() throws Exception{
+        createDelivery();
+        String beforeDate = LocalDate.now().plusDays(1).toString();
+
+        DeliveryResponseDto responseDto = EntityMock.responseDto();
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries?beforeDate=" + beforeDate)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].purchaser").value(responseDto.getName()))
+                .andExpect(jsonPath("$.content[0].CPF").value(responseDto.getCpf()))
+                .andExpect(jsonPath("$.content[0]['product name']").value(responseDto.getTitle()))
+                .andExpect(jsonPath("$.content[0].SKU").value(responseDto.getSku()))
+                .andExpect(jsonPath("$.content[0]['unit price']").value(responseDto.getPrice()))
+                .andExpect(jsonPath("$.content[0].quantity").value(responseDto.getQuantity()))
+                .andExpect(jsonPath("$.content[0]['total price']").value(responseDto.getTotal()))
+                .andExpect(jsonPath("$.content[0].status").value(responseDto.getStatus()))
+                .andExpect(jsonPath("$.content[0]['purchase date']").isNotEmpty()
+                );
+    }
+
+    @Test
     void testFindAllDeliveryEntityNotFoundException() throws Exception{
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -177,6 +244,73 @@ public class DeliveryIntegrationTests {
     }
 
     @Test
+    void testFindAllShippedByDateBetweenSuccess() throws Exception{
+        Delivery delivery = EntityMock.delivery();
+        delivery.setStatus(Delivery.Status.SHIPPED);
+        deliveryRepository.save(delivery);
+        String afterDate = LocalDate.now().minusDays(1).toString();
+        String beforeDate = LocalDate.now().plusDays(1).toString();
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/shipped?" + "afterDate=" + afterDate + "&" + "beforeDate=" + beforeDate)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].purchaser").value(delivery.getName()))
+                .andExpect(jsonPath("$.content[0].CPF").value(delivery.getCpf()))
+                .andExpect(jsonPath("$.content[0]['product name']").value(delivery.getTitle()))
+                .andExpect(jsonPath("$.content[0].SKU").value(delivery.getSku()))
+                .andExpect(jsonPath("$.content[0]['unit price']").value(delivery.getPrice()))
+                .andExpect(jsonPath("$.content[0].quantity").value(delivery.getQuantity()))
+                .andExpect(jsonPath("$.content[0]['total price']").value(delivery.getTotal()))
+                .andExpect(jsonPath("$.content[0].status").value(delivery.getStatus().toString()))
+                .andExpect(jsonPath("$.content[0]['purchase date']").isNotEmpty()
+                );
+    }
+
+    @Test
+    void testFindAllShippedByDateAfterSuccess() throws Exception{
+        Delivery delivery = EntityMock.delivery();
+        delivery.setStatus(Delivery.Status.SHIPPED);
+        deliveryRepository.save(delivery);
+        String afterDate = LocalDate.now().minusDays(1).toString();
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/shipped?" + "afterDate=" + afterDate)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].purchaser").value(delivery.getName()))
+                .andExpect(jsonPath("$.content[0].CPF").value(delivery.getCpf()))
+                .andExpect(jsonPath("$.content[0]['product name']").value(delivery.getTitle()))
+                .andExpect(jsonPath("$.content[0].SKU").value(delivery.getSku()))
+                .andExpect(jsonPath("$.content[0]['unit price']").value(delivery.getPrice()))
+                .andExpect(jsonPath("$.content[0].quantity").value(delivery.getQuantity()))
+                .andExpect(jsonPath("$.content[0]['total price']").value(delivery.getTotal()))
+                .andExpect(jsonPath("$.content[0].status").value(delivery.getStatus().toString()))
+                .andExpect(jsonPath("$.content[0]['purchase date']").isNotEmpty()
+                );
+    }
+
+    @Test
+    void testFindAllShippedByDateBeforeSuccess() throws Exception{
+        Delivery delivery = EntityMock.delivery();
+        delivery.setStatus(Delivery.Status.SHIPPED);
+        deliveryRepository.save(delivery);
+        String beforeDate = LocalDate.now().plusDays(1).toString();
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/shipped?" + "beforeDate=" + beforeDate)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].purchaser").value(delivery.getName()))
+                .andExpect(jsonPath("$.content[0].CPF").value(delivery.getCpf()))
+                .andExpect(jsonPath("$.content[0]['product name']").value(delivery.getTitle()))
+                .andExpect(jsonPath("$.content[0].SKU").value(delivery.getSku()))
+                .andExpect(jsonPath("$.content[0]['unit price']").value(delivery.getPrice()))
+                .andExpect(jsonPath("$.content[0].quantity").value(delivery.getQuantity()))
+                .andExpect(jsonPath("$.content[0]['total price']").value(delivery.getTotal()))
+                .andExpect(jsonPath("$.content[0].status").value(delivery.getStatus().toString()))
+                .andExpect(jsonPath("$.content[0]['purchase date']").isNotEmpty()
+                );
+    }
+
+    @Test
     void testFindAllShippedEntityNotFoundException() throws Exception{
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/shipped")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -207,6 +341,73 @@ public class DeliveryIntegrationTests {
     }
 
     @Test
+    void testFindAllProcessingByDateBetweenSuccess() throws Exception{
+        Delivery delivery = EntityMock.delivery();
+        delivery.setStatus(Delivery.Status.PROCESSING);
+        deliveryRepository.save(delivery);
+        String afterDate = LocalDate.now().minusDays(1).toString();
+        String beforeDate = LocalDate.now().plusDays(1).toString();
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/processing?" + "afterDate=" + afterDate + "&" + "beforeDate=" + beforeDate)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].purchaser").value(delivery.getName()))
+                .andExpect(jsonPath("$.content[0].CPF").value(delivery.getCpf()))
+                .andExpect(jsonPath("$.content[0]['product name']").value(delivery.getTitle()))
+                .andExpect(jsonPath("$.content[0].SKU").value(delivery.getSku()))
+                .andExpect(jsonPath("$.content[0]['unit price']").value(delivery.getPrice()))
+                .andExpect(jsonPath("$.content[0].quantity").value(delivery.getQuantity()))
+                .andExpect(jsonPath("$.content[0]['total price']").value(delivery.getTotal()))
+                .andExpect(jsonPath("$.content[0].status").value(delivery.getStatus().toString()))
+                .andExpect(jsonPath("$.content[0]['purchase date']").isNotEmpty()
+                );
+    }
+
+    @Test
+    void testFindAllProcessingByDateAfterSuccess() throws Exception{
+        Delivery delivery = EntityMock.delivery();
+        delivery.setStatus(Delivery.Status.PROCESSING);
+        deliveryRepository.save(delivery);
+        String afterDate = LocalDate.now().minusDays(1).toString();
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/processing?" + "afterDate=" + afterDate)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].purchaser").value(delivery.getName()))
+                .andExpect(jsonPath("$.content[0].CPF").value(delivery.getCpf()))
+                .andExpect(jsonPath("$.content[0]['product name']").value(delivery.getTitle()))
+                .andExpect(jsonPath("$.content[0].SKU").value(delivery.getSku()))
+                .andExpect(jsonPath("$.content[0]['unit price']").value(delivery.getPrice()))
+                .andExpect(jsonPath("$.content[0].quantity").value(delivery.getQuantity()))
+                .andExpect(jsonPath("$.content[0]['total price']").value(delivery.getTotal()))
+                .andExpect(jsonPath("$.content[0].status").value(delivery.getStatus().toString()))
+                .andExpect(jsonPath("$.content[0]['purchase date']").isNotEmpty()
+                );
+    }
+
+    @Test
+    void testFindAllProcessingByDateBeforeSuccess() throws Exception{
+        Delivery delivery = EntityMock.delivery();
+        delivery.setStatus(Delivery.Status.PROCESSING);
+        deliveryRepository.save(delivery);
+        String beforeDate = LocalDate.now().plusDays(1).toString();
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/processing?" + "beforeDate=" + beforeDate)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].purchaser").value(delivery.getName()))
+                .andExpect(jsonPath("$.content[0].CPF").value(delivery.getCpf()))
+                .andExpect(jsonPath("$.content[0]['product name']").value(delivery.getTitle()))
+                .andExpect(jsonPath("$.content[0].SKU").value(delivery.getSku()))
+                .andExpect(jsonPath("$.content[0]['unit price']").value(delivery.getPrice()))
+                .andExpect(jsonPath("$.content[0].quantity").value(delivery.getQuantity()))
+                .andExpect(jsonPath("$.content[0]['total price']").value(delivery.getTotal()))
+                .andExpect(jsonPath("$.content[0].status").value(delivery.getStatus().toString()))
+                .andExpect(jsonPath("$.content[0]['purchase date']").isNotEmpty()
+                );
+    }
+
+    @Test
     void testFindAllProcessingEntityNotFoundException() throws Exception{
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/processing")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -222,6 +423,73 @@ public class DeliveryIntegrationTests {
         deliveryRepository.save(delivery);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/canceled")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].purchaser").value(delivery.getName()))
+                .andExpect(jsonPath("$.content[0].CPF").value(delivery.getCpf()))
+                .andExpect(jsonPath("$.content[0]['product name']").value(delivery.getTitle()))
+                .andExpect(jsonPath("$.content[0].SKU").value(delivery.getSku()))
+                .andExpect(jsonPath("$.content[0]['unit price']").value(delivery.getPrice()))
+                .andExpect(jsonPath("$.content[0].quantity").value(delivery.getQuantity()))
+                .andExpect(jsonPath("$.content[0]['total price']").value(delivery.getTotal()))
+                .andExpect(jsonPath("$.content[0].status").value(delivery.getStatus().toString()))
+                .andExpect(jsonPath("$.content[0]['purchase date']").isNotEmpty()
+                );
+    }
+
+    @Test
+    void testFindAllCanceledByDateBetweenSuccess() throws Exception{
+        Delivery delivery = EntityMock.delivery();
+        delivery.setStatus(Delivery.Status.CANCELED);
+        deliveryRepository.save(delivery);
+        String afterDate = LocalDate.now().minusDays(1).toString();
+        String beforeDate = LocalDate.now().plusDays(1).toString();
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/canceled?" + "afterDate=" + afterDate + "&" + "beforeDate=" + beforeDate)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].purchaser").value(delivery.getName()))
+                .andExpect(jsonPath("$.content[0].CPF").value(delivery.getCpf()))
+                .andExpect(jsonPath("$.content[0]['product name']").value(delivery.getTitle()))
+                .andExpect(jsonPath("$.content[0].SKU").value(delivery.getSku()))
+                .andExpect(jsonPath("$.content[0]['unit price']").value(delivery.getPrice()))
+                .andExpect(jsonPath("$.content[0].quantity").value(delivery.getQuantity()))
+                .andExpect(jsonPath("$.content[0]['total price']").value(delivery.getTotal()))
+                .andExpect(jsonPath("$.content[0].status").value(delivery.getStatus().toString()))
+                .andExpect(jsonPath("$.content[0]['purchase date']").isNotEmpty()
+                );
+    }
+
+    @Test
+    void testFindAllCanceledByDateAfterSuccess() throws Exception{
+        Delivery delivery = EntityMock.delivery();
+        delivery.setStatus(Delivery.Status.CANCELED);
+        deliveryRepository.save(delivery);
+        String afterDate = LocalDate.now().minusDays(1).toString();
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/canceled?" + "afterDate=" + afterDate)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].purchaser").value(delivery.getName()))
+                .andExpect(jsonPath("$.content[0].CPF").value(delivery.getCpf()))
+                .andExpect(jsonPath("$.content[0]['product name']").value(delivery.getTitle()))
+                .andExpect(jsonPath("$.content[0].SKU").value(delivery.getSku()))
+                .andExpect(jsonPath("$.content[0]['unit price']").value(delivery.getPrice()))
+                .andExpect(jsonPath("$.content[0].quantity").value(delivery.getQuantity()))
+                .andExpect(jsonPath("$.content[0]['total price']").value(delivery.getTotal()))
+                .andExpect(jsonPath("$.content[0].status").value(delivery.getStatus().toString()))
+                .andExpect(jsonPath("$.content[0]['purchase date']").isNotEmpty()
+                );
+    }
+
+    @Test
+    void testFindAllCanceledByDateBeforeSuccess() throws Exception{
+        Delivery delivery = EntityMock.delivery();
+        delivery.setStatus(Delivery.Status.CANCELED);
+        deliveryRepository.save(delivery);
+        String beforeDate = LocalDate.now().plusDays(1).toString();
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/canceled?" + "beforeDate=" + beforeDate)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].purchaser").value(delivery.getName()))
