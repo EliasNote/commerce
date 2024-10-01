@@ -55,7 +55,7 @@ public class EntityMock {
     }
 
     public static Page<DeliveryDtoPagination> page() {
-        Pageable pageable = PageRequest.of(0, PRODUCT_QUANTITY);
+        Pageable pageable = PageRequest.of(0, 10);
         List<DeliveryDtoPagination> content = List.of(
                 new DeliveryDtoPagination() {
                     public Long getId() { return DELIVERY_ID; }
@@ -74,7 +74,7 @@ public class EntityMock {
     }
 
     public static Page<DeliveryDtoPagination> pageEmpty() {
-        Pageable pageable = PageRequest.of(0, PRODUCT_QUANTITY);
+        Pageable pageable = PageRequest.of(0, 10);
         List<DeliveryDtoPagination> content = List.of();
         return new PageImpl<>(content, pageable, content.size());
     }
