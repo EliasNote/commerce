@@ -69,7 +69,88 @@ class DeliveryServiceTest {
         when(deliveryRepository.findAllPageable(any(Pageable.class))).thenReturn(page);
         when(deliveryMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        PageableDto response = deliveryService.findAll(page.getPageable());
+        PageableDto response = deliveryService.findAll(null, null, page.getPageable());
+
+        assertNotNull(response);
+        assertNotNull(response.getContent());
+        assertEquals(1, response.getContent().size());
+
+        DeliveryDtoPagination delivery = (DeliveryDtoPagination) response.getContent().get(0);
+        assertEquals(page.getContent().get(0).getId(), delivery.getId());
+        assertEquals(page.getContent().get(0).getName(), delivery.getName());
+        assertEquals(page.getContent().get(0).getCpf(), delivery.getCpf());
+        assertEquals(page.getContent().get(0).getTitle(), delivery.getTitle());
+        assertEquals(page.getContent().get(0).getSku(), delivery.getSku());
+        assertEquals(page.getContent().get(0).getPrice(), delivery.getPrice());
+        assertEquals(page.getContent().get(0).getQuantity(), delivery.getQuantity());
+        assertEquals(page.getContent().get(0).getTotal(), delivery.getTotal());
+        assertEquals(page.getContent().get(0).getStatus(), delivery.getStatus());
+        assertEquals(page.getContent().get(0).getDate(), delivery.getDate());
+    }
+
+    @Test
+    void testFindAllByDateBetweenSuccess() {
+        Page<DeliveryDtoPagination> page = EntityMock.page();
+        PageableDto pageableDto = EntityMock.pageableDto();
+
+        when(deliveryRepository.findAllByDateBetween(any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
+        when(deliveryMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
+
+        PageableDto response = deliveryService.findAll(LocalDate.now().minusDays(1).toString(), LocalDate.now().plusDays(1).toString(), page.getPageable());
+
+        assertNotNull(response);
+        assertNotNull(response.getContent());
+        assertEquals(1, response.getContent().size());
+
+        DeliveryDtoPagination delivery = (DeliveryDtoPagination) response.getContent().get(0);
+        assertEquals(page.getContent().get(0).getId(), delivery.getId());
+        assertEquals(page.getContent().get(0).getName(), delivery.getName());
+        assertEquals(page.getContent().get(0).getCpf(), delivery.getCpf());
+        assertEquals(page.getContent().get(0).getTitle(), delivery.getTitle());
+        assertEquals(page.getContent().get(0).getSku(), delivery.getSku());
+        assertEquals(page.getContent().get(0).getPrice(), delivery.getPrice());
+        assertEquals(page.getContent().get(0).getQuantity(), delivery.getQuantity());
+        assertEquals(page.getContent().get(0).getTotal(), delivery.getTotal());
+        assertEquals(page.getContent().get(0).getStatus(), delivery.getStatus());
+        assertEquals(page.getContent().get(0).getDate(), delivery.getDate());
+    }
+
+    @Test
+    void testFindAllByDateAfterSuccess() {
+        Page<DeliveryDtoPagination> page = EntityMock.page();
+        PageableDto pageableDto = EntityMock.pageableDto();
+
+        when(deliveryRepository.findAllByDateAfter(any(LocalDateTime.class),any(Pageable.class))).thenReturn(page);
+        when(deliveryMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
+
+        PageableDto response = deliveryService.findAll(LocalDate.now().minusDays(1).toString(), null, page.getPageable());
+
+        assertNotNull(response);
+        assertNotNull(response.getContent());
+        assertEquals(1, response.getContent().size());
+
+        DeliveryDtoPagination delivery = (DeliveryDtoPagination) response.getContent().get(0);
+        assertEquals(page.getContent().get(0).getId(), delivery.getId());
+        assertEquals(page.getContent().get(0).getName(), delivery.getName());
+        assertEquals(page.getContent().get(0).getCpf(), delivery.getCpf());
+        assertEquals(page.getContent().get(0).getTitle(), delivery.getTitle());
+        assertEquals(page.getContent().get(0).getSku(), delivery.getSku());
+        assertEquals(page.getContent().get(0).getPrice(), delivery.getPrice());
+        assertEquals(page.getContent().get(0).getQuantity(), delivery.getQuantity());
+        assertEquals(page.getContent().get(0).getTotal(), delivery.getTotal());
+        assertEquals(page.getContent().get(0).getStatus(), delivery.getStatus());
+        assertEquals(page.getContent().get(0).getDate(), delivery.getDate());
+    }
+
+    @Test
+    void testFindAllByDateBeforeSuccess() {
+        Page<DeliveryDtoPagination> page = EntityMock.page();
+        PageableDto pageableDto = EntityMock.pageableDto();
+
+        when(deliveryRepository.findAllByDateBefore(any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
+        when(deliveryMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
+
+        PageableDto response = deliveryService.findAll(null, LocalDate.now().plusDays(1).toString(), page.getPageable());
 
         assertNotNull(response);
         assertNotNull(response.getContent());
@@ -96,7 +177,7 @@ class DeliveryServiceTest {
         when(deliveryRepository.findAllPageable(any(Pageable.class))).thenReturn(page);
         when(deliveryMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        assertThrows(EntityNotFoundException.class, () -> deliveryService.findAll(page.getPageable()));
+        assertThrows(EntityNotFoundException.class, () -> deliveryService.findAll(null, null,page.getPageable()));
     }
 
     @Test
@@ -136,7 +217,88 @@ class DeliveryServiceTest {
         when(deliveryRepository.findAllByStatus(any(Pageable.class), eq(Delivery.Status.SHIPPED))).thenReturn(page);
         when(deliveryMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        PageableDto response = deliveryService.findAllShipped(page.getPageable());
+        PageableDto response = deliveryService.findAllShipped(null, null, page.getPageable());
+
+        assertNotNull(response);
+        assertNotNull(response.getContent());
+        assertEquals(1, response.getContent().size());
+
+        DeliveryDtoPagination delivery = (DeliveryDtoPagination) response.getContent().get(0);
+        assertEquals(page.getContent().get(0).getId(), delivery.getId());
+        assertEquals(page.getContent().get(0).getName(), delivery.getName());
+        assertEquals(page.getContent().get(0).getCpf(), delivery.getCpf());
+        assertEquals(page.getContent().get(0).getTitle(), delivery.getTitle());
+        assertEquals(page.getContent().get(0).getSku(), delivery.getSku());
+        assertEquals(page.getContent().get(0).getPrice(), delivery.getPrice());
+        assertEquals(page.getContent().get(0).getQuantity(), delivery.getQuantity());
+        assertEquals(page.getContent().get(0).getTotal(), delivery.getTotal());
+        assertEquals(page.getContent().get(0).getStatus(), delivery.getStatus());
+        assertEquals(page.getContent().get(0).getDate(), delivery.getDate());
+    }
+
+    @Test
+    void testFindAllShippedByDateBetweenSuccess() {
+        Page<DeliveryDtoPagination> page = EntityMock.page();
+        PageableDto pageableDto = EntityMock.pageableDto();
+
+        when(deliveryRepository.findAllByStatusAndDateBetween(eq(Delivery.Status.SHIPPED), any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
+        when(deliveryMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
+
+        PageableDto response = deliveryService.findAllShipped(LocalDate.now().minusDays(1).toString(), LocalDate.now().plusDays(1).toString(), page.getPageable());
+
+        assertNotNull(response);
+        assertNotNull(response.getContent());
+        assertEquals(1, response.getContent().size());
+
+        DeliveryDtoPagination delivery = (DeliveryDtoPagination) response.getContent().get(0);
+        assertEquals(page.getContent().get(0).getId(), delivery.getId());
+        assertEquals(page.getContent().get(0).getName(), delivery.getName());
+        assertEquals(page.getContent().get(0).getCpf(), delivery.getCpf());
+        assertEquals(page.getContent().get(0).getTitle(), delivery.getTitle());
+        assertEquals(page.getContent().get(0).getSku(), delivery.getSku());
+        assertEquals(page.getContent().get(0).getPrice(), delivery.getPrice());
+        assertEquals(page.getContent().get(0).getQuantity(), delivery.getQuantity());
+        assertEquals(page.getContent().get(0).getTotal(), delivery.getTotal());
+        assertEquals(page.getContent().get(0).getStatus(), delivery.getStatus());
+        assertEquals(page.getContent().get(0).getDate(), delivery.getDate());
+    }
+
+    @Test
+    void testFindAllShippedByDateAfterSuccess() {
+        Page<DeliveryDtoPagination> page = EntityMock.page();
+        PageableDto pageableDto = EntityMock.pageableDto();
+
+        when(deliveryRepository.findAllByStatusAndDateAfter(eq(Delivery.Status.SHIPPED), any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
+        when(deliveryMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
+
+        PageableDto response = deliveryService.findAllShipped(LocalDate.now().minusDays(1).toString(), null, page.getPageable());
+
+        assertNotNull(response);
+        assertNotNull(response.getContent());
+        assertEquals(1, response.getContent().size());
+
+        DeliveryDtoPagination delivery = (DeliveryDtoPagination) response.getContent().get(0);
+        assertEquals(page.getContent().get(0).getId(), delivery.getId());
+        assertEquals(page.getContent().get(0).getName(), delivery.getName());
+        assertEquals(page.getContent().get(0).getCpf(), delivery.getCpf());
+        assertEquals(page.getContent().get(0).getTitle(), delivery.getTitle());
+        assertEquals(page.getContent().get(0).getSku(), delivery.getSku());
+        assertEquals(page.getContent().get(0).getPrice(), delivery.getPrice());
+        assertEquals(page.getContent().get(0).getQuantity(), delivery.getQuantity());
+        assertEquals(page.getContent().get(0).getTotal(), delivery.getTotal());
+        assertEquals(page.getContent().get(0).getStatus(), delivery.getStatus());
+        assertEquals(page.getContent().get(0).getDate(), delivery.getDate());
+    }
+
+    @Test
+    void testFindAllShippedByDateBeforeSuccess() {
+        Page<DeliveryDtoPagination> page = EntityMock.page();
+        PageableDto pageableDto = EntityMock.pageableDto();
+
+        when(deliveryRepository.findAllByStatusAndDateBefore(eq(Delivery.Status.SHIPPED), any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
+        when(deliveryMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
+
+        PageableDto response = deliveryService.findAllShipped(null, LocalDate.now().plusDays(1).toString(), page.getPageable());
 
         assertNotNull(response);
         assertNotNull(response.getContent());
@@ -163,7 +325,7 @@ class DeliveryServiceTest {
         when(deliveryRepository.findAllByStatus(any(Pageable.class), eq(Delivery.Status.SHIPPED))).thenReturn(page);
         when(deliveryMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        assertThrows(EntityNotFoundException.class, () -> deliveryService.findAllShipped(page.getPageable()));
+        assertThrows(EntityNotFoundException.class, () -> deliveryService.findAllShipped(null, null, page.getPageable()));
     }
 
     @Test
@@ -174,7 +336,88 @@ class DeliveryServiceTest {
         when(deliveryRepository.findAllByStatus(any(Pageable.class), eq(Delivery.Status.PROCESSING))).thenReturn(page);
         when(deliveryMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        PageableDto response = deliveryService.findAllProcessing(page.getPageable());
+        PageableDto response = deliveryService.findAllProcessing(null, null, page.getPageable());
+
+        assertNotNull(response);
+        assertNotNull(response.getContent());
+        assertEquals(1, response.getContent().size());
+
+        DeliveryDtoPagination delivery = (DeliveryDtoPagination) response.getContent().get(0);
+        assertEquals(page.getContent().get(0).getId(), delivery.getId());
+        assertEquals(page.getContent().get(0).getName(), delivery.getName());
+        assertEquals(page.getContent().get(0).getCpf(), delivery.getCpf());
+        assertEquals(page.getContent().get(0).getTitle(), delivery.getTitle());
+        assertEquals(page.getContent().get(0).getSku(), delivery.getSku());
+        assertEquals(page.getContent().get(0).getPrice(), delivery.getPrice());
+        assertEquals(page.getContent().get(0).getQuantity(), delivery.getQuantity());
+        assertEquals(page.getContent().get(0).getTotal(), delivery.getTotal());
+        assertEquals(page.getContent().get(0).getStatus(), delivery.getStatus());
+        assertEquals(page.getContent().get(0).getDate(), delivery.getDate());
+    }
+
+    @Test
+    void testFindAllProcessingByDateBetweenSuccess() {
+        Page<DeliveryDtoPagination> page = EntityMock.page();
+        PageableDto pageableDto = EntityMock.pageableDto();
+
+        when(deliveryRepository.findAllByStatusAndDateBetween(eq(Delivery.Status.PROCESSING), any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
+        when(deliveryMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
+
+        PageableDto response = deliveryService.findAllProcessing(LocalDate.now().minusDays(1).toString(), LocalDate.now().plusDays(1).toString(), page.getPageable());
+
+        assertNotNull(response);
+        assertNotNull(response.getContent());
+        assertEquals(1, response.getContent().size());
+
+        DeliveryDtoPagination delivery = (DeliveryDtoPagination) response.getContent().get(0);
+        assertEquals(page.getContent().get(0).getId(), delivery.getId());
+        assertEquals(page.getContent().get(0).getName(), delivery.getName());
+        assertEquals(page.getContent().get(0).getCpf(), delivery.getCpf());
+        assertEquals(page.getContent().get(0).getTitle(), delivery.getTitle());
+        assertEquals(page.getContent().get(0).getSku(), delivery.getSku());
+        assertEquals(page.getContent().get(0).getPrice(), delivery.getPrice());
+        assertEquals(page.getContent().get(0).getQuantity(), delivery.getQuantity());
+        assertEquals(page.getContent().get(0).getTotal(), delivery.getTotal());
+        assertEquals(page.getContent().get(0).getStatus(), delivery.getStatus());
+        assertEquals(page.getContent().get(0).getDate(), delivery.getDate());
+    }
+
+    @Test
+    void testFindAllProcessingByDateAfterSuccess() {
+        Page<DeliveryDtoPagination> page = EntityMock.page();
+        PageableDto pageableDto = EntityMock.pageableDto();
+
+        when(deliveryRepository.findAllByStatusAndDateAfter(eq(Delivery.Status.PROCESSING), any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
+        when(deliveryMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
+
+        PageableDto response = deliveryService.findAllProcessing(LocalDate.now().minusDays(1).toString(), null, page.getPageable());
+
+        assertNotNull(response);
+        assertNotNull(response.getContent());
+        assertEquals(1, response.getContent().size());
+
+        DeliveryDtoPagination delivery = (DeliveryDtoPagination) response.getContent().get(0);
+        assertEquals(page.getContent().get(0).getId(), delivery.getId());
+        assertEquals(page.getContent().get(0).getName(), delivery.getName());
+        assertEquals(page.getContent().get(0).getCpf(), delivery.getCpf());
+        assertEquals(page.getContent().get(0).getTitle(), delivery.getTitle());
+        assertEquals(page.getContent().get(0).getSku(), delivery.getSku());
+        assertEquals(page.getContent().get(0).getPrice(), delivery.getPrice());
+        assertEquals(page.getContent().get(0).getQuantity(), delivery.getQuantity());
+        assertEquals(page.getContent().get(0).getTotal(), delivery.getTotal());
+        assertEquals(page.getContent().get(0).getStatus(), delivery.getStatus());
+        assertEquals(page.getContent().get(0).getDate(), delivery.getDate());
+    }
+
+    @Test
+    void testFindAllProcessingByDateBeforeSuccess() {
+        Page<DeliveryDtoPagination> page = EntityMock.page();
+        PageableDto pageableDto = EntityMock.pageableDto();
+
+        when(deliveryRepository.findAllByStatusAndDateBefore(eq(Delivery.Status.PROCESSING), any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
+        when(deliveryMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
+
+        PageableDto response = deliveryService.findAllProcessing(null, LocalDate.now().plusDays(1).toString(), page.getPageable());
 
         assertNotNull(response);
         assertNotNull(response.getContent());
@@ -201,7 +444,7 @@ class DeliveryServiceTest {
         when(deliveryRepository.findAllByStatus(any(Pageable.class), eq(Delivery.Status.PROCESSING))).thenReturn(page);
         when(deliveryMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        assertThrows(EntityNotFoundException.class, () -> deliveryService.findAllProcessing(page.getPageable()));
+        assertThrows(EntityNotFoundException.class, () -> deliveryService.findAllProcessing(null, null, page.getPageable()));
     }
 
     @Test
@@ -212,7 +455,88 @@ class DeliveryServiceTest {
         when(deliveryRepository.findAllByStatus(any(Pageable.class), eq(Delivery.Status.CANCELED))).thenReturn(page);
         when(deliveryMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        PageableDto response = deliveryService.findAllCanceled(page.getPageable());
+        PageableDto response = deliveryService.findAllCanceled(null, null, page.getPageable());
+
+        assertNotNull(response);
+        assertNotNull(response.getContent());
+        assertEquals(1, response.getContent().size());
+
+        DeliveryDtoPagination delivery = (DeliveryDtoPagination) response.getContent().get(0);
+        assertEquals(page.getContent().get(0).getId(), delivery.getId());
+        assertEquals(page.getContent().get(0).getName(), delivery.getName());
+        assertEquals(page.getContent().get(0).getCpf(), delivery.getCpf());
+        assertEquals(page.getContent().get(0).getTitle(), delivery.getTitle());
+        assertEquals(page.getContent().get(0).getSku(), delivery.getSku());
+        assertEquals(page.getContent().get(0).getPrice(), delivery.getPrice());
+        assertEquals(page.getContent().get(0).getQuantity(), delivery.getQuantity());
+        assertEquals(page.getContent().get(0).getTotal(), delivery.getTotal());
+        assertEquals(page.getContent().get(0).getStatus(), delivery.getStatus());
+        assertEquals(page.getContent().get(0).getDate(), delivery.getDate());
+    }
+
+    @Test
+    void testFindAllCanceledByDateBetweenSuccess() {
+        Page<DeliveryDtoPagination> page = EntityMock.page();
+        PageableDto pageableDto = EntityMock.pageableDto();
+
+        when(deliveryRepository.findAllByStatusAndDateBetween(eq(Delivery.Status.CANCELED), any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
+        when(deliveryMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
+
+        PageableDto response = deliveryService.findAllCanceled(LocalDate.now().minusDays(1).toString(), LocalDate.now().plusDays(1).toString(), page.getPageable());
+
+        assertNotNull(response);
+        assertNotNull(response.getContent());
+        assertEquals(1, response.getContent().size());
+
+        DeliveryDtoPagination delivery = (DeliveryDtoPagination) response.getContent().get(0);
+        assertEquals(page.getContent().get(0).getId(), delivery.getId());
+        assertEquals(page.getContent().get(0).getName(), delivery.getName());
+        assertEquals(page.getContent().get(0).getCpf(), delivery.getCpf());
+        assertEquals(page.getContent().get(0).getTitle(), delivery.getTitle());
+        assertEquals(page.getContent().get(0).getSku(), delivery.getSku());
+        assertEquals(page.getContent().get(0).getPrice(), delivery.getPrice());
+        assertEquals(page.getContent().get(0).getQuantity(), delivery.getQuantity());
+        assertEquals(page.getContent().get(0).getTotal(), delivery.getTotal());
+        assertEquals(page.getContent().get(0).getStatus(), delivery.getStatus());
+        assertEquals(page.getContent().get(0).getDate(), delivery.getDate());
+    }
+
+    @Test
+    void testFindAllCanceledByDateAfterSuccess() {
+        Page<DeliveryDtoPagination> page = EntityMock.page();
+        PageableDto pageableDto = EntityMock.pageableDto();
+
+        when(deliveryRepository.findAllByStatusAndDateAfter(eq(Delivery.Status.CANCELED), any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
+        when(deliveryMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
+
+        PageableDto response = deliveryService.findAllCanceled(LocalDate.now().minusDays(1).toString(), null, page.getPageable());
+
+        assertNotNull(response);
+        assertNotNull(response.getContent());
+        assertEquals(1, response.getContent().size());
+
+        DeliveryDtoPagination delivery = (DeliveryDtoPagination) response.getContent().get(0);
+        assertEquals(page.getContent().get(0).getId(), delivery.getId());
+        assertEquals(page.getContent().get(0).getName(), delivery.getName());
+        assertEquals(page.getContent().get(0).getCpf(), delivery.getCpf());
+        assertEquals(page.getContent().get(0).getTitle(), delivery.getTitle());
+        assertEquals(page.getContent().get(0).getSku(), delivery.getSku());
+        assertEquals(page.getContent().get(0).getPrice(), delivery.getPrice());
+        assertEquals(page.getContent().get(0).getQuantity(), delivery.getQuantity());
+        assertEquals(page.getContent().get(0).getTotal(), delivery.getTotal());
+        assertEquals(page.getContent().get(0).getStatus(), delivery.getStatus());
+        assertEquals(page.getContent().get(0).getDate(), delivery.getDate());
+    }
+
+    @Test
+    void testFindAllCanceledByDateBeforeSuccess() {
+        Page<DeliveryDtoPagination> page = EntityMock.page();
+        PageableDto pageableDto = EntityMock.pageableDto();
+
+        when(deliveryRepository.findAllByStatusAndDateBefore(eq(Delivery.Status.CANCELED), any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
+        when(deliveryMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
+
+        PageableDto response = deliveryService.findAllCanceled(null, LocalDate.now().plusDays(1).toString(), page.getPageable());
 
         assertNotNull(response);
         assertNotNull(response.getContent());
@@ -239,101 +563,7 @@ class DeliveryServiceTest {
         when(deliveryRepository.findAllByStatus(any(Pageable.class), eq(Delivery.Status.CANCELED))).thenReturn(page);
         when(deliveryMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        assertThrows(EntityNotFoundException.class, () -> deliveryService.findAllCanceled(page.getPageable()));
-    }
-
-    @Test
-    void testFindDeliveryByDateBetweenSuccess() {
-        Page<DeliveryDtoPagination> page = EntityMock.page();
-        PageableDto pageableDto = EntityMock.pageableDto();
-
-        when(deliveryRepository.findByDateBetween(any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
-        when(deliveryMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
-
-        PageableDto response = deliveryService.findDeliveryByDate(LocalDate.now().minusDays(1).toString(), LocalDate.now().plusDays(1).toString(), page.getPageable());
-
-        assertNotNull(response.getContent());
-        assertEquals(1, response.getContent().size());
-
-        DeliveryDtoPagination delivery = (DeliveryDtoPagination) response.getContent().get(0);
-        assertEquals(page.getContent().get(0).getId(), delivery.getId());
-        assertEquals(page.getContent().get(0).getName(), delivery.getName());
-        assertEquals(page.getContent().get(0).getCpf(), delivery.getCpf());
-        assertEquals(page.getContent().get(0).getTitle(), delivery.getTitle());
-        assertEquals(page.getContent().get(0).getSku(), delivery.getSku());
-        assertEquals(page.getContent().get(0).getPrice(), delivery.getPrice());
-        assertEquals(page.getContent().get(0).getQuantity(), delivery.getQuantity());
-        assertEquals(page.getContent().get(0).getTotal(), delivery.getTotal());
-        assertEquals(page.getContent().get(0).getStatus(), delivery.getStatus());
-        assertEquals(page.getContent().get(0).getDate(), delivery.getDate());
-    }
-
-    @Test
-    void testFindDeliveryByDateAfterSuccess() {
-        Page<DeliveryDtoPagination> page = EntityMock.page();
-        PageableDto pageableDto = EntityMock.pageableDto();
-
-        when(deliveryRepository.findByDateAfter(any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
-        when(deliveryMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
-
-        PageableDto response = deliveryService.findDeliveryByDate(LocalDate.now().minusDays(1).toString(), null, page.getPageable());
-
-        assertNotNull(response.getContent());
-        assertEquals(1, response.getContent().size());
-
-        DeliveryDtoPagination delivery = (DeliveryDtoPagination) response.getContent().get(0);
-        assertEquals(page.getContent().get(0).getId(), delivery.getId());
-        assertEquals(page.getContent().get(0).getName(), delivery.getName());
-        assertEquals(page.getContent().get(0).getCpf(), delivery.getCpf());
-        assertEquals(page.getContent().get(0).getTitle(), delivery.getTitle());
-        assertEquals(page.getContent().get(0).getSku(), delivery.getSku());
-        assertEquals(page.getContent().get(0).getPrice(), delivery.getPrice());
-        assertEquals(page.getContent().get(0).getQuantity(), delivery.getQuantity());
-        assertEquals(page.getContent().get(0).getTotal(), delivery.getTotal());
-        assertEquals(page.getContent().get(0).getStatus(), delivery.getStatus());
-        assertEquals(page.getContent().get(0).getDate(), delivery.getDate());
-    }
-
-    @Test
-    void testFindDeliveryByDateBeforeSuccess() {
-        Page<DeliveryDtoPagination> page = EntityMock.page();
-        PageableDto pageableDto = EntityMock.pageableDto();
-
-        when(deliveryRepository.findByDateBefore(any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
-        when(deliveryMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
-
-        PageableDto response = deliveryService.findDeliveryByDate(null, LocalDate.now().plusDays(1).toString(), page.getPageable());
-
-        assertNotNull(response.getContent());
-        assertEquals(1, response.getContent().size());
-
-        DeliveryDtoPagination delivery = (DeliveryDtoPagination) response.getContent().get(0);
-        assertEquals(page.getContent().get(0).getId(), delivery.getId());
-        assertEquals(page.getContent().get(0).getName(), delivery.getName());
-        assertEquals(page.getContent().get(0).getCpf(), delivery.getCpf());
-        assertEquals(page.getContent().get(0).getTitle(), delivery.getTitle());
-        assertEquals(page.getContent().get(0).getSku(), delivery.getSku());
-        assertEquals(page.getContent().get(0).getPrice(), delivery.getPrice());
-        assertEquals(page.getContent().get(0).getQuantity(), delivery.getQuantity());
-        assertEquals(page.getContent().get(0).getTotal(), delivery.getTotal());
-        assertEquals(page.getContent().get(0).getStatus(), delivery.getStatus());
-        assertEquals(page.getContent().get(0).getDate(), delivery.getDate());
-    }
-
-    @Test
-    void testFindDeliveryByDateNoDateParametersProvided() {
-        assertThrows(EntityNotFoundException.class, () -> deliveryService.findDeliveryByDate(null, null, EntityMock.page().getPageable()));
-    }
-
-    @Test
-    void testFindDeliveryByDateEntityNotFoundException() {
-        Page<DeliveryDtoPagination> page = EntityMock.pageEmpty();
-        PageableDto pageableDto = EntityMock.pageableDtoEmpty();
-
-        when(deliveryRepository.findByDateBetween(any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
-        when(deliveryMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
-
-        assertThrows(EntityNotFoundException.class, () -> deliveryService.findDeliveryByDate(LocalDate.now().minusDays(1).toString(), LocalDate.now().plusDays(1).toString(), page.getPageable()));
+        assertThrows(EntityNotFoundException.class, () -> deliveryService.findAllCanceled(null, null, page.getPageable()));
     }
 
     @Test
