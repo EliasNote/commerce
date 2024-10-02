@@ -137,6 +137,8 @@ services:
       KAFKA_HOST: kafka:19092
       DEFAULT_ZONE: http://server:8761/eureka
       PRODUCTS_API_URL: http://gateway:8080/api/v1/products
+      KEYCLOAK_DEFAULT_URL: http://keycloak:8081
+      DB_HOST: postgres
       SPRING_PROFILES_ACTIVE: docker
 
   orders:
@@ -158,6 +160,8 @@ services:
       DEFAULT_ZONE: http://server:8761/eureka
       CUSTOMERS_API_URL: http://gateway:8080/api/v1/customers
       PRODUCTS_API_URL: http://gateway:8080/api/v1/products
+      KEYCLOAK_DEFAULT_URL: http://keycloak:8081
+      DB_HOST: postgres
       SPRING_PROFILES_ACTIVE: docker
 
   gateway:

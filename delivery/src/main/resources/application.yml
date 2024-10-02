@@ -1,3 +1,10 @@
 spring:
   profiles:
     active: local
+keycloak:
+  server-url: ${KEYCLOAK_DEFAULT_URL:http://localhost:8081}
+  datasource:
+    jdbc-url: jdbc:postgresql://${DB_HOST:localhost}:5432/keycloak
+    username: root
+    password: root
+    driverClassName: org.postgresql.Driver
