@@ -1,4 +1,4 @@
-package com.esand.delivery.repository;
+package com.esand.delivery.repository.delivery;
 
 import com.esand.delivery.entity.Delivery;
 import com.esand.delivery.repository.pagination.DeliveryDtoPagination;
