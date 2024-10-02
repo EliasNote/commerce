@@ -5,13 +5,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CustomerResponseDto {
+public class CustomerResponseDto implements Serializable {
     private String name;
     private String cpf;
     private String phone;
