@@ -4,7 +4,7 @@ import com.esand.delivery.client.products.ProductClient;
 import com.esand.delivery.config.Listener;
 import com.esand.delivery.entity.Delivery;
 import com.esand.delivery.entity.EntityMock;
-import com.esand.delivery.repository.DeliveryRepository;
+import com.esand.delivery.repository.delivery.DeliveryRepository;
 import com.esand.delivery.web.dto.DeliveryResponseDto;
 import com.esand.delivery.web.dto.DeliverySaveDto;
 import com.esand.delivery.web.mapper.DeliveryMapper;

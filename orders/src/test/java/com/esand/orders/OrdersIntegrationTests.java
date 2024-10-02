@@ -6,7 +6,7 @@ import com.esand.orders.client.products.Product;
 import com.esand.orders.client.products.ProductClient;
 import com.esand.orders.entity.EntityMock;
 import com.esand.orders.entity.Order;
-import com.esand.orders.repository.OrderRepository;
+import com.esand.orders.repository.order.OrderRepository;
 import com.esand.orders.web.dto.OrderCreateDto;
 import com.esand.orders.web.dto.OrderResponseDto;
 import org.junit.jupiter.api.BeforeEach;

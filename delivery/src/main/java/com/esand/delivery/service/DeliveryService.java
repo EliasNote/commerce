@@ -6,7 +6,7 @@ import com.esand.delivery.exception.ConnectionException;
 import com.esand.delivery.exception.EntityNotFoundException;
 import com.esand.delivery.exception.DeliveryCanceledException;
 import com.esand.delivery.exception.DeliveryShippedException;
-import com.esand.delivery.repository.DeliveryRepository;
+import com.esand.delivery.repository.delivery.DeliveryRepository;
 import com.esand.delivery.web.dto.DeliveryResponseDto;
 import com.esand.delivery.web.dto.DeliverySaveDto;
 import com.esand.delivery.web.dto.PageableDto;

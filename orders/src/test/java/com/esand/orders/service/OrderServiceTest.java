@@ -10,7 +10,7 @@ import com.esand.orders.exception.ConnectionException;
 import com.esand.orders.exception.EntityNotFoundException;
 import com.esand.orders.exception.InvalidQuantityException;
 import com.esand.orders.exception.UnavailableProductException;
-import com.esand.orders.repository.OrderRepository;
+import com.esand.orders.repository.order.OrderRepository;
 import com.esand.orders.repository.pagination.OrderDtoPagination;
 import com.esand.orders.web.dto.OrderCreateDto;
 import com.esand.orders.web.dto.OrderResponseDto;
