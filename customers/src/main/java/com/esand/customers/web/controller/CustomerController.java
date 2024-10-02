@@ -27,8 +27,10 @@ public class CustomerController implements SpringDoc {
     }
 
     @GetMapping
-    public ResponseEntity<PageableDto> findAll(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable) {
-        return ResponseEntity.ok(customerService.findAll(pageable));
+    public ResponseEntity<PageableDto> findAll(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                               @RequestParam(value = "afterDate", required = false) String afterDate,
+                                               @RequestParam(value = "beforeDate", required = false) String beforeDate) {
+        return ResponseEntity.ok(customerService.findAll(afterDate, beforeDate, pageable));
     }
 
     @GetMapping("/name/{name}")
@@ -39,13 +41,6 @@ public class CustomerController implements SpringDoc {
     @GetMapping("/cpf/{cpf}")
     public ResponseEntity<CustomerResponseDto> findByCpf(@PathVariable String cpf) {
         return ResponseEntity.ok(customerService.findByCpf(cpf));
-    }
-
-    @GetMapping("/date")
-    public ResponseEntity<PageableDto> findByDate(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
-                                              @RequestParam(value = "afterDate", required = false) String afterDate,
-                                              @RequestParam(value = "beforeDate", required = false) String beforeDate) {
-        return ResponseEntity.ok(customerService.findCustomersByDate(afterDate, beforeDate, pageable));
     }
 
     @PatchMapping("/edit/{cpf}")

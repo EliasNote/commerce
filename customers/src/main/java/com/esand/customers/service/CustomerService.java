@@ -34,8 +34,19 @@ public class CustomerService {
     }
 
     @Transactional(readOnly = true)
-    public PageableDto findAll(Pageable pageable) {
-        PageableDto dto = customerMapper.toPageableDto(customerRepository.findAllPageable(pageable));
+    public PageableDto findAll(String afterDate, String beforeDate, Pageable pageable) {
+        PageableDto dto;
+
+        if (afterDate != null && beforeDate != null) {
+            dto = customerMapper.toPageableDto(customerRepository.findByCreateDateBetween(LocalDate.parse(afterDate).atStartOfDay(), LocalDate.parse(beforeDate).atStartOfDay().plusDays(1), pageable));
+        } else if (afterDate != null) {
+            dto = customerMapper.toPageableDto(customerRepository.findByCreateDateAfter(LocalDate.parse(afterDate).atStartOfDay(), pageable));
+        } else if (beforeDate != null) {
+            dto = customerMapper.toPageableDto(customerRepository.findByCreateDateBefore(LocalDate.parse(beforeDate).atStartOfDay().plusDays(1), pageable));
+        } else {
+            dto = customerMapper.toPageableDto(customerRepository.findAllPageable(pageable));
+        }
+
         if (dto.getContent().isEmpty()) {
             throw new EntityNotFoundException("No customers found");
         }
@@ -54,26 +65,6 @@ public class CustomerService {
     @Transactional(readOnly = true)
     public CustomerResponseDto findByCpf(String cpf) {
         return customerMapper.toDto(findCustomerByCpf(cpf));
-    }
-
-    @Transactional(readOnly = true)
-    public PageableDto findCustomersByDate(String afterDate, String beforeDate, Pageable pageable) {
-        PageableDto dto;
-        if (afterDate != null && beforeDate != null) {
-            dto = customerMapper.toPageableDto(customerRepository.findByCreateDateBetween(LocalDate.parse(afterDate).atStartOfDay(), LocalDate.parse(beforeDate).atStartOfDay().plusDays(1), pageable));
-        } else if (afterDate != null) {
-            dto = customerMapper.toPageableDto(customerRepository.findByCreateDateAfter(LocalDate.parse(afterDate).atStartOfDay(), pageable));
-        } else if (beforeDate != null) {
-            dto = customerMapper.toPageableDto(customerRepository.findByCreateDateBefore(LocalDate.parse(beforeDate).atStartOfDay().plusDays(1), pageable));
-        } else {
-            throw new EntityNotFoundException("No date parameters provided");
-        }
-
-        if (dto.getContent().isEmpty()) {
-            throw new EntityNotFoundException("No customers found by date(s)");
-        }
-
-        return dto;
     }
 
     @Transactional
