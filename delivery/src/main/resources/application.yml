@@ -1,6 +1,60 @@
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+  client:
+    service-url:
+      defaultZone: ${DEFAULT_ZONE:http://localhost:8761/eureka}
+
+products:
+  api:
+    url: ${PRODUCTS_API_URL:http://localhost:8080/api/v1/products}
+
 spring:
   profiles:
     active: local
+  application:
+    name: delivery
+  datasource:
+    jdbc-url: jdbc:postgresql://${DB_HOST:localhost}:5432/delivery
+    username: root
+    password: root
+    driverClassName: org.postgresql.Driver
+  mvc:
+    locale-resolver: fixed
+    locale: pt_BR
+  jpa:
+    defer-datasource-initialization: 'true'
+    show-sql: 'true'
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: 'true'
+        boot:
+          allow_jdbc_metadata_access: 'false'
+
+server:
+  port: '0'
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+    enabled-by-default: 'true'
+  endpoint:
+    health:
+      enabled: 'true'
+      show-details: always
+
+springdoc:
+  api-docs:
+    path: /docs-api
+  packagesToScan: com.esand.delivery.web.controller
+  swagger-ui:
+    path: /docs-ui.html
+
 keycloak:
   server-url: ${KEYCLOAK_DEFAULT_URL:http://localhost:8081}
   datasource:
