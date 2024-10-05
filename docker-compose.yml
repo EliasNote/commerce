@@ -1,5 +1,9 @@
 version: '3'
 
+x-env: &db-config
+  DB_HOST: postgres
+  DB_PORT: 5432
+
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
@@ -48,7 +52,7 @@ services:
       - pgdata:/var/lib/postgresql/data
       - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
-      - "5432:5432"
+      - "5433:5433"
 
   pgadmin:
     image: dpage/pgadmin4
@@ -105,6 +109,7 @@ services:
     environment:
       DEFAULT_ZONE: http://server:8761/eureka
       SPRING_PROFILES_ACTIVE: docker
+      <<: *db-config
       KEYCLOAK_DEFAULT_URL: http://keycloak:8081
 
   customers:
@@ -119,6 +124,7 @@ services:
     restart: unless-stopped
     environment:
       DEFAULT_ZONE: http://server:8761/eureka
+      <<: *db-config
       SPRING_PROFILES_ACTIVE: docker
 
   delivery:
@@ -138,7 +144,7 @@ services:
       DEFAULT_ZONE: http://server:8761/eureka
       PRODUCTS_API_URL: http://gateway:8080/api/v1/products
       KEYCLOAK_DEFAULT_URL: http://keycloak:8081
-      DB_HOST: postgres
+      <<: *db-config
       SPRING_PROFILES_ACTIVE: docker
 
   orders:
@@ -161,7 +167,7 @@ services:
       CUSTOMERS_API_URL: http://gateway:8080/api/v1/customers
       PRODUCTS_API_URL: http://gateway:8080/api/v1/products
       KEYCLOAK_DEFAULT_URL: http://keycloak:8081
-      DB_HOST: postgres
+      <<: *db-config
       SPRING_PROFILES_ACTIVE: docker
 
   gateway:
