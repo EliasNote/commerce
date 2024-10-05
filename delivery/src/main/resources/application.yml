@@ -15,7 +15,7 @@ spring:
   application:
     name: delivery
   datasource:
-    jdbc-url: jdbc:postgresql://${DB_HOST:localhost}:5432/delivery
+    jdbc-url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5433}/delivery
     username: root
     password: root
     driverClassName: org.postgresql.Driver
@@ -56,7 +56,7 @@ springdoc:
 keycloak:
   server-url: ${KEYCLOAK_DEFAULT_URL:http://localhost:8081}
   datasource:
-    jdbc-url: jdbc:postgresql://${DB_HOST:localhost}:5432/keycloak
+    jdbc-url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5433}/keycloak
     username: root
     password: root
     driverClassName: org.postgresql.Driver
