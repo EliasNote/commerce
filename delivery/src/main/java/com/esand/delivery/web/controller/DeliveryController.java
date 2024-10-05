@@ -52,6 +52,22 @@ public class DeliveryController implements SpringDoc {
         return ResponseEntity.ok(deliveryService.findAllCanceled(afterDate, beforeDate, pageable));
     }
 
+    @GetMapping("/cpf/{cpf}")
+    public ResponseEntity<PageableDto> findAllByCpf(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                                    @RequestParam(value = "afterDate", required = false) String afterDate,
+                                                    @RequestParam(value = "beforeDate", required = false) String beforeDate,
+                                                    @PathVariable String cpf) {
+        return ResponseEntity.ok(deliveryService.findAllByCpf(cpf, afterDate, beforeDate, pageable));
+    }
+
+    @GetMapping("/sku/{sku}")
+    public ResponseEntity<PageableDto> findAllBySku(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                                    @RequestParam(value = "afterDate", required = false) String afterDate,
+                                                    @RequestParam(value = "beforeDate", required = false) String beforeDate,
+                                                    @PathVariable String sku) {
+        return ResponseEntity.ok(deliveryService.findAllBySku(sku, afterDate, beforeDate, pageable));
+    }
+
     @GetMapping("/top-shipped-customers")
     public ResponseEntity<String> findTopShippedCustomers(@RequestParam(value = "afterDate", required = false) String afterDate,
                                                           @RequestParam(value = "beforeDate", required = false) String beforeDate) {

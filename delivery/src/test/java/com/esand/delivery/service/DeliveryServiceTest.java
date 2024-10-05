@@ -214,7 +214,7 @@ class DeliveryServiceTest {
         Page<DeliveryDtoPagination> page = EntityMock.page();
         PageableDto pageableDto = EntityMock.pageableDto();
 
-        when(deliveryRepository.findAllByStatus(any(Pageable.class), eq(Delivery.Status.SHIPPED))).thenReturn(page);
+        when(deliveryRepository.findAllByStatus(eq(Delivery.Status.SHIPPED), any(Pageable.class))).thenReturn(page);
         when(deliveryMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
         PageableDto response = deliveryService.findAllShipped(null, null, page.getPageable());
@@ -322,7 +322,7 @@ class DeliveryServiceTest {
         Page<DeliveryDtoPagination> page = EntityMock.pageEmpty();
         PageableDto pageableDto = EntityMock.pageableDtoEmpty();
 
-        when(deliveryRepository.findAllByStatus(any(Pageable.class), eq(Delivery.Status.SHIPPED))).thenReturn(page);
+        when(deliveryRepository.findAllByStatus(eq(Delivery.Status.SHIPPED), any(Pageable.class))).thenReturn(page);
         when(deliveryMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
         assertThrows(EntityNotFoundException.class, () -> deliveryService.findAllShipped(null, null, page.getPageable()));
@@ -333,7 +333,7 @@ class DeliveryServiceTest {
         Page<DeliveryDtoPagination> page = EntityMock.page();
         PageableDto pageableDto = EntityMock.pageableDto();
 
-        when(deliveryRepository.findAllByStatus(any(Pageable.class), eq(Delivery.Status.PROCESSING))).thenReturn(page);
+        when(deliveryRepository.findAllByStatus(eq(Delivery.Status.PROCESSING), any(Pageable.class))).thenReturn(page);
         when(deliveryMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
         PageableDto response = deliveryService.findAllProcessing(null, null, page.getPageable());
@@ -441,7 +441,7 @@ class DeliveryServiceTest {
         Page<DeliveryDtoPagination> page = EntityMock.pageEmpty();
         PageableDto pageableDto = EntityMock.pageableDtoEmpty();
 
-        when(deliveryRepository.findAllByStatus(any(Pageable.class), eq(Delivery.Status.PROCESSING))).thenReturn(page);
+        when(deliveryRepository.findAllByStatus(eq(Delivery.Status.PROCESSING), any(Pageable.class))).thenReturn(page);
         when(deliveryMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
         assertThrows(EntityNotFoundException.class, () -> deliveryService.findAllProcessing(null, null, page.getPageable()));
@@ -452,7 +452,7 @@ class DeliveryServiceTest {
         Page<DeliveryDtoPagination> page = EntityMock.page();
         PageableDto pageableDto = EntityMock.pageableDto();
 
-        when(deliveryRepository.findAllByStatus(any(Pageable.class), eq(Delivery.Status.CANCELED))).thenReturn(page);
+        when(deliveryRepository.findAllByStatus(eq(Delivery.Status.CANCELED), any(Pageable.class))).thenReturn(page);
         when(deliveryMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
         PageableDto response = deliveryService.findAllCanceled(null, null, page.getPageable());
@@ -560,7 +560,7 @@ class DeliveryServiceTest {
         Page<DeliveryDtoPagination> page = EntityMock.pageEmpty();
         PageableDto pageableDto = EntityMock.pageableDtoEmpty();
 
-        when(deliveryRepository.findAllByStatus(any(Pageable.class), eq(Delivery.Status.CANCELED))).thenReturn(page);
+        when(deliveryRepository.findAllByStatus(eq(Delivery.Status.CANCELED), any(Pageable.class))).thenReturn(page);
         when(deliveryMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
         assertThrows(EntityNotFoundException.class, () -> deliveryService.findAllCanceled(null, null, page.getPageable()));

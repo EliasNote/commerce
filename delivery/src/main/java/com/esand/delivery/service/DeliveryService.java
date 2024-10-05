@@ -13,6 +13,7 @@ import com.esand.delivery.web.dto.PageableDto;
 import com.esand.delivery.web.mapper.DeliveryMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -39,23 +41,7 @@ public class DeliveryService {
 
     @Transactional(readOnly = true)
     public PageableDto findAll(String afterDate, String beforeDate, Pageable pageable) {
-        PageableDto dto;
-
-        if (afterDate != null && beforeDate != null) {
-            dto = deliveryMapper.toPageableDto(deliveryRepository.findAllByDateBetween(LocalDate.parse(afterDate).atStartOfDay(), LocalDate.parse(beforeDate).atStartOfDay().plusDays(1), pageable));
-        } else if (afterDate != null) {
-            dto = deliveryMapper.toPageableDto(deliveryRepository.findAllByDateAfter(LocalDate.parse(afterDate).atStartOfDay(), pageable));
-        } else if (beforeDate != null) {
-            dto = deliveryMapper.toPageableDto(deliveryRepository.findAllByDateBefore(LocalDate.parse(beforeDate).atStartOfDay().plusDays(1), pageable));
-        } else {
-            dto = deliveryMapper.toPageableDto(deliveryRepository.findAllPageable(pageable));
-        }
-
-        if (dto.getContent().isEmpty()) {
-            throw new EntityNotFoundException("No orders found");
-        }
-
-        return dto;
+        return findByCriteria(null, null, null, afterDate, beforeDate, pageable);
     }
 
     @Transactional(readOnly = true)
@@ -65,17 +51,27 @@ public class DeliveryService {
 
     @Transactional(readOnly = true)
     public PageableDto findAllShipped(String afterDate, String beforeDate, Pageable pageable) {
-        return findByStatusAndDate(afterDate, beforeDate, Delivery.Status.SHIPPED, pageable);
+        return findByCriteria(null, null, Delivery.Status.SHIPPED, afterDate, beforeDate, pageable);
     }
 
     @Transactional(readOnly = true)
     public PageableDto findAllProcessing(String afterDate, String beforeDate, Pageable pageable) {
-        return findByStatusAndDate(afterDate, beforeDate, Delivery.Status.PROCESSING, pageable);
+        return findByCriteria(null, null, Delivery.Status.PROCESSING, afterDate, beforeDate, pageable);
     }
 
     @Transactional(readOnly = true)
     public PageableDto findAllCanceled(String afterDate, String beforeDate, Pageable pageable) {
-        return findByStatusAndDate(afterDate, beforeDate, Delivery.Status.CANCELED, pageable);
+        return findByCriteria(null, null, Delivery.Status.CANCELED, afterDate, beforeDate, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public PageableDto findAllByCpf(String cpf, String afterDate, String beforeDate, Pageable pageable) {
+        return findByCriteria(cpf, null, null, afterDate, beforeDate, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public PageableDto findAllBySku(String sku, String afterDate, String beforeDate, Pageable pageable) {
+        return findByCriteria(null, sku, null, afterDate, beforeDate, pageable);
     }
 
     @Transactional(noRollbackFor= Exception.class)
@@ -131,23 +127,64 @@ public class DeliveryService {
     }
 
     @Transactional(readOnly = true)
-    private PageableDto findByStatusAndDate(String afterDate, String beforeDate, Delivery.Status status, Pageable pageable) {
+    private PageableDto findByCriteria(String cpf, String sku, Delivery.Status status, String afterDate, String beforeDate, Pageable pageable) {
+        LocalDateTime after = null;
+        LocalDateTime before = null;
         PageableDto dto;
-        
-        if (afterDate != null && beforeDate != null) {
-            dto = deliveryMapper.toPageableDto(deliveryRepository.findAllByStatusAndDateBetween(status, LocalDate.parse(afterDate).atStartOfDay(), LocalDate.parse(beforeDate).atStartOfDay().plusDays(1), pageable));
-        } else if (afterDate != null) {
-            dto = deliveryMapper.toPageableDto(deliveryRepository.findAllByStatusAndDateAfter(status, LocalDate.parse(afterDate).atStartOfDay(), pageable));
-        } else if (beforeDate != null) {
-            dto = deliveryMapper.toPageableDto(deliveryRepository.findAllByStatusAndDateBefore(status, LocalDate.parse(beforeDate).atStartOfDay().plusDays(1), pageable));
+
+        if (afterDate != null) {
+            after = LocalDate.parse(afterDate).atStartOfDay();
+        }
+        if (beforeDate != null) {
+            before = LocalDate.parse(beforeDate).plusDays(1).atStartOfDay();
+        }
+
+        if (cpf != null) {
+            if (after != null && before != null) {
+                dto = deliveryMapper.toPageableDto(deliveryRepository.findAllByCpfAndDateBetween(cpf, after, before, pageable));
+            } else if (after != null) {
+                dto = deliveryMapper.toPageableDto(deliveryRepository.findAllByCpfAndDateAfter(cpf, after, pageable));
+            } else if (before != null) {
+                dto = deliveryMapper.toPageableDto(deliveryRepository.findAllByCpfAndDateBefore(cpf, before, pageable));
+            } else {
+                dto = deliveryMapper.toPageableDto(deliveryRepository.findAllByCpf(cpf, pageable));
+            }
+        } else if (sku != null) {
+            if (after != null && before != null) {
+                dto = deliveryMapper.toPageableDto(deliveryRepository.findAllBySkuAndDateBetween(sku, after, before, pageable));
+            } else if (after != null) {
+                dto = deliveryMapper.toPageableDto(deliveryRepository.findAllBySkuAndDateAfter(sku, after, pageable));
+            } else if (before != null) {
+                dto = deliveryMapper.toPageableDto(deliveryRepository.findAllBySkuAndDateBefore(sku, before, pageable));
+            } else {
+                dto = deliveryMapper.toPageableDto(deliveryRepository.findAllBySku(sku, pageable));
+            }
+        } else if (status != null) {
+            if (after != null && before != null) {
+                dto = deliveryMapper.toPageableDto(deliveryRepository.findAllByStatusAndDateBetween(status, after, before, pageable));
+            } else if (after != null) {
+                dto = deliveryMapper.toPageableDto(deliveryRepository.findAllByStatusAndDateAfter(status, after, pageable));
+            } else if (before != null) {
+                dto = deliveryMapper.toPageableDto(deliveryRepository.findAllByStatusAndDateBefore(status, before, pageable));
+            } else {
+                dto = deliveryMapper.toPageableDto(deliveryRepository.findAllByStatus(status, pageable));
+            }
         } else {
-            dto = deliveryMapper.toPageableDto(deliveryRepository.findAllByStatus(pageable, status));
+            if (after != null && before != null) {
+                dto = deliveryMapper.toPageableDto(deliveryRepository.findAllByDateBetween(after, before, pageable));
+            } else if (after != null) {
+                dto = deliveryMapper.toPageableDto(deliveryRepository.findAllByDateAfter(after, pageable));
+            } else if (before != null) {
+                dto = deliveryMapper.toPageableDto(deliveryRepository.findAllByDateBefore(before, pageable));
+            } else {
+                dto = deliveryMapper.toPageableDto(deliveryRepository.findAllPageable(pageable));
+            }
         }
 
         if (dto.getContent().isEmpty()) {
             throw new EntityNotFoundException("No orders found");
         }
-        
+
         return dto;
     }
 
@@ -241,5 +278,4 @@ public class DeliveryService {
 
         return sb.toString();
     }
-
 }

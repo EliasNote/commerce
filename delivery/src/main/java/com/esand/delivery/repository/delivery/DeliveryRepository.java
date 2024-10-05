@@ -31,7 +31,7 @@ public interface DeliveryRepository extends JpaRepository<Delivery, Long> {
 
     Page<DeliveryDtoPagination> findAllByStatusAndDateBefore(Delivery.Status status, LocalDateTime localDateTime, Pageable pageable);
 
-    Page<DeliveryDtoPagination> findAllByStatus(Pageable pageable, Delivery.Status status);
+    Page<DeliveryDtoPagination> findAllByStatus(Delivery.Status status, Pageable pageable);
 
     List<Delivery> findAllByStatusAndDateBetween(Delivery.Status status, LocalDateTime localDateTime, LocalDateTime localDateTime1);
 
@@ -40,4 +40,20 @@ public interface DeliveryRepository extends JpaRepository<Delivery, Long> {
     List<Delivery> findAllByStatusAndDateBefore(Delivery.Status status, LocalDateTime localDateTime);
 
     List<Delivery> findAllByStatus(Delivery.Status status);
+
+    Page<DeliveryDtoPagination> findAllByCpfAndDateBetween(String cpf, LocalDateTime localDateTime, LocalDateTime localDateTime1, Pageable pageable);
+
+    Page<DeliveryDtoPagination> findAllByCpfAndDateAfter(String cpf, LocalDateTime localDateTime, Pageable pageable);
+
+    Page<DeliveryDtoPagination> findAllByCpfAndDateBefore(String cpf, LocalDateTime localDateTime, Pageable pageable);
+
+    Page<DeliveryDtoPagination> findAllByCpf(String cpf, Pageable pageable);
+
+    Page<DeliveryDtoPagination> findAllBySkuAndDateBetween(String sku, LocalDateTime localDateTime, LocalDateTime localDateTime1, Pageable pageable);
+
+    Page<DeliveryDtoPagination> findAllBySkuAndDateAfter(String sku, LocalDateTime localDateTime, Pageable pageable);
+
+    Page<DeliveryDtoPagination> findAllBySkuAndDateBefore(String sku, LocalDateTime localDateTime, Pageable pageable);
+
+    Page<DeliveryDtoPagination> findAllBySku(String sku, Pageable pageable);
 }
