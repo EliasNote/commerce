@@ -31,8 +31,10 @@ public class Controller implements SpringDoc {
     }
 
     @GetMapping
-    public ResponseEntity<PageableDto> findAll(@PageableDefault(size = 10) Pageable pageable) {
-        return ResponseEntity.ok(productService.findAll(pageable));
+    public ResponseEntity<PageableDto> findAll(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                               @RequestParam(value = "afterDate", required = false) String afterDate,
+                                               @RequestParam(value = "beforeDate", required = false) String beforeDate) {
+        return ResponseEntity.ok(productService.findAll(afterDate, beforeDate, pageable));
     }
 
     @GetMapping("/title/{title}")
@@ -63,13 +65,6 @@ public class Controller implements SpringDoc {
     @GetMapping("/disabled")
     public ResponseEntity<PageableDto> findAllDisabled(@PageableDefault(size = 10) Pageable pageable) {
         return ResponseEntity.ok(productService.findAllDisabled(pageable));
-    }
-
-    @GetMapping("/date")
-    public ResponseEntity<PageableDto> findByDate(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
-                                                  @RequestParam(value = "afterDate", required = false) String afterDate,
-                                                  @RequestParam(value = "beforeDate", required = false) String beforeDate) {
-        return ResponseEntity.ok(productService.findProductsByDate(afterDate, beforeDate, pageable));
     }
 
     @PatchMapping("/edit/{sku}")

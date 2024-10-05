@@ -33,6 +33,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -91,9 +92,26 @@ class OrdersIntegrationTests {
 		return orderRepository.save(EntityMock.order());
 	}
 
+	void verifyResult(ResultActions response, OrderResponseDto responseDto, boolean isArray) throws Exception {
+		String json = (isArray) ? ".content[0]" : "";
+
+		response
+				.andExpect(jsonPath("$" + json +  ".name").value(responseDto.getName()))
+				.andExpect(jsonPath("$" + json +  ".cpf").value(responseDto.getCpf()))
+				.andExpect(jsonPath("$" + json +  ".title").value(responseDto.getTitle()))
+				.andExpect(jsonPath("$" + json +  ".sku").value(responseDto.getSku()))
+				.andExpect(jsonPath("$" + json +  ".price").value(responseDto.getPrice()))
+				.andExpect(jsonPath("$" + json +  ".quantity").value(responseDto.getQuantity()))
+				.andExpect(jsonPath("$" + json +  ".total").value(responseDto.getTotal()))
+				.andExpect(jsonPath("$" + json +  ".processing").value(responseDto.getProcessing()))
+				.andExpect(jsonPath("$" + json +  ".date").isNotEmpty()
+				);
+	}
+
 	@Test
 	void testCreateOrderSuccess() throws Exception {
 		OrderCreateDto orderCreateDto = EntityMock.createDto();
+		OrderResponseDto responseDto = EntityMock.responseDto();
 		Customer customer = EntityMock.customer();
 		Product product = EntityMock.product();
 
@@ -102,10 +120,12 @@ class OrdersIntegrationTests {
 
 		String json = objectMapper.writeValueAsString(orderCreateDto);
 
-		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/orders")
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/orders")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(json))
 				.andExpect(status().isCreated());
+
+		verifyResult(response, responseDto, false);
 	}
 
 	@Test
@@ -259,22 +279,53 @@ class OrdersIntegrationTests {
 	@Test
 	void testFindAllOrdersSuccess() throws Exception {
 		createOrder();
+		OrderResponseDto responseDto = EntityMock.responseDto();
 
-		OrderResponseDto orderResponseDto = EntityMock.responseDto();
-
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/orders")
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/orders")
 						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.content[0].name").value(orderResponseDto.getName()))
-				.andExpect(jsonPath("$.content[0].cpf").value(orderResponseDto.getCpf()))
-				.andExpect(jsonPath("$.content[0].title").value(orderResponseDto.getTitle()))
-				.andExpect(jsonPath("$.content[0].sku").value(orderResponseDto.getSku()))
-				.andExpect(jsonPath("$.content[0].price").value(orderResponseDto.getPrice()))
-				.andExpect(jsonPath("$.content[0].quantity").value(orderResponseDto.getQuantity()))
-				.andExpect(jsonPath("$.content[0].total").value(orderResponseDto.getTotal()))
-				.andExpect(jsonPath("$.content[0].processing").value(orderResponseDto.getProcessing()))
-				.andExpect(jsonPath("$.content[0].date").isNotEmpty()
-				);
+				.andExpect(status().isOk());
+
+		verifyResult(response, responseDto, true);
+	}
+
+	@Test
+	void testFindAllByDateBetweenSuccess() throws Exception {
+		createOrder();
+		OrderResponseDto responseDto = EntityMock.responseDto();
+		String after = LocalDate.now().minusDays(1).toString();
+		String before = LocalDate.now().plusDays(1).toString();
+
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/orders?afterDate=" + after + "&beforeDate=" + before)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
+
+		verifyResult(response, responseDto, true);
+	}
+
+	@Test
+	void testFindAllByDateAfterSuccess() throws Exception {
+		createOrder();
+		OrderResponseDto responseDto = EntityMock.responseDto();
+		String after = LocalDate.now().minusDays(1).toString();
+
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/orders?afterDate=" + after)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
+
+		verifyResult(response, responseDto, true);
+	}
+
+	@Test
+	void testFindAllByDateBeforeSuccess() throws Exception {
+		createOrder();
+		OrderResponseDto responseDto = EntityMock.responseDto();
+		String before = LocalDate.now().plusDays(1).toString();
+
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/orders?beforeDate=" + before)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
+
+		verifyResult(response, responseDto, true);
 	}
 
 	@Test
@@ -290,21 +341,13 @@ class OrdersIntegrationTests {
 	@Test
 	void testFindBySkuOrdersSuccess() throws Exception {
 		createOrder();
-		OrderResponseDto orderResponseDto = EntityMock.responseDto();
+		OrderResponseDto responseDto = EntityMock.responseDto();
 
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/orders/sku/" + orderResponseDto.getSku())
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/orders/sku/" + responseDto.getSku())
 						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.content[0].name").value(orderResponseDto.getName()))
-				.andExpect(jsonPath("$.content[0].cpf").value(orderResponseDto.getCpf()))
-				.andExpect(jsonPath("$.content[0].title").value(orderResponseDto.getTitle()))
-				.andExpect(jsonPath("$.content[0].sku").value(orderResponseDto.getSku()))
-				.andExpect(jsonPath("$.content[0].price").value(orderResponseDto.getPrice()))
-				.andExpect(jsonPath("$.content[0].quantity").value(orderResponseDto.getQuantity()))
-				.andExpect(jsonPath("$.content[0].total").value(orderResponseDto.getTotal()))
-				.andExpect(jsonPath("$.content[0].processing").value(orderResponseDto.getProcessing()))
-				.andExpect(jsonPath("$.content[0].date").isNotEmpty()
-				);
+				.andExpect(status().isOk());
+
+		verifyResult(response, responseDto, true);
 	}
 
 	@Test
@@ -320,21 +363,13 @@ class OrdersIntegrationTests {
 	@Test
 	void testFindByCpfOrdersSuccess() throws Exception {
 		createOrder();
-		OrderResponseDto orderResponseDto = EntityMock.responseDto();
+		OrderResponseDto responseDto = EntityMock.responseDto();
 
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/orders/cpf/" + orderResponseDto.getCpf())
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/orders/cpf/" + responseDto.getCpf())
 						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.content[0].name").value(orderResponseDto.getName()))
-				.andExpect(jsonPath("$.content[0].cpf").value(orderResponseDto.getCpf()))
-				.andExpect(jsonPath("$.content[0].title").value(orderResponseDto.getTitle()))
-				.andExpect(jsonPath("$.content[0].sku").value(orderResponseDto.getSku()))
-				.andExpect(jsonPath("$.content[0].price").value(orderResponseDto.getPrice()))
-				.andExpect(jsonPath("$.content[0].quantity").value(orderResponseDto.getQuantity()))
-				.andExpect(jsonPath("$.content[0].total").value(orderResponseDto.getTotal()))
-				.andExpect(jsonPath("$.content[0].processing").value(orderResponseDto.getProcessing()))
-				.andExpect(jsonPath("$.content[0].date").isNotEmpty()
-				);
+				.andExpect(status().isOk());
+
+		verifyResult(response, responseDto, true);
 	}
 
 	@Test
@@ -344,96 +379,6 @@ class OrdersIntegrationTests {
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound())
 				.andExpect(jsonPath("$.message").value("No orders found by cpf")
-				);
-	}
-
-	@Test
-	void testFindByDateBetweenSuccess() throws Exception {
-		createOrder();
-		OrderResponseDto orderResponseDto = EntityMock.responseDto();
-
-		String after = LocalDate.now().minusDays(1).toString();
-		String before = LocalDate.now().plusDays(1).toString();
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/orders/date?afterDate=" + after + "&beforeDate=" + before)
-						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.content[0].name").value(orderResponseDto.getName()))
-				.andExpect(jsonPath("$.content[0].cpf").value(orderResponseDto.getCpf()))
-				.andExpect(jsonPath("$.content[0].title").value(orderResponseDto.getTitle()))
-				.andExpect(jsonPath("$.content[0].sku").value(orderResponseDto.getSku()))
-				.andExpect(jsonPath("$.content[0].price").value(orderResponseDto.getPrice()))
-				.andExpect(jsonPath("$.content[0].quantity").value(orderResponseDto.getQuantity()))
-				.andExpect(jsonPath("$.content[0].total").value(orderResponseDto.getTotal()))
-				.andExpect(jsonPath("$.content[0].processing").value(orderResponseDto.getProcessing()))
-				.andExpect(jsonPath("$.content[0].date").isNotEmpty()
-				);
-	}
-
-	@Test
-	void testFindByDateAfterSuccess() throws Exception {
-		createOrder();
-		OrderResponseDto orderResponseDto = EntityMock.responseDto();
-
-		String after = LocalDate.now().minusDays(1).toString();
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/orders/date?afterDate=" + after)
-						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.content[0].name").value(orderResponseDto.getName()))
-				.andExpect(jsonPath("$.content[0].cpf").value(orderResponseDto.getCpf()))
-				.andExpect(jsonPath("$.content[0].title").value(orderResponseDto.getTitle()))
-				.andExpect(jsonPath("$.content[0].sku").value(orderResponseDto.getSku()))
-				.andExpect(jsonPath("$.content[0].price").value(orderResponseDto.getPrice()))
-				.andExpect(jsonPath("$.content[0].quantity").value(orderResponseDto.getQuantity()))
-				.andExpect(jsonPath("$.content[0].total").value(orderResponseDto.getTotal()))
-				.andExpect(jsonPath("$.content[0].processing").value(orderResponseDto.getProcessing()))
-				.andExpect(jsonPath("$.content[0].date").isNotEmpty()
-				);
-	}
-
-	@Test
-	void testFindByDateBeforeSuccess() throws Exception {
-		createOrder();
-		OrderResponseDto orderResponseDto = EntityMock.responseDto();
-
-		String before = LocalDate.now().plusDays(1).toString();
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/orders/date?beforeDate=" + before)
-						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.content[0].name").value(orderResponseDto.getName()))
-				.andExpect(jsonPath("$.content[0].cpf").value(orderResponseDto.getCpf()))
-				.andExpect(jsonPath("$.content[0].title").value(orderResponseDto.getTitle()))
-				.andExpect(jsonPath("$.content[0].sku").value(orderResponseDto.getSku()))
-				.andExpect(jsonPath("$.content[0].price").value(orderResponseDto.getPrice()))
-				.andExpect(jsonPath("$.content[0].quantity").value(orderResponseDto.getQuantity()))
-				.andExpect(jsonPath("$.content[0].total").value(orderResponseDto.getTotal()))
-				.andExpect(jsonPath("$.content[0].processing").value(orderResponseDto.getProcessing()))
-				.andExpect(jsonPath("$.content[0].date").isNotEmpty()
-				);
-	}
-
-	@Test
-	void testFindByDateBetweenNoDateParametersProvided() throws Exception {
-		createOrder();
-		OrderResponseDto orderResponseDto = EntityMock.responseDto();
-
-		String before = LocalDate.now().plusDays(1).toString();
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/orders/date?")
-						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNotFound())
-				.andExpect(jsonPath("$.message").value("No date parameters provided")
-				);
-	}
-
-	@Test
-	void testFindByDateBetweenEntityNotFoundException() throws Exception {
-		OrderResponseDto orderResponseDto = EntityMock.responseDto();
-
-		String after = LocalDate.now().minusDays(1).toString();
-		String before = LocalDate.now().plusDays(1).toString();
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/orders/date?afterDate=" + after + "&beforeDate=" + before)
-						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNotFound())
-				.andExpect(jsonPath("$.message").value("No orders found by date(s)")
 				);
 	}
 

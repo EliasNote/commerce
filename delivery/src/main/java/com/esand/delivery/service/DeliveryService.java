@@ -132,7 +132,7 @@ public class DeliveryService {
 
     @Transactional(readOnly = true)
     private PageableDto findByStatusAndDate(String afterDate, String beforeDate, Delivery.Status status, Pageable pageable) {
-        PageableDto dto = null;
+        PageableDto dto;
         
         if (afterDate != null && beforeDate != null) {
             dto = deliveryMapper.toPageableDto(deliveryRepository.findAllByStatusAndDateBetween(status, LocalDate.parse(afterDate).atStartOfDay(), LocalDate.parse(beforeDate).atStartOfDay().plusDays(1), pageable));
@@ -153,7 +153,7 @@ public class DeliveryService {
 
     @Transactional(readOnly = true)
     private List<Delivery> findAllByDate(String afterDate, String beforeDate) {
-        List<Delivery> deliveries = null;
+        List<Delivery> deliveries;
 
         if (afterDate != null && beforeDate != null) {
             deliveries = deliveryRepository.findAllByStatusAndDateBetween(Delivery.Status.SHIPPED, LocalDate.parse(afterDate).atStartOfDay(), LocalDate.parse(beforeDate).atStartOfDay().plusDays(1));

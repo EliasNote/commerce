@@ -55,11 +55,23 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public PageableDto findAll(Pageable pageable) {
-        PageableDto dto = orderMapper.toPageableDto(orderRepository.findAllPageable(pageable));
+    public PageableDto findAll(String afterDate, String beforeDate, Pageable pageable) {
+        PageableDto dto;
+
+        if (afterDate != null && beforeDate != null) {
+            dto = orderMapper.toPageableDto(orderRepository.findByDateBetween(LocalDate.parse(afterDate).atStartOfDay(), LocalDate.parse(beforeDate).atStartOfDay().plusDays(1), pageable));
+        } else if (afterDate != null) {
+            dto = orderMapper.toPageableDto(orderRepository.findByDateAfter(LocalDate.parse(afterDate).atStartOfDay(), pageable));
+        } else if (beforeDate != null) {
+            dto = orderMapper.toPageableDto(orderRepository.findByDateBefore(LocalDate.parse(beforeDate).atStartOfDay().plusDays(1), pageable));
+        } else {
+            dto = orderMapper.toPageableDto(orderRepository.findAllPageable(pageable));
+        }
+
         if (dto.getContent().isEmpty()) {
             throw new EntityNotFoundException("No orders found");
         }
+
         return dto;
     }
 
@@ -78,26 +90,6 @@ public class OrderService {
         if (dto.getContent().isEmpty()) {
             throw new EntityNotFoundException("No orders found by cpf");
         }
-        return dto;
-    }
-
-    @Transactional(readOnly = true)
-    public PageableDto findOrdersByDate(String afterDate, String beforeDate, Pageable pageable) {
-        PageableDto dto;
-        if (afterDate != null && beforeDate != null) {
-            dto = orderMapper.toPageableDto(orderRepository.findByDateBetween(LocalDate.parse(afterDate).atStartOfDay(), LocalDate.parse(beforeDate).atStartOfDay().plusDays(1), pageable));
-        } else if (afterDate != null) {
-            dto = orderMapper.toPageableDto(orderRepository.findByDateAfter(LocalDate.parse(afterDate).atStartOfDay(), pageable));
-        } else if (beforeDate != null) {
-            dto = orderMapper.toPageableDto(orderRepository.findByDateBefore(LocalDate.parse(beforeDate).atStartOfDay().plusDays(1), pageable));
-        } else {
-            throw new EntityNotFoundException("No date parameters provided");
-        }
-
-        if (dto.getContent().isEmpty()) {
-            throw new EntityNotFoundException("No orders found by date(s)");
-        }
-
         return dto;
     }
 

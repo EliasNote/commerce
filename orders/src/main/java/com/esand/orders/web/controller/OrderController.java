@@ -25,8 +25,10 @@ public class OrderController implements SpringDoc {
     }
 
     @GetMapping
-    public ResponseEntity<PageableDto> findAll(@PageableDefault(size = 10) Pageable pageable) {
-        return ResponseEntity.ok(orderService.findAll(pageable));
+    public ResponseEntity<PageableDto> findAll(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                               @RequestParam(value = "afterDate", required = false) String afterDate,
+                                               @RequestParam(value = "beforeDate", required = false) String beforeDate) {
+        return ResponseEntity.ok(orderService.findAll(afterDate, beforeDate, pageable));
     }
 
     @GetMapping("/sku/{sku}")
@@ -37,13 +39,6 @@ public class OrderController implements SpringDoc {
     @GetMapping("/cpf/{cpf}")
     public ResponseEntity<PageableDto> findByCpf(@PageableDefault(size = 10) Pageable pageable, @PathVariable String cpf) {
         return ResponseEntity.ok(orderService.findByCpf(pageable, cpf));
-    }
-
-    @GetMapping("/date")
-    public ResponseEntity<PageableDto> findByDate(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
-                                                  @RequestParam(value = "afterDate", required = false) String afterDate,
-                                                  @RequestParam(value = "beforeDate", required = false) String beforeDate) {
-        return ResponseEntity.ok(orderService.findOrdersByDate(afterDate, beforeDate, pageable));
     }
 
     @PatchMapping("/processing/{id}")

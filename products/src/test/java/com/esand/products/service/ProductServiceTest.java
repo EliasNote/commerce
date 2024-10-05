@@ -111,7 +111,7 @@ class ProductServiceTest {
         when(productRepository.findAllPageable(any(Pageable.class))).thenReturn(page);
         when(productMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        PageableDto response = productService.findAll(page.getPageable());
+        PageableDto response = productService.findAll(null, null, page.getPageable());
 
         assertNotNull(response);
         assertNotNull(response.getContent());
@@ -127,7 +127,7 @@ class ProductServiceTest {
         when(productRepository.findAllPageable(any(Pageable.class))).thenReturn(page);
         when(productMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        assertThrows(EntityNotFoundException.class, () -> productService.findAll(page.getPageable()));
+        assertThrows(EntityNotFoundException.class, () -> productService.findAll(null, null, page.getPageable()));
     }
 
     @Test
@@ -303,72 +303,6 @@ class ProductServiceTest {
         when(productMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
         assertThrows(EntityNotFoundException.class, () -> productService.findAllDisabled(page.getPageable()));
-    }
-
-    @Test
-    void testFindProductsByDateBetweenSuccess() {
-        Page<ProductDtoPagination> page = EntityMock.page();
-        PageableDto pageableDto = EntityMock.pageableDto();
-
-        when(productRepository.findByCreateDateBetween(any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
-        when(productMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
-
-        PageableDto response = productService.findProductsByDate(LocalDate.now().minusDays(1).toString(), LocalDate.now().plusDays(1).toString(), page.getPageable());
-
-        assertNotNull(response);
-        assertNotNull(response.getContent());
-        assertNotNull(response.getContent().get(0));
-        assertEquals(1, response.getContent().size());
-    }
-
-    @Test
-    void testFindProductsByDateAfterSuccess() {
-        Page<ProductDtoPagination> page = EntityMock.page();
-        PageableDto pageableDto = EntityMock.pageableDto();
-
-        when(productRepository.findByCreateDateAfter(any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
-        when(productMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
-
-        PageableDto response = productService.findProductsByDate(LocalDate.now().minusDays(1).toString(), null, page.getPageable());
-
-        assertNotNull(response);
-        assertNotNull(response.getContent());
-        assertNotNull(response.getContent().get(0));
-        assertEquals(1, response.getContent().size());
-    }
-
-    @Test
-    void testFindProductsByDateBeforeSuccess() {
-        Page<ProductDtoPagination> page = EntityMock.page();
-        PageableDto pageableDto = EntityMock.pageableDto();
-
-        when(productRepository.findByCreateDateBefore(any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
-        when(productMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
-
-        PageableDto response = productService.findProductsByDate(null, LocalDate.now().plusDays(1).toString(), page.getPageable());
-
-        assertNotNull(response);
-        assertNotNull(response.getContent());
-        assertNotNull(response.getContent().get(0));
-        assertEquals(1, response.getContent().size());
-    }
-
-    @Test
-    void testFindProductsByDateNoDateParametersProvided() {
-        Pageable pageable = PageRequest.of(0, 10);
-
-        assertThrows(EntityNotFoundException.class, () -> productService.findProductsByDate(null, null, pageable));
-    }
-
-    @Test
-    void testFindProductsByDateEntityNotFoundException() {
-        Page<ProductDtoPagination> page = EntityMock.pageEmpty();
-        PageableDto pageableDto = EntityMock.pageableDtoEmpty();
-
-        when(productRepository.findByCreateDateBefore(any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
-        when(productMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
-
-        assertThrows(EntityNotFoundException.class, () -> productService.findProductsByDate(null, LocalDate.now().plusDays(1).toString(), page.getPageable()));
     }
 
     @Test

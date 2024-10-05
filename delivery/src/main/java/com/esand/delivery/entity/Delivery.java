@@ -21,7 +21,7 @@ public class Delivery {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "product_name")
+    @Column(name = "product_title")
     private String title;
 
     @Column(name = "product_sku")

@@ -47,7 +47,9 @@ public interface SpringDoc {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorMessage.class)))
     })
-    ResponseEntity<PageableDto> findAll(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable);
+    ResponseEntity<PageableDto> findAll(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                        @RequestParam(value = "afterDate", required = false) String afterDate,
+                                        @RequestParam(value = "beforeDate", required = false) String beforeDate);
 
     @Operation(summary = "Search for product by title",
             description = "Endpoint to search for a product by title.")
@@ -120,20 +122,6 @@ public interface SpringDoc {
                             schema = @Schema(implementation = ErrorMessage.class)))
     })
     ResponseEntity<PageableDto> findAllDisabled(@PageableDefault(size = 10) Pageable pageable);
-
-    @Operation(summary = "Search for products by date",
-            description = "Endpoint to search for products by date range.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Products found successfully by date",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = PageableDto.class))),
-            @ApiResponse(responseCode = "404", description = "No products found by date",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorMessage.class)))
-    })
-    ResponseEntity<PageableDto> findByDate(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
-                                           @RequestParam(value = "afterDate", required = false) String afterDate,
-                                           @RequestParam(value = "beforeDate", required = false) String beforeDate);
 
     @Operation(summary = "Update a product's data",
             description = "Endpoint to update a product's data by SKU. It's possible to update by specifying only the attribute you want to modify.")

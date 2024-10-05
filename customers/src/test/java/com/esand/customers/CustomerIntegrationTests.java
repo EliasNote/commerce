@@ -1,8 +1,10 @@
 package com.esand.customers;
 
+import com.esand.customers.entity.Customer;
 import com.esand.customers.entity.EntityMock;
 import com.esand.customers.repository.CustomerRepository;
 import com.esand.customers.web.dto.CustomerCreateDto;
+import com.esand.customers.web.dto.CustomerResponseDto;
 import com.esand.customers.web.dto.CustomerUpdateDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
@@ -13,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.http.MediaType;
 
@@ -36,25 +39,40 @@ class CustomerIntegrationTests {
 	@Autowired
 	private ObjectMapper objectMapper;
 
-	@BeforeEach
+	@AfterEach
 	public void setUp() {
 		customerRepository.deleteAll();
 	}
 
-	void createCustomer() {
-		customerRepository.save(EntityMock.customer());
+	Customer createCustomer() {
+		return customerRepository.save(EntityMock.customer());
+	}
+
+	void verifyResult(ResultActions response, CustomerResponseDto responseDto, boolean isArray) throws Exception {
+		String json = (isArray) ? ".content[0]" : "";
+
+		response
+				.andExpect(jsonPath("$" + json +  ".name").value(responseDto.getName()))
+				.andExpect(jsonPath("$" + json +  ".cpf").value(responseDto.getCpf()))
+				.andExpect(jsonPath("$" + json +  ".phone").value(responseDto.getPhone()))
+				.andExpect(jsonPath("$" + json +  ".email").value(responseDto.getEmail()))
+				.andExpect(jsonPath("$" + json +  ".address").value(responseDto.getAddress()))
+				.andExpect(jsonPath("$" + json +  ".birthDate").value(responseDto.getBirthDate().toString()))
+				.andExpect(jsonPath("$" + json +  ".gender").value(responseDto.getGender())
+		);
 	}
 
 	@Test
 	void testCreateCustomerSuccess() throws Exception {
 		CustomerCreateDto createDto = EntityMock.createDto();
+		CustomerResponseDto responseDto = EntityMock.customerResponseDto();
 
-		String json = objectMapper.writeValueAsString(createDto);
-
-		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/customers")
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/customers")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(json))
+				.content(objectMapper.writeValueAsString(createDto)))
 			.andExpect(status().isCreated());
+
+		verifyResult(response, responseDto, false);
 	}
 
 	@Test
@@ -89,9 +107,53 @@ class CustomerIntegrationTests {
 	@Test
 	void testFindAllCustomersSuccess() throws Exception {
 		createCustomer();
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/customers")
+		CustomerResponseDto responseDto = EntityMock.customerResponseDto();
+
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/customers")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
+
+		verifyResult(response, responseDto, true);
+	}
+
+	@Test
+	void testFindAllCustomersByDateBetweenSuccess() throws Exception {
+		createCustomer();
+		CustomerResponseDto responseDto = EntityMock.customerResponseDto();
+		String after = LocalDate.now().minusDays(1).toString();
+		String before = LocalDate.now().plusDays(1).toString();
+
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/customers?afterDate=" + after + "&beforeDate=" + before)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
+
+		verifyResult(response, responseDto, true);
+	}
+
+	@Test
+	void testFindAllCustomersByDateAfterSuccess() throws Exception {
+		createCustomer();
+		CustomerResponseDto responseDto = EntityMock.customerResponseDto();
+		String after = LocalDate.now().minusDays(1).toString();
+
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/customers?afterDate=" + after)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
+
+		verifyResult(response, responseDto, true);
+	}
+
+	@Test
+	void testFindAllCustomersByDateBeforeSuccess() throws Exception {
+		createCustomer();
+		CustomerResponseDto responseDto = EntityMock.customerResponseDto();
+		String before = LocalDate.now().plusDays(1).toString();
+
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/customers?beforeDate=" + before)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
+
+		verifyResult(response, responseDto, true);
 	}
 
 	@Test
@@ -105,9 +167,13 @@ class CustomerIntegrationTests {
 	@Test
 	void testFindCustomerByNameSuccess() throws Exception {
 		createCustomer();
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/customers/name/" + EntityMock.customer().getName())
+		CustomerResponseDto responseDto = EntityMock.customerResponseDto();
+
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/customers/name/" + EntityMock.customer().getName())
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
+
+		verifyResult(response, responseDto, true);
 	}
 
 	@Test
@@ -121,9 +187,13 @@ class CustomerIntegrationTests {
 	@Test
 	void testFindCustomerByCpfSuccess() throws Exception {
 		createCustomer();
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/customers/cpf/07021050070")
+		CustomerResponseDto responseDto = EntityMock.customerResponseDto();
+
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/customers/cpf/07021050070")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
+
+		verifyResult(response, responseDto, false);
 	}
 
 	@Test
@@ -132,53 +202,6 @@ class CustomerIntegrationTests {
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound())
 				.andExpect(jsonPath("$.message").value("Customer not found by CPF"));
-	}
-
-	@Test
-	void testFindCustomersByDateBetweenSuccess() throws Exception {
-		createCustomer();
-		String after = LocalDate.now().minusDays(1).toString();
-		String before = LocalDate.now().plusDays(1).toString();
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/customers/date?afterDate=" + after + "&beforeDate=" + before)
-						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk());
-	}
-
-	@Test
-	void testFindCustomersByDateAfterSuccess() throws Exception {
-		createCustomer();
-		String after = LocalDate.now().minusDays(1).toString();
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/customers/date?afterDate=" + after)
-						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk());
-	}
-
-	@Test
-	void testFindCustomersByDateBeforeSuccess() throws Exception {
-		createCustomer();
-		String before = LocalDate.now().plusDays(1).toString();
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/customers/date?beforeDate=" + before)
-						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk());
-	}
-
-	@Test
-	void testFindCustomersByDateNoDateParametersProvided() throws Exception {
-		createCustomer();
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/customers/date?")
-						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNotFound())
-				.andExpect(jsonPath("$.message").value("No date parameters provided"));
-	}
-
-	@Test
-	void testFindCustomersByDateEntityNotFoundException() throws Exception {
-		String after = LocalDate.now().minusDays(1).toString();
-		String before = LocalDate.now().plusDays(1).toString();
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/customers/date?afterDate=" + after + "&beforeDate=" + before)
-						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNotFound())
-				.andExpect(jsonPath("$.message").value("No customers found by date(s)"));
 	}
 
 	@Test

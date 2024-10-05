@@ -6,6 +6,7 @@ import com.esand.products.entity.Product;
 import com.esand.products.repository.CategoryRepository;
 import com.esand.products.repository.ProductRepository;
 import com.esand.products.web.dto.ProductCreateDto;
+import com.esand.products.web.dto.ProductResponseDto;
 import com.esand.products.web.dto.ProductUpdateDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Ignore;
@@ -20,6 +21,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 
@@ -70,22 +72,34 @@ class ProductsIntegrationTests {
 		categoryRepository.deleteAll();
 	}
 
+	void verifyResult(ResultActions response, ProductResponseDto responseDto, boolean isArray) throws Exception {
+		String json = (isArray) ? ".content[0]" : "";
+
+		response
+				.andExpect(jsonPath("$" + json +  ".title").value(responseDto.getTitle()))
+				.andExpect(jsonPath("$" + json +  ".description").value(responseDto.getDescription()))
+				.andExpect(jsonPath("$" + json +  ".price").value(responseDto.getPrice()))
+				.andExpect(jsonPath("$" + json +  ".categories[0].name").value(responseDto.getCategories().get(0).getName()))
+				.andExpect(jsonPath("$" + json +  ".quantity").value(responseDto.getQuantity()))
+				.andExpect(jsonPath("$" + json +  ".sku").value(responseDto.getSku()))
+				.andExpect(jsonPath("$" + json +  ".status").value(responseDto.getStatus())
+				);
+	}
+
 	@Test
 	void testCreateProductSuccess() throws Exception {
 		createCategory();
 		ProductCreateDto createDto = EntityMock.createDto();
+		ProductResponseDto responseDto = EntityMock.productResponseDto();
 
 		String productJson = objectMapper.writeValueAsString(createDto);
 
-		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/products")
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/products")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(productJson))
-				.andExpect(status().isCreated())
-				.andExpect(jsonPath("$.title").value(createDto.getTitle()))
-				.andExpect(jsonPath("$.sku").value(createDto.getSku()))
-				.andExpect(jsonPath("$.price").value(createDto.getPrice()))
-				.andExpect(jsonPath("$.quantity").value(createDto.getQuantity()))
-				.andExpect(jsonPath("$.categories[0].name").value(createDto.getCategory()));
+				.andExpect(status().isCreated());
+
+		verifyResult(response, responseDto, false);
 	}
 
 	@Test
@@ -134,10 +148,53 @@ class ProductsIntegrationTests {
 	@Test
 	void testFindAllProductsSuccess() throws Exception {
 		createProduct();
+		ProductResponseDto responseDto = EntityMock.productResponseDto();
 
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products")
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
+
+		verifyResult(response, responseDto, true);
+	}
+
+	@Test
+	void testFindAllByDateBetweenSuccess() throws Exception {
+		createProduct();
+		ProductResponseDto responseDto = EntityMock.productResponseDto();
+		String after = LocalDate.now().minusDays(1).toString();
+		String before = LocalDate.now().plusDays(1).toString();
+
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products?afterDate=" + after + "&beforeDate=" + before)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
+
+		verifyResult(response, responseDto, true);
+	}
+
+	@Test
+	void testFindAllByDateAfterSuccess() throws Exception {
+		createProduct();
+		ProductResponseDto responseDto = EntityMock.productResponseDto();
+		String after = LocalDate.now().minusDays(1).toString();
+
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products?afterDate=" + after)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
+
+		verifyResult(response, responseDto, true);
+	}
+
+	@Test
+	void testFindAllByDateBeforeSuccess() throws Exception {
+		createProduct();
+		ProductResponseDto responseDto = EntityMock.productResponseDto();
+		String before = LocalDate.now().plusDays(1).toString();
+
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products?beforeDate=" + before)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
+
+		verifyResult(response, responseDto, true);
 	}
 
 	@Test
@@ -151,9 +208,13 @@ class ProductsIntegrationTests {
 	@Test
 	void testFindProductsByTitleSuccess() throws Exception {
 		createProduct();
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products/title/Wireless MouseS")
+		ProductResponseDto responseDto = EntityMock.productResponseDto();
+
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products/title/Wireless MouseS")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
+
+		verifyResult(response, responseDto, true);
 	}
 
 	@Test
@@ -167,9 +228,13 @@ class ProductsIntegrationTests {
 	@Test
 	void testFindProductsBySupplierSuccess() throws Exception {
 		createProduct();
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products/supplier/Mach")
+		ProductResponseDto responseDto = EntityMock.productResponseDto();
+
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products/supplier/Mach")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
+
+		verifyResult(response, responseDto, true);
 	}
 
 	@Test
@@ -183,9 +248,13 @@ class ProductsIntegrationTests {
 	@Test
 	void testFindProductsByCategorySuccess() throws Exception {
 		createProduct();
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products/category/mouses")
+		ProductResponseDto responseDto = EntityMock.productResponseDto();
+
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products/category/mouses")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
+
+		verifyResult(response, responseDto, true);
 	}
 
 	@Test
@@ -205,11 +274,15 @@ class ProductsIntegrationTests {
 	}
 
 	@Test
-	void testFindProductsBySkuSuccess() throws Exception {
+	void testFindProductBySkuSuccess() throws Exception {
 		createProduct();
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products/sku/" + EntityMock.SKU)
+		ProductResponseDto responseDto = EntityMock.productResponseDto();
+
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products/sku/" + EntityMock.SKU)
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
+
+		verifyResult(response, responseDto, false);
 	}
 
 	@Test
@@ -223,9 +296,13 @@ class ProductsIntegrationTests {
 	@Test
 	void testFindAllActivedSuccess() throws Exception {
 		createProduct();
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products/actived")
+		ProductResponseDto responseDto = EntityMock.productResponseDto();
+
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products/actived")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
+
+		verifyResult(response, responseDto, true);
 	}
 
 	@Test
@@ -239,9 +316,14 @@ class ProductsIntegrationTests {
 	@Test
 	void testFindAllDisabledSuccess() throws Exception {
 		testToggleStatusBySkuSuccess();
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products/disabled")
+		ProductResponseDto responseDto = EntityMock.productResponseDto();
+		responseDto.setStatus(false);
+
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products/disabled")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
+
+		verifyResult(response, responseDto, true);
 	}
 
 	@Test
@@ -250,53 +332,6 @@ class ProductsIntegrationTests {
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound())
 				.andExpect(jsonPath("$.message").value("No disabled product found"));
-	}
-
-	@Test
-	void testFindByDateBetweenSuccess() throws Exception {
-		createProduct();
-		String after = LocalDate.now().minusDays(1).toString();
-		String before = LocalDate.now().plusDays(1).toString();
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products/date?afterDate=" + after + "&beforeDate=" + before)
-						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk());
-	}
-
-	@Test
-	void testFindByDateAfterSuccess() throws Exception {
-		createProduct();
-		String after = LocalDate.now().minusDays(1).toString();
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products/date?afterDate=" + after)
-						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk());
-	}
-
-	@Test
-	void testFindByDateBeforeSuccess() throws Exception {
-		createProduct();
-		String before = LocalDate.now().plusDays(1).toString();
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products/date?beforeDate=" + before)
-						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk());
-	}
-
-	@Test
-	void testFindByDateNoDateParametersProvided() throws Exception {
-		createProduct();
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products/date?")
-						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNotFound())
-				.andExpect(jsonPath("$.message").value("No date parameters provided"));
-	}
-
-	@Test
-	void testFindByDateEntityNotFoundException() throws Exception {
-		String after = LocalDate.now().minusDays(1).toString();
-		String before = LocalDate.now().plusDays(1).toString();
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/products/date?afterDate=" + after + "&beforeDate=" + before)
-						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNotFound())
-				.andExpect(jsonPath("$.message").value("No products found by date(s)"));
 	}
 
 	@Test
@@ -315,19 +350,8 @@ class ProductsIntegrationTests {
 	@Test
 	void testEditProductDataBySkuInvalidDataException() throws Exception {
 		createProduct();
-		ProductUpdateDto updateDto = new ProductUpdateDto(
-				"",
-				"An updated high precision wireless mouse",
-				39.99,
-				"MOUSES",
-				15,
-				"MOUSE-2024-WL-0010",
-				0.2,
-				12.0,
-				6.0,
-				4.0,
-				"Updated Mach Supplies Inc."
-		);
+		ProductUpdateDto updateDto = EntityMock.productUpdateDto();
+		updateDto.setTitle("");
 
 		String updateDtoJson = objectMapper.writeValueAsString(updateDto);
 

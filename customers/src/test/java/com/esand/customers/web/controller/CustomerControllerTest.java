@@ -63,9 +63,9 @@ class CustomerControllerTest {
         PageableDto pageableDto = new PageableDto();
         pageableDto.setContent(List.of(createDto));
 
-        when(customerService.findAll(pageable)).thenReturn(pageableDto);
+        when(customerService.findAll(null, null, pageable)).thenReturn(pageableDto);
 
-        ResponseEntity<PageableDto> response = customerController.findAll(pageable);
+        ResponseEntity<PageableDto> response = customerController.findAll(pageable, null, null);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -109,22 +109,22 @@ class CustomerControllerTest {
         assertEquals("M", response.getBody().getGender());
     }
 
-    @Test
-    void findByDate() {
-        CustomerCreateDto createDto =  new CustomerCreateDto("Test", "07021050070", "55210568972", "teste@email.com", "Address1", LocalDate.of(2024, 8, 7), "M");
-        Pageable pageable = PageRequest.of(0, 10);
-        PageableDto pageableDto = new PageableDto();
-        pageableDto.setContent(List.of(createDto));
-
-        when(customerService.findCustomersByDate("2024-08-08", "2024-08-08", pageable)).thenReturn(pageableDto);
-
-        ResponseEntity<PageableDto> response = customerController.findByDate(pageable, "2024-08-08", "2024-08-08");
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertNotNull(response.getBody().getContent());
-        assertEquals(1, response.getBody().getContent().size());
-    }
+//    @Test
+//    void findByDate() {
+//        CustomerCreateDto createDto =  new CustomerCreateDto("Test", "07021050070", "55210568972", "teste@email.com", "Address1", LocalDate.of(2024, 8, 7), "M");
+//        Pageable pageable = PageRequest.of(0, 10);
+//        PageableDto pageableDto = new PageableDto();
+//        pageableDto.setContent(List.of(createDto));
+//
+//        when(customerService.findCustomersByDate("2024-08-08", "2024-08-08", pageable)).thenReturn(pageableDto);
+//
+//        ResponseEntity<PageableDto> response = customerController.findByDate(pageable, "2024-08-08", "2024-08-08");
+//
+//        assertEquals(HttpStatus.OK, response.getStatusCode());
+//        assertNotNull(response.getBody());
+//        assertNotNull(response.getBody().getContent());
+//        assertEquals(1, response.getBody().getContent().size());
+//    }
 
     @Test
     void update() {

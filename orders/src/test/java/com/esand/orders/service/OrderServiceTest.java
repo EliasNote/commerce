@@ -204,7 +204,7 @@ public class OrderServiceTest {
         when(orderRepository.findAllPageable(any(Pageable.class))).thenReturn(page);
         when(orderMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        PageableDto response = orderService.findAll(page.getPageable());
+        PageableDto response = orderService.findAll(null, null, page.getPageable());
 
         assertNotNull(response);
         assertNotNull(response.getContent());
@@ -231,7 +231,7 @@ public class OrderServiceTest {
         when(orderRepository.findAllPageable(any(Pageable.class))).thenReturn(page);
         when(orderMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
 
-        assertThrows(EntityNotFoundException.class, () -> orderService.findAll(page.getPageable()));
+        assertThrows(EntityNotFoundException.class, () -> orderService.findAll(null, null, page.getPageable()));
     }
 
     @Test
@@ -316,103 +316,6 @@ public class OrderServiceTest {
         );
 
         assertEquals("No orders found by cpf", exception.getMessage());
-    }
-
-    @Test
-    void testFindOrdersByDateBetweenSuccess() {
-        Page<OrderDtoPagination> page = EntityMock.page();
-        PageableDto pageableDto = EntityMock.pageableDto();
-
-        when(orderRepository.findByDateBetween(any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
-        when(orderMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
-
-        PageableDto response = orderService.findOrdersByDate(LocalDate.now().minusDays(1).toString(), LocalDate.now().plusDays(1).toString(), page.getPageable());
-
-        assertNotNull(response);
-        assertNotNull(response.getContent());
-        assertEquals(1, response.getContent().size());
-
-        OrderDtoPagination order = (OrderDtoPagination) response.getContent().get(0);
-        assertEquals(page.getContent().get(0).getId(), order.getId());
-        assertEquals(page.getContent().get(0).getName(), order.getName());
-        assertEquals(page.getContent().get(0).getCpf(), order.getCpf());
-        assertEquals(page.getContent().get(0).getTitle(), order.getTitle());
-        assertEquals(page.getContent().get(0).getCpf(), order.getCpf());
-        assertEquals(page.getContent().get(0).getPrice(), order.getPrice());
-        assertEquals(page.getContent().get(0).getQuantity(), order.getQuantity());
-        assertEquals(page.getContent().get(0).getTotal(), order.getTotal());
-        assertFalse(order.getProcessing());
-        assertNotNull(order.getDate());
-    }
-
-    @Test
-    void testFindOrdersByDateAfterSuccess() {
-        Page<OrderDtoPagination> page = EntityMock.page();
-        PageableDto pageableDto = EntityMock.pageableDto();
-
-        when(orderRepository.findByDateAfter(any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
-        when(orderMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
-
-        PageableDto response = orderService.findOrdersByDate(LocalDate.now().minusDays(1).toString(), null, page.getPageable());
-
-        assertNotNull(response);
-        assertNotNull(response.getContent());
-        assertEquals(1, response.getContent().size());
-
-        OrderDtoPagination order = (OrderDtoPagination) response.getContent().get(0);
-        assertEquals(page.getContent().get(0).getId(), order.getId());
-        assertEquals(page.getContent().get(0).getName(), order.getName());
-        assertEquals(page.getContent().get(0).getCpf(), order.getCpf());
-        assertEquals(page.getContent().get(0).getTitle(), order.getTitle());
-        assertEquals(page.getContent().get(0).getCpf(), order.getCpf());
-        assertEquals(page.getContent().get(0).getPrice(), order.getPrice());
-        assertEquals(page.getContent().get(0).getQuantity(), order.getQuantity());
-        assertEquals(page.getContent().get(0).getTotal(), order.getTotal());
-        assertFalse(order.getProcessing());
-        assertNotNull(order.getDate());
-    }
-
-    @Test
-    void testFindOrdersByDateBeforeSuccess() {
-        Page<OrderDtoPagination> page = EntityMock.page();
-        PageableDto pageableDto = EntityMock.pageableDto();
-
-        when(orderRepository.findByDateBefore(any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
-        when(orderMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
-
-        PageableDto response = orderService.findOrdersByDate(null, LocalDate.now().plusDays(1).toString(), page.getPageable());
-
-        assertNotNull(response);
-        assertNotNull(response.getContent());
-        assertEquals(1, response.getContent().size());
-
-        OrderDtoPagination order = (OrderDtoPagination) response.getContent().get(0);
-        assertEquals(page.getContent().get(0).getId(), order.getId());
-        assertEquals(page.getContent().get(0).getName(), order.getName());
-        assertEquals(page.getContent().get(0).getCpf(), order.getCpf());
-        assertEquals(page.getContent().get(0).getTitle(), order.getTitle());
-        assertEquals(page.getContent().get(0).getCpf(), order.getCpf());
-        assertEquals(page.getContent().get(0).getPrice(), order.getPrice());
-        assertEquals(page.getContent().get(0).getQuantity(), order.getQuantity());
-        assertEquals(page.getContent().get(0).getTotal(), order.getTotal());
-        assertFalse(order.getProcessing());
-        assertNotNull(order.getDate());
-    }
-
-    @Test
-    void testFindOrdersByDateNoDateParametersProvided() {
-        assertThrows(EntityNotFoundException.class, () -> orderService.findOrdersByDate(null, null, EntityMock.page().getPageable()));
-    }
-
-    @Test
-    void testFindOrdersByDateEntityNotFoundException() {
-        Page<OrderDtoPagination> page = EntityMock.pageEmpty();
-        PageableDto pageableDto = EntityMock.pageableDtoEmpty();
-
-        when(orderRepository.findByDateBefore(any(LocalDateTime.class), any(Pageable.class))).thenReturn(page);
-        when(orderMapper.toPageableDto(any(Page.class))).thenReturn(pageableDto);
-
-        assertThrows(EntityNotFoundException.class, () -> orderService.findOrdersByDate(null, LocalDate.now().plusDays(1).toString(), page.getPageable()));
     }
 
     @Test

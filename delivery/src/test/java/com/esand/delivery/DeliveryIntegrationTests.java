@@ -22,6 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -75,6 +76,22 @@ public class DeliveryIntegrationTests {
         return deliveryRepository.save(EntityMock.delivery());
     }
 
+    void verifyResult(ResultActions response, DeliveryResponseDto responseDto, boolean isArray) throws Exception {
+        String json = (isArray) ? ".content[0]" : "";
+
+        response
+                .andExpect(jsonPath("$" + json + ".purchaser").value(responseDto.getName()))
+                .andExpect(jsonPath("$" + json + ".CPF").value(responseDto.getCpf()))
+                .andExpect(jsonPath("$" + json + "['product name']").value(responseDto.getTitle()))
+                .andExpect(jsonPath("$" + json + ".SKU").value(responseDto.getSku()))
+                .andExpect(jsonPath("$" + json + "['unit price']").value(responseDto.getPrice()))
+                .andExpect(jsonPath("$" + json + ".quantity").value(responseDto.getQuantity()))
+                .andExpect(jsonPath("$" + json + "['total price']").value(responseDto.getTotal()))
+                .andExpect(jsonPath("$" + json + ".status").value(responseDto.getStatus()))
+                .andExpect(jsonPath("$" + json + "['purchase date']").isNotEmpty()
+                );
+    }
+
     @Test
     void testSaveDeliverySuccess() {
         DeliverySaveDto deliverySaveDto = EntityMock.saveDto();
@@ -96,22 +113,13 @@ public class DeliveryIntegrationTests {
     @Test
     void testFindAllDeliverySuccess() throws Exception{
         createDelivery();
-
         DeliveryResponseDto responseDto = EntityMock.responseDto();
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries")
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].purchaser").value(responseDto.getName()))
-                .andExpect(jsonPath("$.content[0].CPF").value(responseDto.getCpf()))
-                .andExpect(jsonPath("$.content[0]['product name']").value(responseDto.getTitle()))
-                .andExpect(jsonPath("$.content[0].SKU").value(responseDto.getSku()))
-                .andExpect(jsonPath("$.content[0]['unit price']").value(responseDto.getPrice()))
-                .andExpect(jsonPath("$.content[0].quantity").value(responseDto.getQuantity()))
-                .andExpect(jsonPath("$.content[0]['total price']").value(responseDto.getTotal()))
-                .andExpect(jsonPath("$.content[0].status").value(responseDto.getStatus()))
-                .andExpect(jsonPath("$.content[0]['purchase date']").isNotEmpty()
-                );
+                .andExpect(status().isOk());
+
+        verifyResult(response, responseDto, true);
     }
 
     @Test
@@ -119,66 +127,39 @@ public class DeliveryIntegrationTests {
         createDelivery();
         String afterDate = LocalDate.now().minusDays(1).toString();
         String beforeDate = LocalDate.now().plusDays(1).toString();
-
         DeliveryResponseDto responseDto = EntityMock.responseDto();
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries?" + "afterDate=" + afterDate + "&" + "beforeDate=" + beforeDate)
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries?" + "afterDate=" + afterDate + "&" + "beforeDate=" + beforeDate)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].purchaser").value(responseDto.getName()))
-                .andExpect(jsonPath("$.content[0].CPF").value(responseDto.getCpf()))
-                .andExpect(jsonPath("$.content[0]['product name']").value(responseDto.getTitle()))
-                .andExpect(jsonPath("$.content[0].SKU").value(responseDto.getSku()))
-                .andExpect(jsonPath("$.content[0]['unit price']").value(responseDto.getPrice()))
-                .andExpect(jsonPath("$.content[0].quantity").value(responseDto.getQuantity()))
-                .andExpect(jsonPath("$.content[0]['total price']").value(responseDto.getTotal()))
-                .andExpect(jsonPath("$.content[0].status").value(responseDto.getStatus()))
-                .andExpect(jsonPath("$.content[0]['purchase date']").isNotEmpty()
-                );
+                .andExpect(status().isOk());
+
+        verifyResult(response, responseDto, true);
     }
 
     @Test
     void testFindAllDeliveryByDateAfterSuccess() throws Exception{
         createDelivery();
         String afterDate = LocalDate.now().minusDays(1).toString();
-
         DeliveryResponseDto responseDto = EntityMock.responseDto();
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries?" + "afterDate=" + afterDate)
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries?" + "afterDate=" + afterDate)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].purchaser").value(responseDto.getName()))
-                .andExpect(jsonPath("$.content[0].CPF").value(responseDto.getCpf()))
-                .andExpect(jsonPath("$.content[0]['product name']").value(responseDto.getTitle()))
-                .andExpect(jsonPath("$.content[0].SKU").value(responseDto.getSku()))
-                .andExpect(jsonPath("$.content[0]['unit price']").value(responseDto.getPrice()))
-                .andExpect(jsonPath("$.content[0].quantity").value(responseDto.getQuantity()))
-                .andExpect(jsonPath("$.content[0]['total price']").value(responseDto.getTotal()))
-                .andExpect(jsonPath("$.content[0].status").value(responseDto.getStatus()))
-                .andExpect(jsonPath("$.content[0]['purchase date']").isNotEmpty()
-                );
+                .andExpect(status().isOk());
+
+        verifyResult(response, responseDto, true);
     }
 
     @Test
     void testFindAllDeliveryByDateBeforeSuccess() throws Exception{
         createDelivery();
         String beforeDate = LocalDate.now().plusDays(1).toString();
-
         DeliveryResponseDto responseDto = EntityMock.responseDto();
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries?beforeDate=" + beforeDate)
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries?beforeDate=" + beforeDate)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].purchaser").value(responseDto.getName()))
-                .andExpect(jsonPath("$.content[0].CPF").value(responseDto.getCpf()))
-                .andExpect(jsonPath("$.content[0]['product name']").value(responseDto.getTitle()))
-                .andExpect(jsonPath("$.content[0].SKU").value(responseDto.getSku()))
-                .andExpect(jsonPath("$.content[0]['unit price']").value(responseDto.getPrice()))
-                .andExpect(jsonPath("$.content[0].quantity").value(responseDto.getQuantity()))
-                .andExpect(jsonPath("$.content[0]['total price']").value(responseDto.getTotal()))
-                .andExpect(jsonPath("$.content[0].status").value(responseDto.getStatus()))
-                .andExpect(jsonPath("$.content[0]['purchase date']").isNotEmpty()
-                );
+                .andExpect(status().isOk());
+
+        verifyResult(response, responseDto, true);
     }
 
     @Test
@@ -193,22 +174,13 @@ public class DeliveryIntegrationTests {
     @Test
     void testFindByIdSuccess() throws Exception {
         createDelivery();
-
         DeliveryResponseDto responseDto = EntityMock.responseDto();
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/id/" + responseDto.getId())
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/id/" + responseDto.getId())
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.purchaser").value(responseDto.getName()))
-                .andExpect(jsonPath("$.CPF").value(responseDto.getCpf()))
-                .andExpect(jsonPath("$['product name']").value(responseDto.getTitle()))
-                .andExpect(jsonPath("$.SKU").value(responseDto.getSku()))
-                .andExpect(jsonPath("$['unit price']").value(responseDto.getPrice()))
-                .andExpect(jsonPath("$.quantity").value(responseDto.getQuantity()))
-                .andExpect(jsonPath("$['total price']").value(responseDto.getTotal()))
-                .andExpect(jsonPath("$.status").value(responseDto.getStatus()))
-                .andExpect(jsonPath("$['purchase date']").isNotEmpty()
-                );
+                .andExpect(status().isOk());
+
+        verifyResult(response, responseDto, false);
     }
 
     @Test
@@ -227,20 +199,14 @@ public class DeliveryIntegrationTests {
         Delivery delivery = EntityMock.delivery();
         delivery.setStatus(Delivery.Status.SHIPPED);
         deliveryRepository.save(delivery);
+        DeliveryResponseDto responseDto = EntityMock.responseDto();
+        responseDto.setStatus("SHIPPED");
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/shipped")
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/shipped")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].purchaser").value(delivery.getName()))
-                .andExpect(jsonPath("$.content[0].CPF").value(delivery.getCpf()))
-                .andExpect(jsonPath("$.content[0]['product name']").value(delivery.getTitle()))
-                .andExpect(jsonPath("$.content[0].SKU").value(delivery.getSku()))
-                .andExpect(jsonPath("$.content[0]['unit price']").value(delivery.getPrice()))
-                .andExpect(jsonPath("$.content[0].quantity").value(delivery.getQuantity()))
-                .andExpect(jsonPath("$.content[0]['total price']").value(delivery.getTotal()))
-                .andExpect(jsonPath("$.content[0].status").value(delivery.getStatus().toString()))
-                .andExpect(jsonPath("$.content[0]['purchase date']").isNotEmpty()
-                );
+                .andExpect(status().isOk());
+
+        verifyResult(response, responseDto, true);
     }
 
     @Test
@@ -250,20 +216,14 @@ public class DeliveryIntegrationTests {
         deliveryRepository.save(delivery);
         String afterDate = LocalDate.now().minusDays(1).toString();
         String beforeDate = LocalDate.now().plusDays(1).toString();
+        DeliveryResponseDto responseDto = EntityMock.responseDto();
+        responseDto.setStatus("SHIPPED");
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/shipped?" + "afterDate=" + afterDate + "&" + "beforeDate=" + beforeDate)
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/shipped?" + "afterDate=" + afterDate + "&" + "beforeDate=" + beforeDate)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].purchaser").value(delivery.getName()))
-                .andExpect(jsonPath("$.content[0].CPF").value(delivery.getCpf()))
-                .andExpect(jsonPath("$.content[0]['product name']").value(delivery.getTitle()))
-                .andExpect(jsonPath("$.content[0].SKU").value(delivery.getSku()))
-                .andExpect(jsonPath("$.content[0]['unit price']").value(delivery.getPrice()))
-                .andExpect(jsonPath("$.content[0].quantity").value(delivery.getQuantity()))
-                .andExpect(jsonPath("$.content[0]['total price']").value(delivery.getTotal()))
-                .andExpect(jsonPath("$.content[0].status").value(delivery.getStatus().toString()))
-                .andExpect(jsonPath("$.content[0]['purchase date']").isNotEmpty()
-                );
+                .andExpect(status().isOk());
+
+        verifyResult(response, responseDto, true);
     }
 
     @Test
@@ -272,20 +232,14 @@ public class DeliveryIntegrationTests {
         delivery.setStatus(Delivery.Status.SHIPPED);
         deliveryRepository.save(delivery);
         String afterDate = LocalDate.now().minusDays(1).toString();
+        DeliveryResponseDto responseDto = EntityMock.responseDto();
+        responseDto.setStatus("SHIPPED");
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/shipped?" + "afterDate=" + afterDate)
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/shipped?" + "afterDate=" + afterDate)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].purchaser").value(delivery.getName()))
-                .andExpect(jsonPath("$.content[0].CPF").value(delivery.getCpf()))
-                .andExpect(jsonPath("$.content[0]['product name']").value(delivery.getTitle()))
-                .andExpect(jsonPath("$.content[0].SKU").value(delivery.getSku()))
-                .andExpect(jsonPath("$.content[0]['unit price']").value(delivery.getPrice()))
-                .andExpect(jsonPath("$.content[0].quantity").value(delivery.getQuantity()))
-                .andExpect(jsonPath("$.content[0]['total price']").value(delivery.getTotal()))
-                .andExpect(jsonPath("$.content[0].status").value(delivery.getStatus().toString()))
-                .andExpect(jsonPath("$.content[0]['purchase date']").isNotEmpty()
-                );
+                .andExpect(status().isOk());
+
+        verifyResult(response, responseDto, true);
     }
 
     @Test
@@ -294,20 +248,14 @@ public class DeliveryIntegrationTests {
         delivery.setStatus(Delivery.Status.SHIPPED);
         deliveryRepository.save(delivery);
         String beforeDate = LocalDate.now().plusDays(1).toString();
+        DeliveryResponseDto responseDto = EntityMock.responseDto();
+        responseDto.setStatus("SHIPPED");
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/shipped?" + "beforeDate=" + beforeDate)
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/shipped?" + "beforeDate=" + beforeDate)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].purchaser").value(delivery.getName()))
-                .andExpect(jsonPath("$.content[0].CPF").value(delivery.getCpf()))
-                .andExpect(jsonPath("$.content[0]['product name']").value(delivery.getTitle()))
-                .andExpect(jsonPath("$.content[0].SKU").value(delivery.getSku()))
-                .andExpect(jsonPath("$.content[0]['unit price']").value(delivery.getPrice()))
-                .andExpect(jsonPath("$.content[0].quantity").value(delivery.getQuantity()))
-                .andExpect(jsonPath("$.content[0]['total price']").value(delivery.getTotal()))
-                .andExpect(jsonPath("$.content[0].status").value(delivery.getStatus().toString()))
-                .andExpect(jsonPath("$.content[0]['purchase date']").isNotEmpty()
-                );
+                .andExpect(status().isOk());
+
+        verifyResult(response, responseDto, true);
     }
 
     @Test
@@ -325,19 +273,11 @@ public class DeliveryIntegrationTests {
 
         DeliveryResponseDto responseDto = EntityMock.responseDto();
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/processing")
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/processing")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].purchaser").value(responseDto.getName()))
-                .andExpect(jsonPath("$.content[0].CPF").value(responseDto.getCpf()))
-                .andExpect(jsonPath("$.content[0]['product name']").value(responseDto.getTitle()))
-                .andExpect(jsonPath("$.content[0].SKU").value(responseDto.getSku()))
-                .andExpect(jsonPath("$.content[0]['unit price']").value(responseDto.getPrice()))
-                .andExpect(jsonPath("$.content[0].quantity").value(responseDto.getQuantity()))
-                .andExpect(jsonPath("$.content[0]['total price']").value(responseDto.getTotal()))
-                .andExpect(jsonPath("$.content[0].status").value(responseDto.getStatus()))
-                .andExpect(jsonPath("$.content[0]['purchase date']").isNotEmpty()
-                );
+                .andExpect(status().isOk());
+
+        verifyResult(response, responseDto, true);
     }
 
     @Test
@@ -347,20 +287,13 @@ public class DeliveryIntegrationTests {
         deliveryRepository.save(delivery);
         String afterDate = LocalDate.now().minusDays(1).toString();
         String beforeDate = LocalDate.now().plusDays(1).toString();
+        DeliveryResponseDto responseDto = EntityMock.responseDto();
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/processing?" + "afterDate=" + afterDate + "&" + "beforeDate=" + beforeDate)
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/processing?" + "afterDate=" + afterDate + "&" + "beforeDate=" + beforeDate)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].purchaser").value(delivery.getName()))
-                .andExpect(jsonPath("$.content[0].CPF").value(delivery.getCpf()))
-                .andExpect(jsonPath("$.content[0]['product name']").value(delivery.getTitle()))
-                .andExpect(jsonPath("$.content[0].SKU").value(delivery.getSku()))
-                .andExpect(jsonPath("$.content[0]['unit price']").value(delivery.getPrice()))
-                .andExpect(jsonPath("$.content[0].quantity").value(delivery.getQuantity()))
-                .andExpect(jsonPath("$.content[0]['total price']").value(delivery.getTotal()))
-                .andExpect(jsonPath("$.content[0].status").value(delivery.getStatus().toString()))
-                .andExpect(jsonPath("$.content[0]['purchase date']").isNotEmpty()
-                );
+                .andExpect(status().isOk());
+
+        verifyResult(response, responseDto, true);
     }
 
     @Test
@@ -369,20 +302,13 @@ public class DeliveryIntegrationTests {
         delivery.setStatus(Delivery.Status.PROCESSING);
         deliveryRepository.save(delivery);
         String afterDate = LocalDate.now().minusDays(1).toString();
+        DeliveryResponseDto responseDto = EntityMock.responseDto();
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/processing?" + "afterDate=" + afterDate)
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/processing?" + "afterDate=" + afterDate)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].purchaser").value(delivery.getName()))
-                .andExpect(jsonPath("$.content[0].CPF").value(delivery.getCpf()))
-                .andExpect(jsonPath("$.content[0]['product name']").value(delivery.getTitle()))
-                .andExpect(jsonPath("$.content[0].SKU").value(delivery.getSku()))
-                .andExpect(jsonPath("$.content[0]['unit price']").value(delivery.getPrice()))
-                .andExpect(jsonPath("$.content[0].quantity").value(delivery.getQuantity()))
-                .andExpect(jsonPath("$.content[0]['total price']").value(delivery.getTotal()))
-                .andExpect(jsonPath("$.content[0].status").value(delivery.getStatus().toString()))
-                .andExpect(jsonPath("$.content[0]['purchase date']").isNotEmpty()
-                );
+                .andExpect(status().isOk());
+
+        verifyResult(response, responseDto, true);
     }
 
     @Test
@@ -391,20 +317,13 @@ public class DeliveryIntegrationTests {
         delivery.setStatus(Delivery.Status.PROCESSING);
         deliveryRepository.save(delivery);
         String beforeDate = LocalDate.now().plusDays(1).toString();
+        DeliveryResponseDto responseDto = EntityMock.responseDto();
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/processing?" + "beforeDate=" + beforeDate)
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/processing?" + "beforeDate=" + beforeDate)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].purchaser").value(delivery.getName()))
-                .andExpect(jsonPath("$.content[0].CPF").value(delivery.getCpf()))
-                .andExpect(jsonPath("$.content[0]['product name']").value(delivery.getTitle()))
-                .andExpect(jsonPath("$.content[0].SKU").value(delivery.getSku()))
-                .andExpect(jsonPath("$.content[0]['unit price']").value(delivery.getPrice()))
-                .andExpect(jsonPath("$.content[0].quantity").value(delivery.getQuantity()))
-                .andExpect(jsonPath("$.content[0]['total price']").value(delivery.getTotal()))
-                .andExpect(jsonPath("$.content[0].status").value(delivery.getStatus().toString()))
-                .andExpect(jsonPath("$.content[0]['purchase date']").isNotEmpty()
-                );
+                .andExpect(status().isOk());
+
+        verifyResult(response, responseDto, true);
     }
 
     @Test
@@ -421,20 +340,14 @@ public class DeliveryIntegrationTests {
         Delivery delivery = EntityMock.delivery();
         delivery.setStatus(Delivery.Status.CANCELED);
         deliveryRepository.save(delivery);
+        DeliveryResponseDto responseDto = EntityMock.responseDto();
+        responseDto.setStatus("CANCELED");
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/canceled")
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/canceled")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].purchaser").value(delivery.getName()))
-                .andExpect(jsonPath("$.content[0].CPF").value(delivery.getCpf()))
-                .andExpect(jsonPath("$.content[0]['product name']").value(delivery.getTitle()))
-                .andExpect(jsonPath("$.content[0].SKU").value(delivery.getSku()))
-                .andExpect(jsonPath("$.content[0]['unit price']").value(delivery.getPrice()))
-                .andExpect(jsonPath("$.content[0].quantity").value(delivery.getQuantity()))
-                .andExpect(jsonPath("$.content[0]['total price']").value(delivery.getTotal()))
-                .andExpect(jsonPath("$.content[0].status").value(delivery.getStatus().toString()))
-                .andExpect(jsonPath("$.content[0]['purchase date']").isNotEmpty()
-                );
+                .andExpect(status().isOk());
+
+        verifyResult(response, responseDto, true);
     }
 
     @Test
@@ -444,20 +357,14 @@ public class DeliveryIntegrationTests {
         deliveryRepository.save(delivery);
         String afterDate = LocalDate.now().minusDays(1).toString();
         String beforeDate = LocalDate.now().plusDays(1).toString();
+        DeliveryResponseDto responseDto = EntityMock.responseDto();
+        responseDto.setStatus("CANCELED");
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/canceled?" + "afterDate=" + afterDate + "&" + "beforeDate=" + beforeDate)
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/canceled?" + "afterDate=" + afterDate + "&" + "beforeDate=" + beforeDate)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].purchaser").value(delivery.getName()))
-                .andExpect(jsonPath("$.content[0].CPF").value(delivery.getCpf()))
-                .andExpect(jsonPath("$.content[0]['product name']").value(delivery.getTitle()))
-                .andExpect(jsonPath("$.content[0].SKU").value(delivery.getSku()))
-                .andExpect(jsonPath("$.content[0]['unit price']").value(delivery.getPrice()))
-                .andExpect(jsonPath("$.content[0].quantity").value(delivery.getQuantity()))
-                .andExpect(jsonPath("$.content[0]['total price']").value(delivery.getTotal()))
-                .andExpect(jsonPath("$.content[0].status").value(delivery.getStatus().toString()))
-                .andExpect(jsonPath("$.content[0]['purchase date']").isNotEmpty()
-                );
+                .andExpect(status().isOk());
+
+        verifyResult(response, responseDto, true);
     }
 
     @Test
@@ -466,20 +373,14 @@ public class DeliveryIntegrationTests {
         delivery.setStatus(Delivery.Status.CANCELED);
         deliveryRepository.save(delivery);
         String afterDate = LocalDate.now().minusDays(1).toString();
+        DeliveryResponseDto responseDto = EntityMock.responseDto();
+        responseDto.setStatus("CANCELED");
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/canceled?" + "afterDate=" + afterDate)
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/canceled?" + "afterDate=" + afterDate)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].purchaser").value(delivery.getName()))
-                .andExpect(jsonPath("$.content[0].CPF").value(delivery.getCpf()))
-                .andExpect(jsonPath("$.content[0]['product name']").value(delivery.getTitle()))
-                .andExpect(jsonPath("$.content[0].SKU").value(delivery.getSku()))
-                .andExpect(jsonPath("$.content[0]['unit price']").value(delivery.getPrice()))
-                .andExpect(jsonPath("$.content[0].quantity").value(delivery.getQuantity()))
-                .andExpect(jsonPath("$.content[0]['total price']").value(delivery.getTotal()))
-                .andExpect(jsonPath("$.content[0].status").value(delivery.getStatus().toString()))
-                .andExpect(jsonPath("$.content[0]['purchase date']").isNotEmpty()
-                );
+                .andExpect(status().isOk());
+
+        verifyResult(response, responseDto, true);
     }
 
     @Test
@@ -488,20 +389,14 @@ public class DeliveryIntegrationTests {
         delivery.setStatus(Delivery.Status.CANCELED);
         deliveryRepository.save(delivery);
         String beforeDate = LocalDate.now().plusDays(1).toString();
+        DeliveryResponseDto responseDto = EntityMock.responseDto();
+        responseDto.setStatus("CANCELED");
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/canceled?" + "beforeDate=" + beforeDate)
+        ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/deliveries/canceled?" + "beforeDate=" + beforeDate)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].purchaser").value(delivery.getName()))
-                .andExpect(jsonPath("$.content[0].CPF").value(delivery.getCpf()))
-                .andExpect(jsonPath("$.content[0]['product name']").value(delivery.getTitle()))
-                .andExpect(jsonPath("$.content[0].SKU").value(delivery.getSku()))
-                .andExpect(jsonPath("$.content[0]['unit price']").value(delivery.getPrice()))
-                .andExpect(jsonPath("$.content[0].quantity").value(delivery.getQuantity()))
-                .andExpect(jsonPath("$.content[0]['total price']").value(delivery.getTotal()))
-                .andExpect(jsonPath("$.content[0].status").value(delivery.getStatus().toString()))
-                .andExpect(jsonPath("$.content[0]['purchase date']").isNotEmpty()
-                );
+                .andExpect(status().isOk());
+
+        verifyResult(response, responseDto, true);
     }
 
     @Test
