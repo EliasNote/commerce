@@ -51,6 +51,34 @@ class DeliveryServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
+    void verifyResult(DeliveryDtoPagination response, DeliveryResponseDto responseDto, Delivery delivery) {
+        if (response != null) {
+            assertNotNull(response);
+            assertEquals(delivery.getId(), response.getId());
+            assertEquals(delivery.getName(), response.getName());
+            assertEquals(delivery.getCpf(), response.getCpf());
+            assertEquals(delivery.getTitle(), response.getTitle());
+            assertEquals(delivery.getSku(), response.getSku());
+            assertEquals(delivery.getPrice(), response.getPrice());
+            assertEquals(delivery.getQuantity(), response.getQuantity());
+            assertEquals(delivery.getTotal(), response.getTotal());
+            assertEquals(delivery.getStatus().toString(), response.getStatus());
+            assertNotNull(response.getDate());
+        } else {
+            assertNotNull(responseDto);
+            assertEquals(delivery.getId(), responseDto.getId());
+            assertEquals(delivery.getName(), responseDto.getName());
+            assertEquals(delivery.getCpf(), responseDto.getCpf());
+            assertEquals(delivery.getTitle(), responseDto.getTitle());
+            assertEquals(delivery.getSku(), responseDto.getSku());
+            assertEquals(delivery.getPrice(), responseDto.getPrice());
+            assertEquals(delivery.getQuantity(), responseDto.getQuantity());
+            assertEquals(delivery.getTotal(), responseDto.getTotal());
+            assertEquals(delivery.getStatus().toString(), responseDto.getStatus());
+            assertNotNull(responseDto.getDate());
+        }
+    }
+
     @Test
     void testSaveDeliverySuccess() {
         DeliverySaveDto deliverySaveDto = EntityMock.saveDto();
@@ -71,21 +99,7 @@ class DeliveryServiceTest {
 
         PageableDto response = deliveryService.findAll(null, null, page.getPageable());
 
-        assertNotNull(response);
-        assertNotNull(response.getContent());
-        assertEquals(1, response.getContent().size());
-
-        DeliveryDtoPagination delivery = (DeliveryDtoPagination) response.getContent().get(0);
-        assertEquals(page.getContent().get(0).getId(), delivery.getId());
-        assertEquals(page.getContent().get(0).getName(), delivery.getName());
-        assertEquals(page.getContent().get(0).getCpf(), delivery.getCpf());
-        assertEquals(page.getContent().get(0).getTitle(), delivery.getTitle());
-        assertEquals(page.getContent().get(0).getSku(), delivery.getSku());
-        assertEquals(page.getContent().get(0).getPrice(), delivery.getPrice());
-        assertEquals(page.getContent().get(0).getQuantity(), delivery.getQuantity());
-        assertEquals(page.getContent().get(0).getTotal(), delivery.getTotal());
-        assertEquals(page.getContent().get(0).getStatus(), delivery.getStatus());
-        assertEquals(page.getContent().get(0).getDate(), delivery.getDate());
+        verifyResult((DeliveryDtoPagination) response.getContent().get(0), null, EntityMock.delivery());
     }
 
     @Test
@@ -98,21 +112,7 @@ class DeliveryServiceTest {
 
         PageableDto response = deliveryService.findAll(LocalDate.now().minusDays(1).toString(), LocalDate.now().plusDays(1).toString(), page.getPageable());
 
-        assertNotNull(response);
-        assertNotNull(response.getContent());
-        assertEquals(1, response.getContent().size());
-
-        DeliveryDtoPagination delivery = (DeliveryDtoPagination) response.getContent().get(0);
-        assertEquals(page.getContent().get(0).getId(), delivery.getId());
-        assertEquals(page.getContent().get(0).getName(), delivery.getName());
-        assertEquals(page.getContent().get(0).getCpf(), delivery.getCpf());
-        assertEquals(page.getContent().get(0).getTitle(), delivery.getTitle());
-        assertEquals(page.getContent().get(0).getSku(), delivery.getSku());
-        assertEquals(page.getContent().get(0).getPrice(), delivery.getPrice());
-        assertEquals(page.getContent().get(0).getQuantity(), delivery.getQuantity());
-        assertEquals(page.getContent().get(0).getTotal(), delivery.getTotal());
-        assertEquals(page.getContent().get(0).getStatus(), delivery.getStatus());
-        assertEquals(page.getContent().get(0).getDate(), delivery.getDate());
+        verifyResult((DeliveryDtoPagination) response.getContent().get(0), null, EntityMock.delivery());
     }
 
     @Test
@@ -125,21 +125,7 @@ class DeliveryServiceTest {
 
         PageableDto response = deliveryService.findAll(LocalDate.now().minusDays(1).toString(), null, page.getPageable());
 
-        assertNotNull(response);
-        assertNotNull(response.getContent());
-        assertEquals(1, response.getContent().size());
-
-        DeliveryDtoPagination delivery = (DeliveryDtoPagination) response.getContent().get(0);
-        assertEquals(page.getContent().get(0).getId(), delivery.getId());
-        assertEquals(page.getContent().get(0).getName(), delivery.getName());
-        assertEquals(page.getContent().get(0).getCpf(), delivery.getCpf());
-        assertEquals(page.getContent().get(0).getTitle(), delivery.getTitle());
-        assertEquals(page.getContent().get(0).getSku(), delivery.getSku());
-        assertEquals(page.getContent().get(0).getPrice(), delivery.getPrice());
-        assertEquals(page.getContent().get(0).getQuantity(), delivery.getQuantity());
-        assertEquals(page.getContent().get(0).getTotal(), delivery.getTotal());
-        assertEquals(page.getContent().get(0).getStatus(), delivery.getStatus());
-        assertEquals(page.getContent().get(0).getDate(), delivery.getDate());
+        verifyResult((DeliveryDtoPagination) response.getContent().get(0), null, EntityMock.delivery());
     }
 
     @Test
@@ -152,21 +138,7 @@ class DeliveryServiceTest {
 
         PageableDto response = deliveryService.findAll(null, LocalDate.now().plusDays(1).toString(), page.getPageable());
 
-        assertNotNull(response);
-        assertNotNull(response.getContent());
-        assertEquals(1, response.getContent().size());
-
-        DeliveryDtoPagination delivery = (DeliveryDtoPagination) response.getContent().get(0);
-        assertEquals(page.getContent().get(0).getId(), delivery.getId());
-        assertEquals(page.getContent().get(0).getName(), delivery.getName());
-        assertEquals(page.getContent().get(0).getCpf(), delivery.getCpf());
-        assertEquals(page.getContent().get(0).getTitle(), delivery.getTitle());
-        assertEquals(page.getContent().get(0).getSku(), delivery.getSku());
-        assertEquals(page.getContent().get(0).getPrice(), delivery.getPrice());
-        assertEquals(page.getContent().get(0).getQuantity(), delivery.getQuantity());
-        assertEquals(page.getContent().get(0).getTotal(), delivery.getTotal());
-        assertEquals(page.getContent().get(0).getStatus(), delivery.getStatus());
-        assertEquals(page.getContent().get(0).getDate(), delivery.getDate());
+        verifyResult((DeliveryDtoPagination) response.getContent().get(0), null, EntityMock.delivery());
     }
 
     @Test
@@ -190,16 +162,7 @@ class DeliveryServiceTest {
 
         DeliveryResponseDto response = deliveryService.findById(delivery.getId());
 
-        assertEquals(response.getId(), deliveryResponseDto.getId());
-        assertEquals(response.getName(), deliveryResponseDto.getName());
-        assertEquals(response.getCpf(), deliveryResponseDto.getCpf());
-        assertEquals(response.getTitle(), deliveryResponseDto.getTitle());
-        assertEquals(response.getSku(), deliveryResponseDto.getSku());
-        assertEquals(response.getPrice(), deliveryResponseDto.getPrice());
-        assertEquals(response.getQuantity(), deliveryResponseDto.getQuantity());
-        assertEquals(response.getTotal(), deliveryResponseDto.getTotal());
-        assertEquals(response.getStatus(), deliveryResponseDto.getStatus());
-        assertEquals(response.getDate(), deliveryResponseDto.getDate());
+        verifyResult(null, response, EntityMock.delivery());
     }
 
     @Test
@@ -219,21 +182,7 @@ class DeliveryServiceTest {
 
         PageableDto response = deliveryService.findAllShipped(null, null, page.getPageable());
 
-        assertNotNull(response);
-        assertNotNull(response.getContent());
-        assertEquals(1, response.getContent().size());
-
-        DeliveryDtoPagination delivery = (DeliveryDtoPagination) response.getContent().get(0);
-        assertEquals(page.getContent().get(0).getId(), delivery.getId());
-        assertEquals(page.getContent().get(0).getName(), delivery.getName());
-        assertEquals(page.getContent().get(0).getCpf(), delivery.getCpf());
-        assertEquals(page.getContent().get(0).getTitle(), delivery.getTitle());
-        assertEquals(page.getContent().get(0).getSku(), delivery.getSku());
-        assertEquals(page.getContent().get(0).getPrice(), delivery.getPrice());
-        assertEquals(page.getContent().get(0).getQuantity(), delivery.getQuantity());
-        assertEquals(page.getContent().get(0).getTotal(), delivery.getTotal());
-        assertEquals(page.getContent().get(0).getStatus(), delivery.getStatus());
-        assertEquals(page.getContent().get(0).getDate(), delivery.getDate());
+        verifyResult((DeliveryDtoPagination) response.getContent().get(0), null, EntityMock.delivery());
     }
 
     @Test
@@ -246,21 +195,7 @@ class DeliveryServiceTest {
 
         PageableDto response = deliveryService.findAllShipped(LocalDate.now().minusDays(1).toString(), LocalDate.now().plusDays(1).toString(), page.getPageable());
 
-        assertNotNull(response);
-        assertNotNull(response.getContent());
-        assertEquals(1, response.getContent().size());
-
-        DeliveryDtoPagination delivery = (DeliveryDtoPagination) response.getContent().get(0);
-        assertEquals(page.getContent().get(0).getId(), delivery.getId());
-        assertEquals(page.getContent().get(0).getName(), delivery.getName());
-        assertEquals(page.getContent().get(0).getCpf(), delivery.getCpf());
-        assertEquals(page.getContent().get(0).getTitle(), delivery.getTitle());
-        assertEquals(page.getContent().get(0).getSku(), delivery.getSku());
-        assertEquals(page.getContent().get(0).getPrice(), delivery.getPrice());
-        assertEquals(page.getContent().get(0).getQuantity(), delivery.getQuantity());
-        assertEquals(page.getContent().get(0).getTotal(), delivery.getTotal());
-        assertEquals(page.getContent().get(0).getStatus(), delivery.getStatus());
-        assertEquals(page.getContent().get(0).getDate(), delivery.getDate());
+        verifyResult((DeliveryDtoPagination) response.getContent().get(0), null, EntityMock.delivery());
     }
 
     @Test
@@ -273,21 +208,7 @@ class DeliveryServiceTest {
 
         PageableDto response = deliveryService.findAllShipped(LocalDate.now().minusDays(1).toString(), null, page.getPageable());
 
-        assertNotNull(response);
-        assertNotNull(response.getContent());
-        assertEquals(1, response.getContent().size());
-
-        DeliveryDtoPagination delivery = (DeliveryDtoPagination) response.getContent().get(0);
-        assertEquals(page.getContent().get(0).getId(), delivery.getId());
-        assertEquals(page.getContent().get(0).getName(), delivery.getName());
-        assertEquals(page.getContent().get(0).getCpf(), delivery.getCpf());
-        assertEquals(page.getContent().get(0).getTitle(), delivery.getTitle());
-        assertEquals(page.getContent().get(0).getSku(), delivery.getSku());
-        assertEquals(page.getContent().get(0).getPrice(), delivery.getPrice());
-        assertEquals(page.getContent().get(0).getQuantity(), delivery.getQuantity());
-        assertEquals(page.getContent().get(0).getTotal(), delivery.getTotal());
-        assertEquals(page.getContent().get(0).getStatus(), delivery.getStatus());
-        assertEquals(page.getContent().get(0).getDate(), delivery.getDate());
+        verifyResult((DeliveryDtoPagination) response.getContent().get(0), null, EntityMock.delivery());
     }
 
     @Test
@@ -300,21 +221,7 @@ class DeliveryServiceTest {
 
         PageableDto response = deliveryService.findAllShipped(null, LocalDate.now().plusDays(1).toString(), page.getPageable());
 
-        assertNotNull(response);
-        assertNotNull(response.getContent());
-        assertEquals(1, response.getContent().size());
-
-        DeliveryDtoPagination delivery = (DeliveryDtoPagination) response.getContent().get(0);
-        assertEquals(page.getContent().get(0).getId(), delivery.getId());
-        assertEquals(page.getContent().get(0).getName(), delivery.getName());
-        assertEquals(page.getContent().get(0).getCpf(), delivery.getCpf());
-        assertEquals(page.getContent().get(0).getTitle(), delivery.getTitle());
-        assertEquals(page.getContent().get(0).getSku(), delivery.getSku());
-        assertEquals(page.getContent().get(0).getPrice(), delivery.getPrice());
-        assertEquals(page.getContent().get(0).getQuantity(), delivery.getQuantity());
-        assertEquals(page.getContent().get(0).getTotal(), delivery.getTotal());
-        assertEquals(page.getContent().get(0).getStatus(), delivery.getStatus());
-        assertEquals(page.getContent().get(0).getDate(), delivery.getDate());
+        verifyResult((DeliveryDtoPagination) response.getContent().get(0), null, EntityMock.delivery());
     }
 
     @Test
@@ -338,21 +245,7 @@ class DeliveryServiceTest {
 
         PageableDto response = deliveryService.findAllProcessing(null, null, page.getPageable());
 
-        assertNotNull(response);
-        assertNotNull(response.getContent());
-        assertEquals(1, response.getContent().size());
-
-        DeliveryDtoPagination delivery = (DeliveryDtoPagination) response.getContent().get(0);
-        assertEquals(page.getContent().get(0).getId(), delivery.getId());
-        assertEquals(page.getContent().get(0).getName(), delivery.getName());
-        assertEquals(page.getContent().get(0).getCpf(), delivery.getCpf());
-        assertEquals(page.getContent().get(0).getTitle(), delivery.getTitle());
-        assertEquals(page.getContent().get(0).getSku(), delivery.getSku());
-        assertEquals(page.getContent().get(0).getPrice(), delivery.getPrice());
-        assertEquals(page.getContent().get(0).getQuantity(), delivery.getQuantity());
-        assertEquals(page.getContent().get(0).getTotal(), delivery.getTotal());
-        assertEquals(page.getContent().get(0).getStatus(), delivery.getStatus());
-        assertEquals(page.getContent().get(0).getDate(), delivery.getDate());
+        verifyResult((DeliveryDtoPagination) response.getContent().get(0), null, EntityMock.delivery());
     }
 
     @Test
@@ -365,21 +258,7 @@ class DeliveryServiceTest {
 
         PageableDto response = deliveryService.findAllProcessing(LocalDate.now().minusDays(1).toString(), LocalDate.now().plusDays(1).toString(), page.getPageable());
 
-        assertNotNull(response);
-        assertNotNull(response.getContent());
-        assertEquals(1, response.getContent().size());
-
-        DeliveryDtoPagination delivery = (DeliveryDtoPagination) response.getContent().get(0);
-        assertEquals(page.getContent().get(0).getId(), delivery.getId());
-        assertEquals(page.getContent().get(0).getName(), delivery.getName());
-        assertEquals(page.getContent().get(0).getCpf(), delivery.getCpf());
-        assertEquals(page.getContent().get(0).getTitle(), delivery.getTitle());
-        assertEquals(page.getContent().get(0).getSku(), delivery.getSku());
-        assertEquals(page.getContent().get(0).getPrice(), delivery.getPrice());
-        assertEquals(page.getContent().get(0).getQuantity(), delivery.getQuantity());
-        assertEquals(page.getContent().get(0).getTotal(), delivery.getTotal());
-        assertEquals(page.getContent().get(0).getStatus(), delivery.getStatus());
-        assertEquals(page.getContent().get(0).getDate(), delivery.getDate());
+        verifyResult((DeliveryDtoPagination) response.getContent().get(0), null, EntityMock.delivery());
     }
 
     @Test
@@ -392,21 +271,7 @@ class DeliveryServiceTest {
 
         PageableDto response = deliveryService.findAllProcessing(LocalDate.now().minusDays(1).toString(), null, page.getPageable());
 
-        assertNotNull(response);
-        assertNotNull(response.getContent());
-        assertEquals(1, response.getContent().size());
-
-        DeliveryDtoPagination delivery = (DeliveryDtoPagination) response.getContent().get(0);
-        assertEquals(page.getContent().get(0).getId(), delivery.getId());
-        assertEquals(page.getContent().get(0).getName(), delivery.getName());
-        assertEquals(page.getContent().get(0).getCpf(), delivery.getCpf());
-        assertEquals(page.getContent().get(0).getTitle(), delivery.getTitle());
-        assertEquals(page.getContent().get(0).getSku(), delivery.getSku());
-        assertEquals(page.getContent().get(0).getPrice(), delivery.getPrice());
-        assertEquals(page.getContent().get(0).getQuantity(), delivery.getQuantity());
-        assertEquals(page.getContent().get(0).getTotal(), delivery.getTotal());
-        assertEquals(page.getContent().get(0).getStatus(), delivery.getStatus());
-        assertEquals(page.getContent().get(0).getDate(), delivery.getDate());
+        verifyResult((DeliveryDtoPagination) response.getContent().get(0), null, EntityMock.delivery());
     }
 
     @Test
@@ -419,21 +284,7 @@ class DeliveryServiceTest {
 
         PageableDto response = deliveryService.findAllProcessing(null, LocalDate.now().plusDays(1).toString(), page.getPageable());
 
-        assertNotNull(response);
-        assertNotNull(response.getContent());
-        assertEquals(1, response.getContent().size());
-
-        DeliveryDtoPagination delivery = (DeliveryDtoPagination) response.getContent().get(0);
-        assertEquals(page.getContent().get(0).getId(), delivery.getId());
-        assertEquals(page.getContent().get(0).getName(), delivery.getName());
-        assertEquals(page.getContent().get(0).getCpf(), delivery.getCpf());
-        assertEquals(page.getContent().get(0).getTitle(), delivery.getTitle());
-        assertEquals(page.getContent().get(0).getSku(), delivery.getSku());
-        assertEquals(page.getContent().get(0).getPrice(), delivery.getPrice());
-        assertEquals(page.getContent().get(0).getQuantity(), delivery.getQuantity());
-        assertEquals(page.getContent().get(0).getTotal(), delivery.getTotal());
-        assertEquals(page.getContent().get(0).getStatus(), delivery.getStatus());
-        assertEquals(page.getContent().get(0).getDate(), delivery.getDate());
+        verifyResult((DeliveryDtoPagination) response.getContent().get(0), null, EntityMock.delivery());
     }
 
     @Test
@@ -457,21 +308,7 @@ class DeliveryServiceTest {
 
         PageableDto response = deliveryService.findAllCanceled(null, null, page.getPageable());
 
-        assertNotNull(response);
-        assertNotNull(response.getContent());
-        assertEquals(1, response.getContent().size());
-
-        DeliveryDtoPagination delivery = (DeliveryDtoPagination) response.getContent().get(0);
-        assertEquals(page.getContent().get(0).getId(), delivery.getId());
-        assertEquals(page.getContent().get(0).getName(), delivery.getName());
-        assertEquals(page.getContent().get(0).getCpf(), delivery.getCpf());
-        assertEquals(page.getContent().get(0).getTitle(), delivery.getTitle());
-        assertEquals(page.getContent().get(0).getSku(), delivery.getSku());
-        assertEquals(page.getContent().get(0).getPrice(), delivery.getPrice());
-        assertEquals(page.getContent().get(0).getQuantity(), delivery.getQuantity());
-        assertEquals(page.getContent().get(0).getTotal(), delivery.getTotal());
-        assertEquals(page.getContent().get(0).getStatus(), delivery.getStatus());
-        assertEquals(page.getContent().get(0).getDate(), delivery.getDate());
+        verifyResult((DeliveryDtoPagination) response.getContent().get(0), null, EntityMock.delivery());
     }
 
     @Test
@@ -484,21 +321,7 @@ class DeliveryServiceTest {
 
         PageableDto response = deliveryService.findAllCanceled(LocalDate.now().minusDays(1).toString(), LocalDate.now().plusDays(1).toString(), page.getPageable());
 
-        assertNotNull(response);
-        assertNotNull(response.getContent());
-        assertEquals(1, response.getContent().size());
-
-        DeliveryDtoPagination delivery = (DeliveryDtoPagination) response.getContent().get(0);
-        assertEquals(page.getContent().get(0).getId(), delivery.getId());
-        assertEquals(page.getContent().get(0).getName(), delivery.getName());
-        assertEquals(page.getContent().get(0).getCpf(), delivery.getCpf());
-        assertEquals(page.getContent().get(0).getTitle(), delivery.getTitle());
-        assertEquals(page.getContent().get(0).getSku(), delivery.getSku());
-        assertEquals(page.getContent().get(0).getPrice(), delivery.getPrice());
-        assertEquals(page.getContent().get(0).getQuantity(), delivery.getQuantity());
-        assertEquals(page.getContent().get(0).getTotal(), delivery.getTotal());
-        assertEquals(page.getContent().get(0).getStatus(), delivery.getStatus());
-        assertEquals(page.getContent().get(0).getDate(), delivery.getDate());
+        verifyResult((DeliveryDtoPagination) response.getContent().get(0), null, EntityMock.delivery());
     }
 
     @Test
@@ -511,21 +334,7 @@ class DeliveryServiceTest {
 
         PageableDto response = deliveryService.findAllCanceled(LocalDate.now().minusDays(1).toString(), null, page.getPageable());
 
-        assertNotNull(response);
-        assertNotNull(response.getContent());
-        assertEquals(1, response.getContent().size());
-
-        DeliveryDtoPagination delivery = (DeliveryDtoPagination) response.getContent().get(0);
-        assertEquals(page.getContent().get(0).getId(), delivery.getId());
-        assertEquals(page.getContent().get(0).getName(), delivery.getName());
-        assertEquals(page.getContent().get(0).getCpf(), delivery.getCpf());
-        assertEquals(page.getContent().get(0).getTitle(), delivery.getTitle());
-        assertEquals(page.getContent().get(0).getSku(), delivery.getSku());
-        assertEquals(page.getContent().get(0).getPrice(), delivery.getPrice());
-        assertEquals(page.getContent().get(0).getQuantity(), delivery.getQuantity());
-        assertEquals(page.getContent().get(0).getTotal(), delivery.getTotal());
-        assertEquals(page.getContent().get(0).getStatus(), delivery.getStatus());
-        assertEquals(page.getContent().get(0).getDate(), delivery.getDate());
+        verifyResult((DeliveryDtoPagination) response.getContent().get(0), null, EntityMock.delivery());
     }
 
     @Test
@@ -538,21 +347,7 @@ class DeliveryServiceTest {
 
         PageableDto response = deliveryService.findAllCanceled(null, LocalDate.now().plusDays(1).toString(), page.getPageable());
 
-        assertNotNull(response);
-        assertNotNull(response.getContent());
-        assertEquals(1, response.getContent().size());
-
-        DeliveryDtoPagination delivery = (DeliveryDtoPagination) response.getContent().get(0);
-        assertEquals(page.getContent().get(0).getId(), delivery.getId());
-        assertEquals(page.getContent().get(0).getName(), delivery.getName());
-        assertEquals(page.getContent().get(0).getCpf(), delivery.getCpf());
-        assertEquals(page.getContent().get(0).getTitle(), delivery.getTitle());
-        assertEquals(page.getContent().get(0).getSku(), delivery.getSku());
-        assertEquals(page.getContent().get(0).getPrice(), delivery.getPrice());
-        assertEquals(page.getContent().get(0).getQuantity(), delivery.getQuantity());
-        assertEquals(page.getContent().get(0).getTotal(), delivery.getTotal());
-        assertEquals(page.getContent().get(0).getStatus(), delivery.getStatus());
-        assertEquals(page.getContent().get(0).getDate(), delivery.getDate());
+        verifyResult((DeliveryDtoPagination) response.getContent().get(0), null, EntityMock.delivery());
     }
 
     @Test
