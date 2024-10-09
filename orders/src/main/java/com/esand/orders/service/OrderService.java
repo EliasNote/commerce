@@ -7,6 +7,7 @@ import com.esand.orders.client.products.ProductClient;
 import com.esand.orders.entity.Order;
 import com.esand.orders.exception.*;
 import com.esand.orders.repository.order.OrderRepository;
+import com.esand.orders.repository.pagination.OrderDtoPagination;
 import com.esand.orders.web.dto.OrderCreateDto;
 import com.esand.orders.web.dto.OrderResponseDto;
 import com.esand.orders.web.dto.PageableDto;
@@ -24,6 +25,8 @@ import org.springframework.web.client.HttpServerErrorException;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -54,43 +57,19 @@ public class OrderService {
         return orderMapper.toDto(orderRepository.save(order));
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public PageableDto findAll(String afterDate, String beforeDate, Pageable pageable) {
-        PageableDto dto;
-
-        if (afterDate != null && beforeDate != null) {
-            dto = orderMapper.toPageableDto(orderRepository.findByDateBetween(LocalDate.parse(afterDate).atStartOfDay(), LocalDate.parse(beforeDate).atStartOfDay().plusDays(1), pageable));
-        } else if (afterDate != null) {
-            dto = orderMapper.toPageableDto(orderRepository.findByDateAfter(LocalDate.parse(afterDate).atStartOfDay(), pageable));
-        } else if (beforeDate != null) {
-            dto = orderMapper.toPageableDto(orderRepository.findByDateBefore(LocalDate.parse(beforeDate).atStartOfDay().plusDays(1), pageable));
-        } else {
-            dto = orderMapper.toPageableDto(orderRepository.findAllPageable(pageable));
-        }
-
-        if (dto.getContent().isEmpty()) {
-            throw new EntityNotFoundException("No orders found");
-        }
-
-        return dto;
+        return findByCriteria(null, null, afterDate, beforeDate, pageable);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public PageableDto findBySku(Pageable pageable, String sku) {
-        PageableDto dto = orderMapper.toPageableDto(orderRepository.findBySku(pageable, sku));
-        if (dto.getContent().isEmpty()) {
-            throw new EntityNotFoundException("No orders found by sku");
-        }
-        return dto;
+        return findByCriteria(null, sku, null, null, pageable);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public PageableDto findByCpf(Pageable pageable, String cpf) {
-        PageableDto dto = orderMapper.toPageableDto(orderRepository.findByCpf(pageable, cpf));
-        if (dto.getContent().isEmpty()) {
-            throw new EntityNotFoundException("No orders found by cpf");
-        }
-        return dto;
+        return findByCriteria(cpf, null, null, null, pageable);
     }
 
     @Transactional
@@ -172,5 +151,65 @@ public class OrderService {
         if (!product.getStatus()) {
             throw new UnavailableProductException("The product is not available");
         }
+    }
+
+    @Transactional
+    private void updateNameAndTitle(String sku, String cpf) {
+        List<Order> orders;
+
+        if (sku != null || cpf != null) {
+            if (sku != null) {
+                orders = orderRepository.findBySku(sku);
+            } else {
+                orders = orderRepository.findByCpf(cpf);
+            }
+        } else {
+            orders = orderRepository.findAll();
+        }
+
+        if (orders.isEmpty()) {
+            throw new EntityNotFoundException("No orders found");
+        }
+
+        for (Order order : orders) {
+            order.setName(customerClient.getCustomerByCpf(order.getCpf()).getName());
+            order.setTitle(productClient.getProductBySku(order.getSku()).getTitle());
+            orderRepository.save(order);
+        }
+    }
+
+    @Transactional
+    private PageableDto findByCriteria(String cpf, String sku, String afterDate, String beforeDate, Pageable pageable) {
+        LocalDateTime after = null;
+        LocalDateTime before = null;
+        PageableDto dto;
+
+        if (afterDate != null) {
+            after = LocalDate.parse(afterDate).atStartOfDay();
+        }
+        if (beforeDate != null) {
+            before = LocalDate.parse(beforeDate).plusDays(1).atStartOfDay();
+        }
+
+        if (cpf != null) {
+            updateNameAndTitle(null, cpf);
+            dto = orderMapper.toPageableDto(orderRepository.findByCpf(pageable, cpf));
+        } else if (sku != null) {
+            updateNameAndTitle(sku, null);
+            dto = orderMapper.toPageableDto(orderRepository.findBySku(pageable, sku));
+        } else {
+            updateNameAndTitle(null, null);
+            if (after != null && before != null) {
+                dto = orderMapper.toPageableDto(orderRepository.findByDateBetween(after, before, pageable));
+            } else if (after != null) {
+                dto = orderMapper.toPageableDto(orderRepository.findByDateAfter(after, pageable));
+            } else if (before != null) {
+                dto = orderMapper.toPageableDto(orderRepository.findByDateBefore(before, pageable));
+            } else {
+                dto = orderMapper.toPageableDto(orderRepository.findAllPageable(pageable));
+            }
+        }
+
+        return dto;
     }
 }

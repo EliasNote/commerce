@@ -1,5 +1,6 @@
 package com.esand.delivery.client;
 
+import com.esand.delivery.client.customers.CustomerClient;
 import com.esand.delivery.client.products.ProductClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +21,9 @@ public class RestConfig {
     @Value("${products.api.url}")
     private String productUrl;
 
+    @Value("${customers.api.url}")
+    private String customerUrl;
+
     @Bean
     public ProductClient productClient() {
         var client = RestClient.builder()
@@ -30,5 +34,17 @@ public class RestConfig {
         RestClientAdapter adapter = RestClientAdapter.create(client);
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
         return factory.createClient(ProductClient.class);
+    }
+
+    @Bean
+    public CustomerClient customerClient() {
+        var client = RestClient.builder()
+                .baseUrl(customerUrl)
+                .requestInterceptor(tokenInterceptor)
+                .build();
+
+        RestClientAdapter adapter = RestClientAdapter.create(client);
+        HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
+        return factory.createClient(CustomerClient.class);
     }
 }

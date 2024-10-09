@@ -13,4 +13,7 @@ public interface ProductClient {
 
     @PatchExchange("/sku/{sku}/add/{quantity}")
     void addProductQuantityBySku(@PathVariable String sku, @PathVariable Integer quantity);
+
+    @GetExchange("/sku/{sku}")
+    Product getProductBySku(@PathVariable String sku);
 }

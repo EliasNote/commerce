@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("SELECT p FROM Order p")
@@ -15,7 +16,11 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     Page<OrderDtoPagination> findBySku(Pageable pageable, String sku);
 
+    List<Order> findBySku(String sku);
+
     Page<OrderDtoPagination> findByCpf(Pageable pageable, String cpf);
+
+    List<Order> findByCpf(String cpf);
 
     void deleteAllByProcessing(Boolean processed);
 

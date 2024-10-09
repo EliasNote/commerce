@@ -1,5 +1,6 @@
 package com.esand.delivery.service;
 
+import com.esand.delivery.client.customers.CustomerClient;
 import com.esand.delivery.client.products.ProductClient;
 import com.esand.delivery.entity.Delivery;
 import com.esand.delivery.exception.ConnectionException;
@@ -7,6 +8,7 @@ import com.esand.delivery.exception.EntityNotFoundException;
 import com.esand.delivery.exception.DeliveryCanceledException;
 import com.esand.delivery.exception.DeliveryShippedException;
 import com.esand.delivery.repository.delivery.DeliveryRepository;
+import com.esand.delivery.repository.pagination.DeliveryDtoPagination;
 import com.esand.delivery.web.dto.DeliveryResponseDto;
 import com.esand.delivery.web.dto.DeliverySaveDto;
 import com.esand.delivery.web.dto.PageableDto;
@@ -33,6 +35,7 @@ public class DeliveryService {
     private final DeliveryRepository deliveryRepository;
     private final DeliveryMapper deliveryMapper;
     private final ProductClient productClient;
+    private final CustomerClient customerClient;
 
     @Transactional
     public void save(DeliverySaveDto dto) {
@@ -185,7 +188,19 @@ public class DeliveryService {
             throw new EntityNotFoundException("No orders found");
         }
 
-        return dto;
+        return setNameAndTitle(dto);
+    }
+
+    public PageableDto setNameAndTitle(PageableDto response) {
+        PageableDto data = response;
+
+        for (Object object : data.getContent()) {
+            DeliveryDtoPagination dto = (DeliveryDtoPagination) object;
+            dto.setName(customerClient.getCustomerByCpf(dto.getCpf()).getName());
+            dto.setTitle(productClient.getProductBySku(dto.getSku()).getTitle());
+        }
+
+        return data;
     }
 
     @Transactional(readOnly = true)
@@ -216,7 +231,7 @@ public class DeliveryService {
                                 Collectors.toList(),
                                 deliveries -> {
                                     Map<String, Object> data = new HashMap<>();
-                                    data.put("customerName", deliveries.stream().findFirst().map(Delivery::getName).orElse("Name not found"));
+                                    data.put("customerName", deliveries.stream().findFirst().map(x -> customerClient.getCustomerByCpf(x.getCpf()).getName()).orElse("Name not found"));
                                     data.put("totalQuantity", deliveries.stream().mapToLong(Delivery::getQuantity).sum());
                                     data.put("totalSpent", deliveries.stream().mapToDouble(Delivery::getTotal).sum());
                                     return data;
@@ -254,7 +269,7 @@ public class DeliveryService {
                                 Collectors.toList(),
                                 deliveries -> {
                                     Map<String, Object> data = new HashMap<>();
-                                    data.put("productTitle", deliveries.stream().findFirst().map(Delivery::getTitle).orElse("Product not found"));
+                                    data.put("productTitle", deliveries.stream().findFirst().map(x -> productClient.getProductBySku(x.getSku()).getTitle()).orElse("Product not found"));
                                     data.put("totalQuantity", deliveries.stream().mapToLong(Delivery::getQuantity).sum());
                                     data.put("totalRevenue", deliveries.stream().mapToDouble(Delivery::getTotal).sum());
                                     return data;
