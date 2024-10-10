@@ -8,7 +8,6 @@ import com.esand.delivery.exception.EntityNotFoundException;
 import com.esand.delivery.exception.DeliveryCanceledException;
 import com.esand.delivery.exception.DeliveryShippedException;
 import com.esand.delivery.repository.delivery.DeliveryRepository;
-import com.esand.delivery.repository.pagination.DeliveryDtoPagination;
 import com.esand.delivery.web.dto.DeliveryResponseDto;
 import com.esand.delivery.web.dto.DeliverySaveDto;
 import com.esand.delivery.web.dto.PageableDto;
@@ -195,7 +194,7 @@ public class DeliveryService {
         PageableDto data = response;
 
         for (Object object : data.getContent()) {
-            DeliveryDtoPagination dto = (DeliveryDtoPagination) object;
+            DeliveryResponseDto dto = (DeliveryResponseDto) object;
             dto.setName(customerClient.getCustomerByCpf(dto.getCpf()).getName());
             dto.setTitle(productClient.getProductBySku(dto.getSku()).getTitle());
         }

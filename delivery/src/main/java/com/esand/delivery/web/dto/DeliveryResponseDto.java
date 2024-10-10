@@ -1,5 +1,6 @@
 package com.esand.delivery.web.dto;
 
+import com.esand.delivery.entity.Delivery;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -37,7 +38,7 @@ public class DeliveryResponseDto implements Serializable {
     @JsonProperty("total price")
     private Double total;
 
-    private String status;
+    private Delivery.Status status;
 
     @JsonProperty("purchase date")
     private LocalDateTime date;
