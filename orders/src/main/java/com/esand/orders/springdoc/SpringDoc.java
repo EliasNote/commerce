@@ -64,7 +64,9 @@ public interface SpringDoc {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorMessage.class)))
     })
-    ResponseEntity<PageableDto> findBySku(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable, @PathVariable String sku);
+    ResponseEntity<PageableDto> findBySku(@PageableDefault(size = 10) Pageable pageable, @PathVariable String sku,
+                                                 @RequestParam(value = "afterDate", required = false) String afterDate,
+                                                 @RequestParam(value = "beforeDate", required = false) String beforeDate);
 
     @Operation(summary = "Search for orders by customer CPF",
             description = "Endpoint to search for orders by customer CPF.")
@@ -76,7 +78,9 @@ public interface SpringDoc {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorMessage.class)))
     })
-    ResponseEntity<PageableDto> findByCpf(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable, @PathVariable String cpf);
+    ResponseEntity<PageableDto> findByCpf(@PageableDefault(size = 10) Pageable pageable, @PathVariable String cpf,
+                                                 @RequestParam(value = "afterDate", required = false) String afterDate,
+                                                 @RequestParam(value = "beforeDate", required = false) String beforeDate);
 
     @Operation(summary = "Send an order",
             description = "Endpoint to send an order by its ID.")

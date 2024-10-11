@@ -190,6 +190,7 @@ public class DeliveryService {
         return setNameAndTitle(dto);
     }
 
+    @Transactional
     public PageableDto setNameAndTitle(PageableDto response) {
         PageableDto data = response;
 

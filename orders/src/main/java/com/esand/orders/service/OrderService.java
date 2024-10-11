@@ -7,7 +7,6 @@ import com.esand.orders.client.products.ProductClient;
 import com.esand.orders.entity.Order;
 import com.esand.orders.exception.*;
 import com.esand.orders.repository.order.OrderRepository;
-import com.esand.orders.repository.pagination.OrderDtoPagination;
 import com.esand.orders.web.dto.OrderCreateDto;
 import com.esand.orders.web.dto.OrderResponseDto;
 import com.esand.orders.web.dto.PageableDto;
@@ -54,7 +53,7 @@ public class OrderService {
         order.setQuantity(dto.getQuantity());
         order.setTotal(dto.getQuantity() * product.getPrice());
 
-        return orderMapper.toDto(orderRepository.save(order));
+        return (OrderResponseDto) setNameAndTitle(null, orderMapper.toDto(orderRepository.save(order)));
     }
 
     @Transactional
@@ -63,13 +62,13 @@ public class OrderService {
     }
 
     @Transactional
-    public PageableDto findBySku(Pageable pageable, String sku) {
-        return findByCriteria(null, sku, null, null, pageable);
+    public PageableDto findBySku(String afterDate, String beforeDate, String sku, Pageable pageable) {
+        return findByCriteria(null, sku, afterDate, beforeDate, pageable);
     }
 
     @Transactional
-    public PageableDto findByCpf(Pageable pageable, String cpf) {
-        return findByCriteria(cpf, null, null, null, pageable);
+    public PageableDto findByCpf(String afterDate, String beforeDate, String cpf, Pageable pageable) {
+        return findByCriteria(cpf, null, afterDate, beforeDate, pageable);
     }
 
     @Transactional
@@ -154,27 +153,23 @@ public class OrderService {
     }
 
     @Transactional
-    private void updateNameAndTitle(String sku, String cpf) {
-        List<Order> orders;
+    public Object setNameAndTitle(PageableDto response, OrderResponseDto responseDto) {
+        PageableDto data = response;
+        OrderResponseDto data1 = responseDto;
 
-        if (sku != null || cpf != null) {
-            if (sku != null) {
-                orders = orderRepository.findBySku(sku);
-            } else {
-                orders = orderRepository.findByCpf(cpf);
+        if (response != null) {
+            for (Object object : data.getContent()) {
+                OrderResponseDto dto = (OrderResponseDto) object;
+                dto.setName(customerClient.getCustomerByCpf(dto.getCpf()).getName());
+                dto.setTitle(productClient.getProductBySku(dto.getSku()).getTitle());
             }
+
+            return data;
         } else {
-            orders = orderRepository.findAll();
-        }
+            data1.setName(customerClient.getCustomerByCpf(data1.getCpf()).getName());
+            data1.setTitle(productClient.getProductBySku(data1.getSku()).getTitle());
 
-        if (orders.isEmpty()) {
-            throw new EntityNotFoundException("No orders found");
-        }
-
-        for (Order order : orders) {
-            order.setName(customerClient.getCustomerByCpf(order.getCpf()).getName());
-            order.setTitle(productClient.getProductBySku(order.getSku()).getTitle());
-            orderRepository.save(order);
+            return data1;
         }
     }
 
@@ -192,13 +187,26 @@ public class OrderService {
         }
 
         if (cpf != null) {
-            updateNameAndTitle(null, cpf);
-            dto = orderMapper.toPageableDto(orderRepository.findByCpf(pageable, cpf));
+            if (after != null && before != null) {
+                dto = orderMapper.toPageableDto(orderRepository.findAllByCpfAndDateBetween(cpf, after, before, pageable));
+            } else if (after != null) {
+                dto = orderMapper.toPageableDto(orderRepository.findAllByCpfAndDateAfter(cpf, after, pageable));
+            } else if (before != null) {
+                dto = orderMapper.toPageableDto(orderRepository.findAllByCpfAndDateBefore(cpf, before, pageable));
+            } else {
+                dto = orderMapper.toPageableDto(orderRepository.findAllByCpf(cpf, pageable));
+            }
         } else if (sku != null) {
-            updateNameAndTitle(sku, null);
-            dto = orderMapper.toPageableDto(orderRepository.findBySku(pageable, sku));
+            if (after != null && before != null) {
+                dto = orderMapper.toPageableDto(orderRepository.findAllBySkuAndDateBetween(sku, after, before, pageable));
+            } else if (after != null) {
+                dto = orderMapper.toPageableDto(orderRepository.findAllBySkuAndDateAfter(sku, after, pageable));
+            } else if (before != null) {
+                dto = orderMapper.toPageableDto(orderRepository.findAllBySkuAndDateBefore(sku, before, pageable));
+            } else {
+                dto = orderMapper.toPageableDto(orderRepository.findAllBySku(sku, pageable));
+            }
         } else {
-            updateNameAndTitle(null, null);
             if (after != null && before != null) {
                 dto = orderMapper.toPageableDto(orderRepository.findByDateBetween(after, before, pageable));
             } else if (after != null) {
@@ -210,6 +218,10 @@ public class OrderService {
             }
         }
 
-        return dto;
+        if (dto.getContent().isEmpty()) {
+            throw new EntityNotFoundException("No orders found");
+        }
+
+        return (PageableDto) setNameAndTitle(dto, null);
     }
 }
