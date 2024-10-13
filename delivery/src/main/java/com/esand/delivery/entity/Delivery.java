@@ -21,8 +21,14 @@ public class Delivery {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Column(name = "product_title")
+    private String title;
+
     @Column(name = "product_sku")
     private String sku;
+
+    @Column(name = "client_name")
+    private String name;
 
     @Column(name = "client_cpf")
     private String cpf;

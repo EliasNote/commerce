@@ -95,4 +95,10 @@ public class DeliveryController implements SpringDoc {
         deliveryService.deleteAllCanceled();
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
+        deliveryService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
 }

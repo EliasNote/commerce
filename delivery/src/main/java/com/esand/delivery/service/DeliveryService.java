@@ -3,10 +3,7 @@ package com.esand.delivery.service;
 import com.esand.delivery.client.customers.CustomerClient;
 import com.esand.delivery.client.products.ProductClient;
 import com.esand.delivery.entity.Delivery;
-import com.esand.delivery.exception.ConnectionException;
-import com.esand.delivery.exception.EntityNotFoundException;
-import com.esand.delivery.exception.DeliveryCanceledException;
-import com.esand.delivery.exception.DeliveryShippedException;
+import com.esand.delivery.exception.*;
 import com.esand.delivery.repository.delivery.DeliveryRepository;
 import com.esand.delivery.web.dto.DeliveryResponseDto;
 import com.esand.delivery.web.dto.DeliverySaveDto;
@@ -15,11 +12,13 @@ import com.esand.delivery.web.mapper.DeliveryMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.cglib.core.Local;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestClientException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -41,39 +40,39 @@ public class DeliveryService {
         deliveryRepository.save(deliveryMapper.toDelivery(dto));
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public PageableDto findAll(String afterDate, String beforeDate, Pageable pageable) {
-        return findByCriteria(null, null, null, afterDate, beforeDate, pageable);
+        return findByCriteria(null, null, null, null, afterDate, beforeDate, pageable);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public DeliveryResponseDto findById(Long id) {
         return deliveryMapper.toDto(findOrderById(id));
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public PageableDto findAllShipped(String afterDate, String beforeDate, Pageable pageable) {
-        return findByCriteria(null, null, Delivery.Status.SHIPPED, afterDate, beforeDate, pageable);
+        return findByCriteria(null, null, null, Delivery.Status.SHIPPED, afterDate, beforeDate, pageable);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public PageableDto findAllProcessing(String afterDate, String beforeDate, Pageable pageable) {
-        return findByCriteria(null, null, Delivery.Status.PROCESSING, afterDate, beforeDate, pageable);
+        return findByCriteria(null, null, null, Delivery.Status.PROCESSING, afterDate, beforeDate, pageable);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public PageableDto findAllCanceled(String afterDate, String beforeDate, Pageable pageable) {
-        return findByCriteria(null, null, Delivery.Status.CANCELED, afterDate, beforeDate, pageable);
+        return findByCriteria(null, null, null, Delivery.Status.CANCELED, afterDate, beforeDate, pageable);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public PageableDto findAllByCpf(String cpf, String afterDate, String beforeDate, Pageable pageable) {
-        return findByCriteria(cpf, null, null, afterDate, beforeDate, pageable);
+        return findByCriteria(cpf, null, null, null, afterDate, beforeDate, pageable);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public PageableDto findAllBySku(String sku, String afterDate, String beforeDate, Pageable pageable) {
-        return findByCriteria(null, sku, null, afterDate, beforeDate, pageable);
+        return findByCriteria(null, sku, null, null, afterDate, beforeDate, pageable);
     }
 
     @Transactional(noRollbackFor= Exception.class)
@@ -121,15 +120,23 @@ public class DeliveryService {
         deliveryRepository.deleteAllByStatus(Delivery.Status.CANCELED);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
+    public void deleteById(Long id) {
+        if (!deliveryRepository.existsById(id)) {
+            throw new EntityNotFoundException("Delivery not found");
+        }
+        deliveryRepository.deleteById(id);
+    }
+
+    @Transactional
     private Delivery findOrderById(Long id) {
         return deliveryRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Order nº" + id + " does not exist")
         );
     }
 
-    @Transactional(readOnly = true)
-    private PageableDto findByCriteria(String cpf, String sku, Delivery.Status status, String afterDate, String beforeDate, Pageable pageable) {
+    @Transactional
+    private PageableDto findByCriteria(String cpf, String sku, Long id,  Delivery.Status status, String afterDate, String beforeDate, Pageable pageable) {
         LocalDateTime after = null;
         LocalDateTime before = null;
         PageableDto dto;
@@ -142,6 +149,7 @@ public class DeliveryService {
         }
 
         if (cpf != null) {
+            updateNameAndTitle(cpf, sku, id, status);
             if (after != null && before != null) {
                 dto = deliveryMapper.toPageableDto(deliveryRepository.findAllByCpfAndDateBetween(cpf, after, before, pageable));
             } else if (after != null) {
@@ -152,6 +160,7 @@ public class DeliveryService {
                 dto = deliveryMapper.toPageableDto(deliveryRepository.findAllByCpf(cpf, pageable));
             }
         } else if (sku != null) {
+            updateNameAndTitle(cpf, sku, id, status);
             if (after != null && before != null) {
                 dto = deliveryMapper.toPageableDto(deliveryRepository.findAllBySkuAndDateBetween(sku, after, before, pageable));
             } else if (after != null) {
@@ -162,6 +171,7 @@ public class DeliveryService {
                 dto = deliveryMapper.toPageableDto(deliveryRepository.findAllBySku(sku, pageable));
             }
         } else if (status != null) {
+            updateNameAndTitle(cpf, sku, id, status);
             if (after != null && before != null) {
                 dto = deliveryMapper.toPageableDto(deliveryRepository.findAllByStatusAndDateBetween(status, after, before, pageable));
             } else if (after != null) {
@@ -172,6 +182,7 @@ public class DeliveryService {
                 dto = deliveryMapper.toPageableDto(deliveryRepository.findAllByStatus(status, pageable));
             }
         } else {
+            updateNameAndTitle(cpf, sku, id, status);
             if (after != null && before != null) {
                 dto = deliveryMapper.toPageableDto(deliveryRepository.findAllByDateBetween(after, before, pageable));
             } else if (after != null) {
@@ -187,23 +198,43 @@ public class DeliveryService {
             throw new EntityNotFoundException("No orders found");
         }
 
-        return setNameAndTitle(dto);
+        return dto;
     }
 
     @Transactional
-    public PageableDto setNameAndTitle(PageableDto response) {
-        PageableDto data = response;
+    private void updateNameAndTitle(String cpf, String sku, Long id, Delivery.Status status) {
+        if (id != null) {
+            Delivery delivery = findOrderById(id);
+            delivery.setName(customerClient.getCustomerByCpf(delivery.getCpf()).getName());
+            delivery.setTitle(productClient.getProductBySku(delivery.getSku()).getTitle());
+        } else {
+            List<Delivery> deliveries;
 
-        for (Object object : data.getContent()) {
-            DeliveryResponseDto dto = (DeliveryResponseDto) object;
-            dto.setName(customerClient.getCustomerByCpf(dto.getCpf()).getName());
-            dto.setTitle(productClient.getProductBySku(dto.getSku()).getTitle());
+            if (cpf != null) {
+                deliveries = deliveryRepository.findAllByCpf(cpf);
+            } else if (sku != null) {
+                deliveries = deliveryRepository.findAllBySku(sku);
+            } else if (status != null) {
+                deliveries = deliveryRepository.findAllByStatus(status);
+            } else {
+                deliveries = deliveryRepository.findAll();
+            }
+
+            for (Delivery delivery : deliveries) {
+                try {
+                    delivery.setName(customerClient.getCustomerByCpf(delivery.getCpf()).getName());
+                    delivery.setTitle(productClient.getProductBySku(delivery.getSku()).getTitle());
+                    deliveryRepository.save(delivery);
+                } catch (HttpClientErrorException.NotFound e) {
+                    System.out.println("Customer or product not found for delivery with ID: " + delivery.getId());
+                } catch (RestClientException e) {
+                    System.out.println("Error fetching customer or product: " + e.getMessage());
+                }
+            }
         }
-
-        return data;
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     private List<Delivery> findAllByDate(String afterDate, String beforeDate) {
         List<Delivery> deliveries;
 
@@ -223,6 +254,8 @@ public class DeliveryService {
     public String findTopShippedByCustomers(String afterDate, String beforeDate) {
         StringBuilder sb = new StringBuilder();
 
+        updateNameAndTitle(null, null, null, null);
+
         List<Delivery> shippeds = findAllByDate(afterDate, beforeDate);
 
         Map<String, Map<String, Object>> customerData = shippeds.stream()
@@ -231,7 +264,7 @@ public class DeliveryService {
                                 Collectors.toList(),
                                 deliveries -> {
                                     Map<String, Object> data = new HashMap<>();
-                                    data.put("customerName", deliveries.stream().findFirst().map(x -> customerClient.getCustomerByCpf(x.getCpf()).getName()).orElse("Name not found"));
+                                    data.put("customerName", deliveries.stream().findFirst().map(Delivery::getName).orElse("Name not found"));
                                     data.put("totalQuantity", deliveries.stream().mapToLong(Delivery::getQuantity).sum());
                                     data.put("totalSpent", deliveries.stream().mapToDouble(Delivery::getTotal).sum());
                                     return data;
@@ -261,6 +294,8 @@ public class DeliveryService {
     public String findTopShippedByProducts(String afterDate, String beforeDate) {
         StringBuilder sb = new StringBuilder();
 
+        updateNameAndTitle(null, null, null, null);
+
         List<Delivery> shippeds = findAllByDate(afterDate, beforeDate);
 
         Map<String, Map<String, Object>> productData = shippeds.stream()
@@ -269,7 +304,7 @@ public class DeliveryService {
                                 Collectors.toList(),
                                 deliveries -> {
                                     Map<String, Object> data = new HashMap<>();
-                                    data.put("productTitle", deliveries.stream().findFirst().map(x -> productClient.getProductBySku(x.getSku()).getTitle()).orElse("Product not found"));
+                                    data.put("productTitle", deliveries.stream().findFirst().map(Delivery::getTitle).orElse("Product not found"));
                                     data.put("totalQuantity", deliveries.stream().mapToLong(Delivery::getQuantity).sum());
                                     data.put("totalRevenue", deliveries.stream().mapToDouble(Delivery::getTotal).sum());
                                     return data;

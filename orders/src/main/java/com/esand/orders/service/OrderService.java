@@ -154,22 +154,24 @@ public class OrderService {
 
     @Transactional
     public Object setNameAndTitle(PageableDto response, OrderResponseDto responseDto) {
-        PageableDto data = response;
-        OrderResponseDto data1 = responseDto;
-
         if (response != null) {
-            for (Object object : data.getContent()) {
+            OrderResponseDto verifyDto = (OrderResponseDto) response.getContent().getFirst();
+            verifyIfExistsClientAndProductAndConnection(verifyDto.getCpf(), verifyDto.getSku());
+
+            for (Object object : response.getContent()) {
                 OrderResponseDto dto = (OrderResponseDto) object;
                 dto.setName(customerClient.getCustomerByCpf(dto.getCpf()).getName());
                 dto.setTitle(productClient.getProductBySku(dto.getSku()).getTitle());
             }
 
-            return data;
+            return response;
         } else {
-            data1.setName(customerClient.getCustomerByCpf(data1.getCpf()).getName());
-            data1.setTitle(productClient.getProductBySku(data1.getSku()).getTitle());
+            verifyIfExistsClientAndProductAndConnection(responseDto.getCpf(), responseDto.getSku());
 
-            return data1;
+            responseDto.setName(customerClient.getCustomerByCpf(responseDto.getCpf()).getName());
+            responseDto.setTitle(productClient.getProductBySku(responseDto.getSku()).getTitle());
+
+            return responseDto;
         }
     }
 
