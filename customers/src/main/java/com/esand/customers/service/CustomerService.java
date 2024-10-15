@@ -38,11 +38,11 @@ public class CustomerService {
         PageableDto dto;
 
         if (afterDate != null && beforeDate != null) {
-            dto = customerMapper.toPageableDto(customerRepository.findByCreateDateBetween(LocalDate.parse(afterDate).atStartOfDay(), LocalDate.parse(beforeDate).atStartOfDay().plusDays(1), pageable));
+            dto = customerMapper.toPageableDto(customerRepository.findByCreateDateBetween(LocalDate.parse(afterDate).minusDays(1).atStartOfDay(), LocalDate.parse(beforeDate).plusDays(1).atStartOfDay(), pageable));
         } else if (afterDate != null) {
-            dto = customerMapper.toPageableDto(customerRepository.findByCreateDateAfter(LocalDate.parse(afterDate).atStartOfDay(), pageable));
+            dto = customerMapper.toPageableDto(customerRepository.findByCreateDateAfter(LocalDate.parse(afterDate).minusDays(1).atStartOfDay(), pageable));
         } else if (beforeDate != null) {
-            dto = customerMapper.toPageableDto(customerRepository.findByCreateDateBefore(LocalDate.parse(beforeDate).atStartOfDay().plusDays(1), pageable));
+            dto = customerMapper.toPageableDto(customerRepository.findByCreateDateBefore(LocalDate.parse(beforeDate).plusDays(1).atStartOfDay(), pageable));
         } else {
             dto = customerMapper.toPageableDto(customerRepository.findAllPageable(pageable));
         }

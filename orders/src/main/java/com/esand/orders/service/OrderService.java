@@ -25,6 +25,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Slf4j
@@ -185,7 +186,7 @@ public class OrderService {
             after = LocalDate.parse(afterDate).atStartOfDay();
         }
         if (beforeDate != null) {
-            before = LocalDate.parse(beforeDate).plusDays(1).atStartOfDay();
+            before = LocalDate.parse(beforeDate).atTime(LocalTime.MAX);
         }
 
         if (cpf != null) {
