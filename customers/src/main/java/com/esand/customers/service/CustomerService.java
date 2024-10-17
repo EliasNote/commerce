@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @RequiredArgsConstructor
 @Service
@@ -33,33 +35,14 @@ public class CustomerService {
         }
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public PageableDto findAll(String afterDate, String beforeDate, Pageable pageable) {
-        PageableDto dto;
-
-        if (afterDate != null && beforeDate != null) {
-            dto = customerMapper.toPageableDto(customerRepository.findByCreateDateBetween(LocalDate.parse(afterDate).minusDays(1).atStartOfDay(), LocalDate.parse(beforeDate).plusDays(1).atStartOfDay(), pageable));
-        } else if (afterDate != null) {
-            dto = customerMapper.toPageableDto(customerRepository.findByCreateDateAfter(LocalDate.parse(afterDate).minusDays(1).atStartOfDay(), pageable));
-        } else if (beforeDate != null) {
-            dto = customerMapper.toPageableDto(customerRepository.findByCreateDateBefore(LocalDate.parse(beforeDate).plusDays(1).atStartOfDay(), pageable));
-        } else {
-            dto = customerMapper.toPageableDto(customerRepository.findAllPageable(pageable));
-        }
-
-        if (dto.getContent().isEmpty()) {
-            throw new EntityNotFoundException("No customers found");
-        }
-        return dto;
+        return findByCriteria(null, afterDate, beforeDate, pageable);
     }
 
-    @Transactional(readOnly = true)
-    public PageableDto findByName(Pageable pageable, String name) {
-        PageableDto dto = customerMapper.toPageableDto(customerRepository.findByNameIgnoreCaseContaining(name, pageable));
-        if (dto.getContent().isEmpty()) {
-            throw new EntityNotFoundException("Customer not found by name");
-        }
-        return dto;
+    @Transactional
+    public PageableDto findByName(String afterDate, String beforeDate, String name, Pageable pageable) {
+        return findByCriteria(name, afterDate, beforeDate, pageable);
     }
 
     @Transactional(readOnly = true)
@@ -85,5 +68,47 @@ public class CustomerService {
         return customerRepository.findByCpf(cpf).orElseThrow(
                 () -> new EntityNotFoundException("Customer not found by CPF")
         );
+    }
+
+    @Transactional
+    private PageableDto findByCriteria(String name, String afterDate, String beforeDate, Pageable pageable) {
+        LocalDateTime after = null;
+        LocalDateTime before = null;
+        PageableDto dto;
+
+        if (afterDate != null) {
+            after = LocalDate.parse(afterDate).atStartOfDay();
+        }
+        if (beforeDate != null) {
+            before = LocalDate.parse(beforeDate).atTime(LocalTime.MAX);
+        }
+
+        if (name != null) {
+            if (after != null && before != null) {
+                dto = customerMapper.toPageableDto(customerRepository.findByNameIgnoreCaseContainingAndCreateDateBetween(name, after, before, pageable));
+            } else if (after != null) {
+                dto = customerMapper.toPageableDto(customerRepository.findByNameIgnoreCaseContainingAndCreateDateAfter(name, after, pageable));
+            } else if (before != null) {
+                dto = customerMapper.toPageableDto(customerRepository.findByNameIgnoreCaseContainingAndCreateDateBefore(name, before, pageable));
+            } else {
+                dto = customerMapper.toPageableDto(customerRepository.findByNameIgnoreCaseContaining(name, pageable));
+            }
+        } else {
+            if (after != null && before != null) {
+                dto = customerMapper.toPageableDto(customerRepository.findByCreateDateBetween(after, before, pageable));
+            } else if (after != null) {
+                dto = customerMapper.toPageableDto(customerRepository.findByCreateDateAfter(after, pageable));
+            } else if (before != null) {
+                dto = customerMapper.toPageableDto(customerRepository.findByCreateDateBefore(before, pageable));
+            } else {
+                dto = customerMapper.toPageableDto(customerRepository.findAllPageable(pageable));
+            }
+        }
+
+        if (dto.getContent().isEmpty()) {
+            throw new EntityNotFoundException("No customers found");
+        }
+
+        return dto;
     }
 }

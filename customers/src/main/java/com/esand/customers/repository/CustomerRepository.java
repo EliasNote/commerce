@@ -27,4 +27,10 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     void deleteByCpf(String cpf);
 
     boolean existsByCpf(String cpf);
+
+    Page<CustomerDtoPagination> findByNameIgnoreCaseContainingAndCreateDateBetween(String name, LocalDateTime after, LocalDateTime before, Pageable pageable);
+
+    Page<CustomerDtoPagination> findByNameIgnoreCaseContainingAndCreateDateAfter(String name, LocalDateTime after, Pageable pageable);
+
+    Page<CustomerDtoPagination> findByNameIgnoreCaseContainingAndCreateDateBefore(String name, LocalDateTime before, Pageable pageable);
 }

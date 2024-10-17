@@ -61,7 +61,10 @@ public interface SpringDoc {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorMessage.class)))
     })
-    ResponseEntity<PageableDto> findByName(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable, @PathVariable String name);
+    ResponseEntity<PageableDto> findByName(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                           @RequestParam(value = "afterDate", required = false) String afterDate,
+                                           @RequestParam(value = "beforeDate", required = false) String beforeDate,
+                                           @PathVariable String name);
 
     @Operation(summary = "Search for customer by CPF",
             description = "Endpoint to search for a customer by CPF.")

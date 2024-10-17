@@ -22,6 +22,7 @@ import org.springframework.web.client.RestClientException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -145,7 +146,7 @@ public class DeliveryService {
             after = LocalDate.parse(afterDate).atStartOfDay();
         }
         if (beforeDate != null) {
-            before = LocalDate.parse(beforeDate).plusDays(1).atStartOfDay();
+            before = LocalDate.parse(beforeDate).atTime(LocalTime.MAX);
         }
 
         if (cpf != null) {

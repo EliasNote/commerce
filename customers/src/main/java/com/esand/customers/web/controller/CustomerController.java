@@ -34,8 +34,11 @@ public class CustomerController implements SpringDoc {
     }
 
     @GetMapping("/name/{name}")
-    public ResponseEntity<PageableDto> findByName(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable, @PathVariable String name) {
-        return ResponseEntity.ok(customerService.findByName(pageable, name));
+    public ResponseEntity<PageableDto> findByName(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                                  @RequestParam(value = "afterDate", required = false) String afterDate,
+                                                  @RequestParam(value = "beforeDate", required = false) String beforeDate,
+                                                  @PathVariable String name) {
+        return ResponseEntity.ok(customerService.findByName(afterDate, beforeDate, name, pageable));
     }
 
     @GetMapping("/cpf/{cpf}")
