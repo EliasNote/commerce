@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public interface CustomerDtoPagination {
     String getName();
@@ -13,4 +14,5 @@ public interface CustomerDtoPagination {
     String getAddress();
     LocalDate getBirthDate();
     String getGender();
+    LocalDateTime getCreateDate();
 }
