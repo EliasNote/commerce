@@ -38,18 +38,27 @@ public class Controller implements SpringDoc {
     }
 
     @GetMapping("/title/{title}")
-    public ResponseEntity<PageableDto> findByTitle(@PageableDefault(size = 10) Pageable pageable, @PathVariable String title) {
-        return ResponseEntity.ok(productService.findByTitle(pageable, title));
+    public ResponseEntity<PageableDto> findByTitle(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                                   @RequestParam(value = "afterDate", required = false) String afterDate,
+                                                   @RequestParam(value = "beforeDate", required = false) String beforeDate,
+                                                   @PathVariable String title) {
+        return ResponseEntity.ok(productService.findByTitle(title, afterDate, beforeDate, pageable));
     }
 
     @GetMapping("/supplier/{supplier}")
-    public ResponseEntity<PageableDto> findBySupplier(@PageableDefault(size = 10) Pageable pageable, @PathVariable String supplier) {
-        return ResponseEntity.ok(productService.findBySupplier(pageable, supplier));
+    public ResponseEntity<PageableDto> findBySupplier(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                                      @RequestParam(value = "afterDate", required = false) String afterDate,
+                                                      @RequestParam(value = "beforeDate", required = false) String beforeDate,
+                                                      @PathVariable String supplier) {
+        return ResponseEntity.ok(productService.findBySupplier(supplier, afterDate, beforeDate, pageable));
     }
 
     @GetMapping("/category/{category}")
-    public ResponseEntity<PageableDto> findByCategory(@PageableDefault(size = 10) Pageable pageable, @PathVariable @Valid String category) {
-        return ResponseEntity.ok(productService.findByCategory(pageable, category));
+    public ResponseEntity<PageableDto> findByCategory(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                                      @RequestParam(value = "afterDate", required = false) String afterDate,
+                                                      @RequestParam(value = "beforeDate", required = false) String beforeDate,
+                                                      @PathVariable @Valid String category) {
+        return ResponseEntity.ok(productService.findByCategory(category, afterDate, beforeDate, pageable));
     }
 
     @GetMapping("/sku/{sku}")
@@ -58,13 +67,17 @@ public class Controller implements SpringDoc {
     }
 
     @GetMapping("/actived")
-    public ResponseEntity<PageableDto> findAllActived(@PageableDefault(size = 10) Pageable pageable) {
-        return ResponseEntity.ok(productService.findAllActived(pageable));
+    public ResponseEntity<PageableDto> findAllActived(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                                      @RequestParam(value = "afterDate", required = false) String afterDate,
+                                                      @RequestParam(value = "beforeDate", required = false) String beforeDate) {
+        return ResponseEntity.ok(productService.findAllActived(afterDate, beforeDate, pageable));
     }
 
     @GetMapping("/disabled")
-    public ResponseEntity<PageableDto> findAllDisabled(@PageableDefault(size = 10) Pageable pageable) {
-        return ResponseEntity.ok(productService.findAllDisabled(pageable));
+    public ResponseEntity<PageableDto> findAllDisabled(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                                       @RequestParam(value = "afterDate", required = false) String afterDate,
+                                                       @RequestParam(value = "beforeDate", required = false) String beforeDate) {
+        return ResponseEntity.ok(productService.findAllDisabled(afterDate, beforeDate, pageable));
     }
 
     @PatchMapping("/edit/{sku}")
@@ -100,7 +113,9 @@ public class Controller implements SpringDoc {
     }
 
     @GetMapping("/category")
-    public ResponseEntity<PageableDto> getCategories(@PageableDefault(size = 10) Pageable pageable) {
+    public ResponseEntity<PageableDto> getCategories(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                                     @RequestParam(value = "afterDate", required = false) String afterDate,
+                                                     @RequestParam(value = "beforeDate", required = false) String beforeDate) {
         return ResponseEntity.ok(categoryService.findAll(pageable));
     }
 

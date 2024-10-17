@@ -14,16 +14,8 @@ import java.util.Optional;
 
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
-    @Query("SELECT p FROM Product p")
-    Page<ProductDtoPagination> findAllPageable(Pageable pageable);
 
     Optional<Product> findBySku(String sku);
-
-    Page<ProductDtoPagination> findByTitleIgnoreCaseContaining(Pageable pageable, String title);
-
-    Page<ProductDtoPagination> findBySupplierIgnoreCaseContaining(Pageable pageable, String supplier);
-
-    Page<ProductDtoPagination> findByCategoriesName(Pageable pageable, String category);
 
     boolean existsByCategoriesName(String upperCase);
 
@@ -31,14 +23,47 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     boolean existsBySku(String sku);
 
-    Page<ProductDtoPagination> findAllByStatus(Pageable pageable, boolean b);
+    void deleteBySku(String sku);
+
+    Page<ProductDtoPagination> findByTitleIgnoreCaseContainingAndCreateDateBetween(String title, LocalDateTime after, LocalDateTime before, Pageable pageable);
+
+    Page<ProductDtoPagination> findByTitleIgnoreCaseContainingAndCreateDateAfter(String title, LocalDateTime after, Pageable pageable);
+
+    Page<ProductDtoPagination> findByTitleIgnoreCaseContainingAndCreateDateBefore(String title, LocalDateTime before, Pageable pageable);
+
+    Page<ProductDtoPagination> findByTitleIgnoreCaseContaining(String title, Pageable pageable);
+
+    Page<ProductDtoPagination> findBySupplierIgnoreCaseContainingAndCreateDateBetween(String supplier, LocalDateTime after, LocalDateTime before, Pageable pageable);
+
+    Page<ProductDtoPagination> findBySupplierIgnoreCaseContainingAndCreateDateAfter(String supplier, LocalDateTime after, Pageable pageable);
+
+    Page<ProductDtoPagination> findBySupplierIgnoreCaseContainingAndCreateDateBefore(String supplier, LocalDateTime before, Pageable pageable);
+
+    Page<ProductDtoPagination> findBySupplierIgnoreCaseContaining(String supplier, Pageable pageable);
+
+    Page<ProductDtoPagination> findByCategoriesNameAndCreateDateBetween(String category, LocalDateTime after, LocalDateTime before, Pageable pageable);
+
+    Page<ProductDtoPagination> findByCategoriesNameAndCreateDateAfter(String category, LocalDateTime after, Pageable pageable);
+
+    Page<ProductDtoPagination> findByCategoriesNameAndCreateDateBefore(String category, LocalDateTime before, Pageable pageable);
+
+    Page<ProductDtoPagination> findByCategoriesName(String category, Pageable pageable);
+
+    Page<ProductDtoPagination> findAllByStatusAndCreateDateBetween(Boolean status, LocalDateTime after, LocalDateTime before, Pageable pageable);
+
+    Page<ProductDtoPagination> findAllByStatusAndCreateDateAfter(Boolean status, LocalDateTime after, Pageable pageable);
+
+    Page<ProductDtoPagination> findAllByStatusAndCreateDateBefore(Boolean status, LocalDateTime before, Pageable pageable);
+
+    Page<ProductDtoPagination> findAllByStatus(boolean b, Pageable pageable);
+
+    Page<ProductDtoPagination> findByCreateDateBetween(LocalDateTime afterDate, LocalDateTime beforeDate, Pageable pageable);
 
     Page<ProductDtoPagination> findByCreateDateAfter(LocalDateTime date, Pageable pageable);
 
     Page<ProductDtoPagination> findByCreateDateBefore(LocalDateTime date, Pageable pageable);
 
-    Page<ProductDtoPagination> findByCreateDateBetween(LocalDateTime afterDate, LocalDateTime beforeDate, Pageable pageable);
-
-    void deleteBySku(String sku);
+    @Query("SELECT p FROM Product p")
+    Page<ProductDtoPagination> findAllPageable(Pageable pageable);
 }
 

@@ -61,7 +61,10 @@ public interface SpringDoc {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorMessage.class)))
     })
-    ResponseEntity<PageableDto> findByTitle(@PageableDefault(size = 10) Pageable pageable, @PathVariable String title);
+    ResponseEntity<PageableDto> findByTitle(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                            @RequestParam(value = "afterDate", required = false) String afterDate,
+                                            @RequestParam(value = "beforeDate", required = false) String beforeDate,
+                                            @PathVariable String title);
 
     @Operation(summary = "Search for products by supplier",
             description = "Endpoint to search for products by supplier.")
@@ -73,7 +76,10 @@ public interface SpringDoc {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorMessage.class)))
     })
-    ResponseEntity<PageableDto> findBySupplier(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable, @PathVariable String supplier);
+    ResponseEntity<PageableDto> findBySupplier(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                               @RequestParam(value = "afterDate", required = false) String afterDate,
+                                               @RequestParam(value = "beforeDate", required = false) String beforeDate,
+                                               @PathVariable String supplier);
 
     @Operation(summary = "Search for products by category",
             description = "Endpoint to search for products by category.")
@@ -85,7 +91,10 @@ public interface SpringDoc {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorMessage.class)))
     })
-    ResponseEntity<PageableDto> findByCategory(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable, @PathVariable String category);
+    ResponseEntity<PageableDto> findByCategory(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                               @RequestParam(value = "afterDate", required = false) String afterDate,
+                                               @RequestParam(value = "beforeDate", required = false) String beforeDate,
+                                               @PathVariable @Valid String category);
 
     @Operation(summary = "Search for product by SKU",
             description = "Endpoint to search for a product by SKU.")
@@ -109,7 +118,9 @@ public interface SpringDoc {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorMessage.class)))
     })
-    ResponseEntity<PageableDto> findAllActived(@PageableDefault(size = 10) Pageable pageable);
+    ResponseEntity<PageableDto> findAllActived(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                               @RequestParam(value = "afterDate", required = false) String afterDate,
+                                               @RequestParam(value = "beforeDate", required = false) String beforeDate);
 
     @Operation(summary = "Search for disabled products",
             description = "Endpoint to search for disabled products.")
@@ -121,7 +132,9 @@ public interface SpringDoc {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorMessage.class)))
     })
-    ResponseEntity<PageableDto> findAllDisabled(@PageableDefault(size = 10) Pageable pageable);
+    ResponseEntity<PageableDto> findAllDisabled(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                                @RequestParam(value = "afterDate", required = false) String afterDate,
+                                                @RequestParam(value = "beforeDate", required = false) String beforeDate);
 
     @Operation(summary = "Update a product's data",
             description = "Endpoint to update a product's data by SKU. It's possible to update by specifying only the attribute you want to modify.")
