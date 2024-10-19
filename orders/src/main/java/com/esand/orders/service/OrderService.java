@@ -63,12 +63,12 @@ public class OrderService {
     }
 
     @Transactional
-    public PageableDto findBySku(String afterDate, String beforeDate, String sku, Pageable pageable) {
+    public PageableDto findBySku(String sku, String afterDate, String beforeDate, Pageable pageable) {
         return findByCriteria(null, sku, afterDate, beforeDate, pageable);
     }
 
     @Transactional
-    public PageableDto findByCpf(String afterDate, String beforeDate, String cpf, Pageable pageable) {
+    public PageableDto findByCpf(String cpf, String afterDate, String beforeDate, Pageable pageable) {
         return findByCriteria(cpf, null, afterDate, beforeDate, pageable);
     }
 
@@ -126,7 +126,7 @@ public class OrderService {
         } catch (HttpServerErrorException.ServiceUnavailable e) {
             throw new ConnectionException("Customers API not available");
         } catch (RestClientException e) {
-            throw new UnknownErrorException("Error fetching client by CPF: " + e.getMessage());
+            throw new UnknownErrorException("Error fetching customer by CPF: " + e.getMessage());
         }
 
         try {
