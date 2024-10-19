@@ -41,7 +41,7 @@ public class CustomerService {
     }
 
     @Transactional
-    public PageableDto findByName(String afterDate, String beforeDate, String name, Pageable pageable) {
+    public PageableDto findByName(String name, String afterDate, String beforeDate, Pageable pageable) {
         return findByCriteria(name, afterDate, beforeDate, pageable);
     }
 

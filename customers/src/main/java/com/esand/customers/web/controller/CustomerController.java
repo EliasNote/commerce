@@ -38,7 +38,7 @@ public class CustomerController implements SpringDoc {
                                                   @RequestParam(value = "afterDate", required = false) String afterDate,
                                                   @RequestParam(value = "beforeDate", required = false) String beforeDate,
                                                   @PathVariable String name) {
-        return ResponseEntity.ok(customerService.findByName(afterDate, beforeDate, name, pageable));
+        return ResponseEntity.ok(customerService.findByName(name, afterDate, beforeDate, pageable));
     }
 
     @GetMapping("/cpf/{cpf}")
