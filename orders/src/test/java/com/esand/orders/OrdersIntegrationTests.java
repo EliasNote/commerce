@@ -37,6 +37,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestClientException;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -129,7 +130,7 @@ class OrdersIntegrationTests {
 	}
 
 	@Test
-	void testCreateOrderClientNotFoundException() throws Exception {
+	void testCreateOrderCustomerNotFoundException() throws Exception {
 		OrderCreateDto orderCreateDto = EntityMock.createDto();
 		Customer customer = new Customer();
 		Product product = EntityMock.product();
@@ -146,12 +147,12 @@ class OrdersIntegrationTests {
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/orders")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(json))
-				.andExpect(status().isNotFound()
-				);
+				.andExpect(status().isNotFound())
+				.andExpect(jsonPath("$.message").value("Customer not found by CPF"));
 	}
 
 	@Test
-	void testCreateOrderClientServiceUnavailableException() throws Exception {
+	void testCreateOrderCustomerConnectionException() throws Exception {
 		OrderCreateDto orderCreateDto = EntityMock.createDto();
 		Customer customer = new Customer();
 		Product product = EntityMock.product();
@@ -168,8 +169,30 @@ class OrdersIntegrationTests {
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/orders")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(json))
-				.andExpect(status().isServiceUnavailable()
-				);
+				.andExpect(status().isServiceUnavailable())
+				.andExpect(jsonPath("$.message").value("Customers API not available"));
+	}
+
+	@Test
+	void testCreateOrderCustomerUnknownErrorException() throws Exception {
+		OrderCreateDto orderCreateDto = EntityMock.createDto();
+		Customer customer = new Customer();
+		Product product = EntityMock.product();
+		product.setStatus(false);
+
+		when(customerClient.getCustomerByCpf(any(String.class))).thenReturn(customer);
+		when(productClient.getProductBySku(any(String.class))).thenReturn(product);
+
+		RestClientException connectionException = mock(RestClientException.class);
+		when(customerClient.getCustomerByCpf(anyString())).thenThrow(connectionException);
+
+		String json = objectMapper.writeValueAsString(orderCreateDto);
+
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/orders")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(json))
+				.andExpect(status().isInternalServerError())
+				.andExpect(jsonPath("$.message").value("Error fetching customer by CPF: null"));
 	}
 
 	@Test
@@ -190,12 +213,12 @@ class OrdersIntegrationTests {
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/orders")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(json))
-				.andExpect(status().isNotFound()
-				);
+				.andExpect(status().isNotFound())
+				.andExpect(jsonPath("$.message").value("Product not found by SKU"));
 	}
 
 	@Test
-	void testCreateOrderProductServiceUnavailableException() throws Exception {
+	void testCreateOrderProductConnectionException() throws Exception {
 		OrderCreateDto orderCreateDto = EntityMock.createDto();
 		Customer customer = new Customer();
 		Product product = EntityMock.product();
@@ -212,8 +235,30 @@ class OrdersIntegrationTests {
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/orders")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(json))
-				.andExpect(status().isServiceUnavailable()
-				);
+				.andExpect(status().isServiceUnavailable())
+				.andExpect(jsonPath("$.message").value("Products API not available"));
+	}
+
+	@Test
+	void testCreateOrderProductUnknownErrorException() throws Exception {
+		OrderCreateDto orderCreateDto = EntityMock.createDto();
+		Customer customer = new Customer();
+		Product product = EntityMock.product();
+		product.setStatus(false);
+
+		when(customerClient.getCustomerByCpf(any(String.class))).thenReturn(customer);
+		when(productClient.getProductBySku(any(String.class))).thenReturn(product);
+
+		RestClientException connectionException = mock(RestClientException.class);
+		when(productClient.getProductBySku(anyString())).thenThrow(connectionException);
+
+		String json = objectMapper.writeValueAsString(orderCreateDto);
+
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/orders")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(json))
+				.andExpect(status().isInternalServerError())
+				.andExpect(jsonPath("$.message").value("Error fetching product by SKU: null"));
 	}
 
 	@Test
@@ -280,6 +325,11 @@ class OrdersIntegrationTests {
 	void testFindAllOrdersSuccess() throws Exception {
 		createOrder();
 		OrderResponseDto responseDto = EntityMock.responseDto();
+		Customer customer = EntityMock.customer();
+		Product product = EntityMock.product();
+
+		when(customerClient.getCustomerByCpf(any(String.class))).thenReturn(customer);
+		when(productClient.getProductBySku(any(String.class))).thenReturn(product);
 
 		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/orders")
 						.contentType(MediaType.APPLICATION_JSON))
@@ -294,6 +344,11 @@ class OrdersIntegrationTests {
 		OrderResponseDto responseDto = EntityMock.responseDto();
 		String after = LocalDate.now().minusDays(1).toString();
 		String before = LocalDate.now().plusDays(1).toString();
+		Customer customer = EntityMock.customer();
+		Product product = EntityMock.product();
+
+		when(customerClient.getCustomerByCpf(any(String.class))).thenReturn(customer);
+		when(productClient.getProductBySku(any(String.class))).thenReturn(product);
 
 		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/orders?afterDate=" + after + "&beforeDate=" + before)
 						.contentType(MediaType.APPLICATION_JSON))
@@ -307,6 +362,11 @@ class OrdersIntegrationTests {
 		createOrder();
 		OrderResponseDto responseDto = EntityMock.responseDto();
 		String after = LocalDate.now().minusDays(1).toString();
+		Customer customer = EntityMock.customer();
+		Product product = EntityMock.product();
+
+		when(customerClient.getCustomerByCpf(any(String.class))).thenReturn(customer);
+		when(productClient.getProductBySku(any(String.class))).thenReturn(product);
 
 		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/orders?afterDate=" + after)
 						.contentType(MediaType.APPLICATION_JSON))
@@ -320,6 +380,11 @@ class OrdersIntegrationTests {
 		createOrder();
 		OrderResponseDto responseDto = EntityMock.responseDto();
 		String before = LocalDate.now().plusDays(1).toString();
+		Customer customer = EntityMock.customer();
+		Product product = EntityMock.product();
+
+		when(customerClient.getCustomerByCpf(any(String.class))).thenReturn(customer);
+		when(productClient.getProductBySku(any(String.class))).thenReturn(product);
 
 		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/orders?beforeDate=" + before)
 						.contentType(MediaType.APPLICATION_JSON))
@@ -342,6 +407,11 @@ class OrdersIntegrationTests {
 	void testFindBySkuOrdersSuccess() throws Exception {
 		createOrder();
 		OrderResponseDto responseDto = EntityMock.responseDto();
+		Customer customer = EntityMock.customer();
+		Product product = EntityMock.product();
+
+		when(customerClient.getCustomerByCpf(any(String.class))).thenReturn(customer);
+		when(productClient.getProductBySku(any(String.class))).thenReturn(product);
 
 		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/orders/sku/" + responseDto.getSku())
 						.contentType(MediaType.APPLICATION_JSON))
@@ -351,12 +421,69 @@ class OrdersIntegrationTests {
 	}
 
 	@Test
+	void testFindBySkuAndDateBetweenSuccess() throws Exception {
+		createOrder();
+		OrderResponseDto responseDto = EntityMock.responseDto();
+		String after = LocalDate.now().minusDays(1).toString();
+		String before = LocalDate.now().plusDays(1).toString();
+		Customer customer = EntityMock.customer();
+		Product product = EntityMock.product();
+
+		when(customerClient.getCustomerByCpf(any(String.class))).thenReturn(customer);
+		when(productClient.getProductBySku(any(String.class))).thenReturn(product);
+
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/orders/sku/" + EntityMock.PRODUCT_SKU + "?afterDate=" + after + "&beforeDate=" + before)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
+
+		verifyResult(response, responseDto, true);
+	}
+
+	@Test
+	void testFindBySkuAndDateAfterSuccess() throws Exception {
+		createOrder();
+		OrderResponseDto responseDto = EntityMock.responseDto();
+		String after = LocalDate.now().minusDays(1).toString();
+		Customer customer = EntityMock.customer();
+		Product product = EntityMock.product();
+
+		when(customerClient.getCustomerByCpf(any(String.class))).thenReturn(customer);
+		when(productClient.getProductBySku(any(String.class))).thenReturn(product);
+
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/orders/sku/" + EntityMock.PRODUCT_SKU + "?afterDate=" + after)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
+
+		verifyResult(response, responseDto, true);
+	}
+
+	@Test
+	void testFindBySkuAndDateBeforeSuccess() throws Exception {
+		createOrder();
+		OrderResponseDto responseDto = EntityMock.responseDto();
+		String before = LocalDate.now().plusDays(1).toString();
+		Customer customer = EntityMock.customer();
+		Product product = EntityMock.product();
+
+		when(customerClient.getCustomerByCpf(any(String.class))).thenReturn(customer);
+		when(productClient.getProductBySku(any(String.class))).thenReturn(product);
+
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/orders/sku/" + EntityMock.PRODUCT_SKU + "?beforeDate=" + before)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
+
+		verifyResult(response, responseDto, true);
+	}
+
+	@Test
 	void testFindBySkuOrderEntityNotFoundException() throws Exception {
 		orderRepository.deleteAll();
+
+
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/orders/sku/" + EntityMock.order().getSku())
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound())
-				.andExpect(jsonPath("$.message").value("No orders found by sku")
+				.andExpect(jsonPath("$.message").value("No orders found")
 				);
 	}
 
@@ -364,8 +491,68 @@ class OrdersIntegrationTests {
 	void testFindByCpfOrdersSuccess() throws Exception {
 		createOrder();
 		OrderResponseDto responseDto = EntityMock.responseDto();
+		Customer customer = EntityMock.customer();
+		Product product = EntityMock.product();
+
+		when(customerClient.getCustomerByCpf(any(String.class))).thenReturn(customer);
+		when(productClient.getProductBySku(any(String.class))).thenReturn(product);
 
 		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/orders/cpf/" + responseDto.getCpf())
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
+
+		verifyResult(response, responseDto, true);
+	}
+
+	@Test
+	void testFindByCpfAndDateBetweenSuccess() throws Exception {
+		createOrder();
+		OrderResponseDto responseDto = EntityMock.responseDto();
+		String after = LocalDate.now().minusDays(1).toString();
+		String before = LocalDate.now().plusDays(1).toString();
+		Customer customer = EntityMock.customer();
+		Product product = EntityMock.product();
+
+		when(customerClient.getCustomerByCpf(any(String.class))).thenReturn(customer);
+		when(productClient.getProductBySku(any(String.class))).thenReturn(product);
+
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/orders/cpf/" + EntityMock.CUSTOMER_CPF + "?afterDate=" + after + "&beforeDate=" + before)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
+
+		verifyResult(response, responseDto, true);
+	}
+
+	@Test
+	void testFindByCpfAndDateAfterSuccess() throws Exception {
+		createOrder();
+		OrderResponseDto responseDto = EntityMock.responseDto();
+		String after = LocalDate.now().minusDays(1).toString();
+		Customer customer = EntityMock.customer();
+		Product product = EntityMock.product();
+
+		when(customerClient.getCustomerByCpf(any(String.class))).thenReturn(customer);
+		when(productClient.getProductBySku(any(String.class))).thenReturn(product);
+
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/orders/cpf/" + EntityMock.CUSTOMER_CPF + "?afterDate=" + after)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
+
+		verifyResult(response, responseDto, true);
+	}
+
+	@Test
+	void testFindByCpfAndDateBeforeSuccess() throws Exception {
+		createOrder();
+		OrderResponseDto responseDto = EntityMock.responseDto();
+		String before = LocalDate.now().plusDays(1).toString();
+		Customer customer = EntityMock.customer();
+		Product product = EntityMock.product();
+
+		when(customerClient.getCustomerByCpf(any(String.class))).thenReturn(customer);
+		when(productClient.getProductBySku(any(String.class))).thenReturn(product);
+
+		ResultActions response = mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/orders/cpf/" + EntityMock.CUSTOMER_CPF + "?beforeDate=" + before)
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk());
 
@@ -378,7 +565,7 @@ class OrdersIntegrationTests {
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/orders/cpf/" + EntityMock.order().getCpf())
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound())
-				.andExpect(jsonPath("$.message").value("No orders found by cpf")
+				.andExpect(jsonPath("$.message").value("No orders found")
 				);
 	}
 
@@ -465,7 +652,7 @@ class OrdersIntegrationTests {
 	}
 
 	@Test
-	void testSendOrderByIdClientNotFoundException() throws Exception {
+	void testSendOrderByIdCustomerNotFoundException() throws Exception {
 		Order order = createOrder();
 
 		HttpClientErrorException.NotFound feignException = mock(HttpClientErrorException.NotFound.class);
@@ -473,12 +660,12 @@ class OrdersIntegrationTests {
 
 		mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/orders/processing/" + order.getId())
 						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNotFound()
-				);
+				.andExpect(status().isNotFound())
+				.andExpect(jsonPath("$.message").value("Customer not found by CPF"));
 	}
 
 	@Test
-	void testSendOrderByIdClientServiceUnavailableException() throws Exception {
+	void testSendOrderByIdCustomerConnectionException() throws Exception {
 		Order order = createOrder();
 
 		HttpServerErrorException.ServiceUnavailable feignException = mock(HttpServerErrorException.ServiceUnavailable.class);
@@ -486,8 +673,21 @@ class OrdersIntegrationTests {
 
 		mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/orders/processing/" + order.getId())
 						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isServiceUnavailable()
-				);
+				.andExpect(status().isServiceUnavailable())
+				.andExpect(jsonPath("$.message").value("Customers API not available"));
+	}
+
+	@Test
+	void testSendOrderByIdCustomerUnknownErrorException() throws Exception {
+		Order order = createOrder();
+
+		RestClientException connectionException = mock(RestClientException.class);
+		when(customerClient.getCustomerByCpf(anyString())).thenThrow(connectionException);
+
+		mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/orders/processing/" + order.getId())
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isInternalServerError())
+				.andExpect(jsonPath("$.message").value("Error fetching customer by CPF: null"));
 	}
 
 	@Test
@@ -499,12 +699,12 @@ class OrdersIntegrationTests {
 
 		mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/orders/processing/" + order.getId())
 						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNotFound()
-				);
+				.andExpect(status().isNotFound())
+				.andExpect(jsonPath("$.message").value("Product not found by SKU"));
 	}
 
 	@Test
-	void testSendOrderByIdProductServiceUnavailableException() throws Exception {
+	void testSendOrderByIdProductConnectionException() throws Exception {
 		Order order = createOrder();
 
 		HttpServerErrorException.ServiceUnavailable feignException = mock(HttpServerErrorException.ServiceUnavailable.class);
@@ -512,8 +712,21 @@ class OrdersIntegrationTests {
 
 		mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/orders/processing/" + order.getId())
 						.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isServiceUnavailable()
-				);
+				.andExpect(status().isServiceUnavailable())
+				.andExpect(jsonPath("$.message").value("Products API not available"));
+	}
+
+	@Test
+	void testSendOrderByIdProductUnknownErrorException() throws Exception {
+		Order order = createOrder();
+
+		RestClientException connectionException = mock(RestClientException.class);
+		when(productClient.getProductBySku(anyString())).thenThrow(connectionException);
+
+		mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/orders/processing/" + order.getId())
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isInternalServerError())
+				.andExpect(jsonPath("$.message").value("Error fetching product by SKU: null"));
 	}
 
 	@Test
