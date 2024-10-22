@@ -655,8 +655,8 @@ class OrdersIntegrationTests {
 	void testSendOrderByIdCustomerNotFoundException() throws Exception {
 		Order order = createOrder();
 
-		HttpClientErrorException.NotFound feignException = mock(HttpClientErrorException.NotFound.class);
-		when(customerClient.getCustomerByCpf(anyString())).thenThrow(feignException);
+		HttpClientErrorException.NotFound exception = mock(HttpClientErrorException.NotFound.class);
+		when(customerClient.getCustomerByCpf(anyString())).thenThrow(exception);
 
 		mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/orders/processing/" + order.getId())
 						.contentType(MediaType.APPLICATION_JSON))
@@ -668,8 +668,8 @@ class OrdersIntegrationTests {
 	void testSendOrderByIdCustomerConnectionException() throws Exception {
 		Order order = createOrder();
 
-		HttpServerErrorException.ServiceUnavailable feignException = mock(HttpServerErrorException.ServiceUnavailable.class);
-		when(customerClient.getCustomerByCpf(anyString())).thenThrow(feignException);
+		HttpServerErrorException.ServiceUnavailable exception = mock(HttpServerErrorException.ServiceUnavailable.class);
+		when(customerClient.getCustomerByCpf(anyString())).thenThrow(exception);
 
 		mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/orders/processing/" + order.getId())
 						.contentType(MediaType.APPLICATION_JSON))
@@ -694,8 +694,8 @@ class OrdersIntegrationTests {
 	void testSendOrderByIdProductNotFoundException() throws Exception {
 		Order order = createOrder();
 
-		HttpClientErrorException.NotFound feignException = mock(HttpClientErrorException.NotFound.class);
-		when(productClient.getProductBySku(anyString())).thenThrow(feignException);
+		HttpClientErrorException.NotFound exception = mock(HttpClientErrorException.NotFound.class);
+		when(productClient.getProductBySku(anyString())).thenThrow(exception);
 
 		mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/orders/processing/" + order.getId())
 						.contentType(MediaType.APPLICATION_JSON))
@@ -707,8 +707,8 @@ class OrdersIntegrationTests {
 	void testSendOrderByIdProductConnectionException() throws Exception {
 		Order order = createOrder();
 
-		HttpServerErrorException.ServiceUnavailable feignException = mock(HttpServerErrorException.ServiceUnavailable.class);
-		when(productClient.getProductBySku(anyString())).thenThrow(feignException);
+		HttpServerErrorException.ServiceUnavailable exception = mock(HttpServerErrorException.ServiceUnavailable.class);
+		when(productClient.getProductBySku(anyString())).thenThrow(exception);
 
 		mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/orders/processing/" + order.getId())
 						.contentType(MediaType.APPLICATION_JSON))
