@@ -13,9 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Product {
     private String title;
-    private String description;
     private Double price;
-    private List<Category> categories;
     private Integer quantity;
     private String sku;
     private Boolean status;

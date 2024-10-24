@@ -9,6 +9,7 @@ import com.esand.orders.entity.Order;
 import com.esand.orders.repository.order.OrderRepository;
 import com.esand.orders.web.dto.OrderCreateDto;
 import com.esand.orders.web.dto.OrderResponseDto;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -75,6 +76,11 @@ class OrdersIntegrationTests {
 
 	@MockBean
 	private KafkaAdmin kafkaAdmin;
+
+	@AfterEach
+	public void delete() {
+		orderRepository.deleteAll();
+	}
 
 	@BeforeEach
 	public void setUp() {

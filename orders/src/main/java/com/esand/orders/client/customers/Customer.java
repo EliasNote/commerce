@@ -14,9 +14,4 @@ import java.time.LocalDate;
 public class Customer {
     private String name;
     private String cpf;
-    private String phone;
-    private String email;
-    private String address;
-    private LocalDate birthDate;
-    private String gender;
 }

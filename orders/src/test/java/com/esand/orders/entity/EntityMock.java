@@ -1,7 +1,6 @@
 package com.esand.orders.entity;
 
 import com.esand.orders.client.customers.Customer;
-import com.esand.orders.client.products.Category;
 import com.esand.orders.client.products.Product;
 import com.esand.orders.web.dto.OrderCreateDto;
 import com.esand.orders.web.dto.OrderResponseDto;
@@ -115,21 +114,14 @@ public class EntityMock {
     public static Customer customer() {
         return new Customer(
                 CUSTOMER_NAME,
-                CUSTOMER_CPF,
-                CUSTOMER_PHONE,
-                CUSTOMER_EMAIL,
-                CUSTOMER_ADDRESS,
-                CUSTOMER_BIRTHDATE,
-                CUSTOMER_GENDER
+                CUSTOMER_CPF
         );
     }
 
     public static Product product() {
         return new Product(
                 PRODUCT_TITLE,
-                PRODUCT_DESCRIPTION,
                 PRODUCT_PRICE,
-                List.of(new Category(PRODUCT_CATEGORY)),
                 PRODUCT_QUANTITY,
                 PRODUCT_SKU,
                 PRODUCT_STATUS
