@@ -148,49 +148,12 @@ public interface SpringDoc {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorMessage.class)))
     })
-    ResponseEntity<Void> update(@PathVariable String sku, @RequestBody @Valid ProductUpdateDto dto);
-
-    @Operation(summary = "Toggle the status of a product",
-            description = "Endpoint that toggles the status of an existing product by SKU.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Product status updated successfully",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = String.class))),
-            @ApiResponse(responseCode = "404", description = "Product not found by SKU",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorMessage.class)))
-    })
-    ResponseEntity<String> toggleStatus(@PathVariable String sku);
-
-    @Operation(summary = "Increase product quantity",
-            description = "Endpoint to increase the quantity of a product by SKU.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Product quantity increased successfully",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = String.class))),
-            @ApiResponse(responseCode = "404", description = "Product not found by SKU",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorMessage.class))),
-            @ApiResponse(responseCode = "400", description = "Invalid quantity specified",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorMessage.class)))
-    })
-    ResponseEntity<String> increaseQuantity(@PathVariable String sku, @PathVariable Integer quantity);
-
-    @Operation(summary = "Decrease product quantity",
-            description = "Endpoint to decrease the quantity of a product by SKU.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Product quantity decreased successfully",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = String.class))),
-            @ApiResponse(responseCode = "404", description = "Product not found by SKU",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorMessage.class))),
-            @ApiResponse(responseCode = "400", description = "Invalid quantity specified",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorMessage.class)))
-    })
-    ResponseEntity<String> decreaseQuantity(@PathVariable String sku, @PathVariable Integer quantity);
+    ResponseEntity<ProductResponseDto> update(@PathVariable String sku,
+                                @RequestBody @Valid ProductUpdateDto dto,
+                                @RequestParam(required = false) Boolean status,
+                                @RequestParam(required = false) Integer addQuantity,
+                                @RequestParam(required = false) Integer subQuantity
+    );
 
     @Operation(summary = "Delete a product by SKU",
             description = "Endpoint to delete a product by SKU.")

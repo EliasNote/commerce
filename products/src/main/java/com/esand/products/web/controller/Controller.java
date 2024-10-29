@@ -81,24 +81,13 @@ public class Controller implements SpringDoc {
     }
 
     @PatchMapping("/edit/{sku}")
-    public ResponseEntity<Void> update(@PathVariable String sku, @RequestBody @Valid ProductUpdateDto dto) {
-        productService.update(sku, dto);
-        return ResponseEntity.noContent().build();
-    }
-
-    @PatchMapping("/status/{sku}")
-    public ResponseEntity<String> toggleStatus(@PathVariable String sku) {
-        return ResponseEntity.ok("updated status for: " + productService.alter(sku));
-    }
-
-    @PatchMapping("/sku/{sku}/add/{quantity}")
-    public ResponseEntity<String> increaseQuantity(@PathVariable String sku, @PathVariable Integer quantity) {
-        return ResponseEntity.ok("updated quantity for: " + productService.add(sku, quantity));
-    }
-
-    @PatchMapping("/sku/{sku}/sub/{quantity}")
-    public ResponseEntity<String> decreaseQuantity(@PathVariable String sku, @PathVariable Integer quantity) {
-        return ResponseEntity.ok("updated quantity for: " + productService.sub(sku, quantity));
+    public ResponseEntity<ProductResponseDto> update(@PathVariable String sku,
+                                       @RequestBody(required = false) @Valid ProductUpdateDto dto,
+                                       @RequestParam(required = false) Boolean status,
+                                       @RequestParam(required = false) Integer addQuantity,
+                                       @RequestParam(required = false) Integer subQuantity
+                                       ) {
+        return ResponseEntity.ok(productService.update(sku, dto, status, addQuantity, subQuantity));
     }
 
     @DeleteMapping("/delete/{sku}")

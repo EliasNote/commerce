@@ -82,47 +82,43 @@ public class ProductService {
     }
 
     @Transactional
-    public void update(String sku, ProductUpdateDto dto) {
+    public ProductResponseDto update(String sku, ProductUpdateDto dto, Boolean status, Integer addQuantity, Integer subQuantity) {
         Product product = findProductBySku(sku);
-        productMapper.updateProduct(dto, product);
-        updateProductStatus(product);
-    }
 
-    @Transactional
-    public String alter(String sku) {
-        Product product = findProductBySku(sku);
-        if (product.getQuantity() == 0) {
-            throw new InvalidProductStatusException("Cannot alter status when quantity is 0");
-        }
-        product.setStatus(!product.getStatus());
-        return product.getStatus().toString();
-    }
-
-    @Transactional
-    public String add(String sku, Integer quantity) {
-        Product product = findProductBySku(sku);
-        if (quantity == null || quantity <= 0) {
-            throw new InvalidQuantityException("No quantity stated");
-        }
-        product.setQuantity(product.getQuantity() + quantity);
-        if (product.getQuantity() - quantity == 0 || product.getQuantity() > 0 && product.getStatus()) {
+        if (dto != null) {
+            productMapper.updateProduct(dto, product);
             updateProductStatus(product);
         }
-        return product.getQuantity().toString();
-    }
 
-    @Transactional
-    public String sub(String sku, Integer quantity) {
-        Product product = findProductBySku(sku);
-        if (quantity == null || quantity <= 0) {
-            throw new InvalidQuantityException("No quantity stated");
+        if (status != null) {
+            if (product.getQuantity() == 0) {
+                throw new InvalidProductStatusException("Cannot alter status when quantity is 0");
+            }
+            product.setStatus(status);
         }
-        if (product.getQuantity() < quantity) {
-            throw new InvalidQuantityException("The quantity of available products is " + product.getQuantity());
+
+        if (addQuantity != null) {
+            if (addQuantity == null || addQuantity <= 0) {
+                throw new InvalidQuantityException("No quantity stated");
+            }
+            product.setQuantity(product.getQuantity() + addQuantity);
+            if (product.getQuantity() - addQuantity == 0 || product.getQuantity() > 0 && product.getStatus()) {
+                updateProductStatus(product);
+            }
         }
-        product.setQuantity(product.getQuantity() - quantity);
-        updateProductStatus(product);
-        return product.getQuantity().toString();
+
+        if (subQuantity != null) {
+            if (subQuantity == null || subQuantity <= 0) {
+                throw new InvalidQuantityException("No quantity stated");
+            }
+            if (product.getQuantity() < subQuantity) {
+                throw new InvalidQuantityException("The quantity of available products is " + product.getQuantity());
+            }
+            product.setQuantity(product.getQuantity() - subQuantity);
+            updateProductStatus(product);
+        }
+
+        return productMapper.toDto(product);
     }
 
     @Transactional
