@@ -11,8 +11,8 @@ public interface ProductClient {
     @GetExchange
     void checkStatus();
 
-    @PatchExchange("/sku/{sku}/add/{quantity}")
-    void addProductQuantityBySku(@PathVariable String sku, @PathVariable Integer quantity);
+    @PatchExchange("/edit/{sku}")
+    void addProductQuantityBySku(@PathVariable String sku, @RequestParam Integer addQuantity);
 
     @GetExchange("/sku/{sku}")
     Product getProductBySku(@PathVariable String sku);
