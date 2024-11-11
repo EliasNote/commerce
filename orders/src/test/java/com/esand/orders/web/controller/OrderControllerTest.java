@@ -82,19 +82,15 @@ public class OrderControllerTest {
         verifyResult(response.getBody(), EntityMock.responseDto());
     }
 
-//    @Test
-//    void testCreateOrderCustomerNotFoundException() throws Exception {
-//        OrderCreateDto orderCreateDto = EntityMock.createDto();
-//
-//        when(orderService.save(any(OrderCreateDto.class)))
-//                .thenThrow(new EntityNotFoundException("Customer not found by CPF"));
-//
-//        String json = objectMapper.writeValueAsString(orderCreateDto);
-//
-//        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/orders")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(json))
-//                .andExpect(status().isNotFound())
-//                .andExpect(jsonPath("$.message").value("Customer not found by CPF"));
-//    }
+    @Test
+    void testCreateOrderCustomerNotFoundException() throws Exception {
+        when(orderService.save(any(OrderCreateDto.class)))
+                .thenThrow(new EntityNotFoundException("Customer not found by CPF"));
+
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
+            orderController.create(EntityMock.createDto());
+        });
+
+        assertEquals("Customer not found by CPF", exception.getMessage());
+    }
 }
