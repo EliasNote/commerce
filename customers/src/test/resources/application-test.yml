@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/commerce_test
+    url: jdbc:postgresql://localhost:5433/commerce_test
     username: root
     password: root
   jpa:

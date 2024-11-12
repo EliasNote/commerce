@@ -1,9 +1,7 @@
 package com.esand.customers.web.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.esand.customers.entity.Customer;
+import lombok.*;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -20,6 +18,6 @@ public class CustomerResponseDto implements Serializable {
     private String email;
     private String address;
     private LocalDate birthDate;
-    private String gender;
+    private Customer.Gender gender;
     private LocalDateTime createDate;
 }
