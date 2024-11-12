@@ -140,4 +140,43 @@ public class EntityMock {
                 "Updated Mach Supplies Inc."
         );
     }
+
+    public static ProductDtoPagination productDtoPaginationMock() {
+        return new ProductDtoPagination() {
+            @Override
+            public String getTitle() {
+                return PRODUCT_TITLE;
+            }
+
+            @Override
+            public String getDescription() {
+                return PRODUCT_DESCRIPTION;
+            }
+
+            @Override
+            public Double getPrice() {
+                return PRICE;
+            }
+
+            @Override
+            public List<Category> getCategories() {
+                return List.of(new Category(1L, CATEGORY));
+            }
+
+            @Override
+            public Integer getQuantity() {
+                return QUANTITY;
+            }
+
+            @Override
+            public String getSku() {
+                return SKU;
+            }
+
+            @Override
+            public Boolean getStatus() {
+                return true;
+            }
+        };
+    }
 }
