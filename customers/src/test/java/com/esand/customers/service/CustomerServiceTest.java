@@ -54,7 +54,6 @@ class CustomerServiceTest {
             assertNotNull(page.getContent());
             assertEquals(1, page.getContent().size());
 
-            System.out.println("Tipo do objeto: " + page.getContent().getFirst());
             response = (CustomerResponseDto) page.getContent().getFirst();
         } else {
             response = (CustomerResponseDto) object;
