@@ -1,5 +1,6 @@
 package com.esand.delivery.springdoc;
 
+import com.esand.delivery.entity.KeycloakAccess;
 import com.esand.delivery.web.dto.DeliveryResponseDto;
 import com.esand.delivery.web.dto.PageableDto;
 import com.esand.delivery.web.exception.ErrorMessage;
@@ -16,7 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@Tag(name = "Deliveries", description = "Contains all operations related to delivery management, including searching, updating, and deletion")
+@Tag(name = "Deliveries", description = "Contains all operations related to delivery management, including searching, updating, deletion and Keycloak access")
 public interface SpringDoc {
 
     @Operation(summary = "Search for all deliveries",
@@ -93,10 +94,7 @@ public interface SpringDoc {
             @ApiResponse(responseCode = "200", description = "Delivery canceled successfully",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = String.class))),
-            @ApiResponse(responseCode = "404", description = "Delivery not found by ID",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorMessage.class))),
-            @ApiResponse(responseCode = "404", description = "Product not found by sku, but status has been updated",
+            @ApiResponse(responseCode = "404", description = "Delivery not found by ID or product not found by sku",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorMessage.class))),
             @ApiResponse(responseCode = "409", description = "Delivery already canceled",
@@ -133,4 +131,71 @@ public interface SpringDoc {
                             schema = @Schema(implementation = ErrorMessage.class)))
     })
     ResponseEntity<Void> deleteAllCanceled();
+
+    @Operation(summary = "Search deliveries by CPF",
+            description = "Endpoint to search for deliveries by CPF.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Deliveries found by CPF successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = PageableDto.class))),
+            @ApiResponse(responseCode = "404", description = "No deliveries found for the given CPF",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorMessage.class)))
+    })
+    ResponseEntity<PageableDto> findAllByCpf(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                             @RequestParam(value = "afterDate", required = false) String afterDate,
+                                             @RequestParam(value = "beforeDate", required = false) String beforeDate,
+                                             @PathVariable String cpf);
+
+    @Operation(summary = "Search deliveries by SKU",
+            description = "Endpoint to search for deliveries by SKU.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Deliveries found by SKU successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = PageableDto.class))),
+            @ApiResponse(responseCode = "404", description = "No deliveries found for the given SKU",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorMessage.class)))
+    })
+    ResponseEntity<PageableDto> findAllBySku(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                             @RequestParam(value = "afterDate", required = false) String afterDate,
+                                             @RequestParam(value = "beforeDate", required = false) String beforeDate,
+                                             @PathVariable String sku);
+
+    @Operation(summary = "List top shipped customers",
+            description = "Endpoint to list top shipped customers based on total spent and quantity purchased.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Top shipped customers retrieved successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "404", description = "No shipped deliveries found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorMessage.class)))
+    })
+    ResponseEntity<String> findTopShippedCustomers(@RequestParam(value = "afterDate", required = false) String afterDate,
+                                                   @RequestParam(value = "beforeDate", required = false) String beforeDate);
+
+    @Operation(summary = "List top shipped products",
+            description = "Endpoint to list top shipped products based on total revenue and quantity sold.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Top shipped products retrieved successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "404", description = "No shipped deliveries found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorMessage.class)))
+    })
+    ResponseEntity<String> findTopShippedProducts(@RequestParam(value = "afterDate", required = false) String afterDate,
+                                                  @RequestParam(value = "beforeDate", required = false) String beforeDate);
+
+    @Operation(summary = "Delete delivery by ID",
+            description = "Endpoint to delete a delivery by its ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Delivery deleted successfully",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "Delivery not found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorMessage.class)))
+    })
+    ResponseEntity<Void> deleteById(@PathVariable Long id);
 }

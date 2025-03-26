@@ -48,5 +48,3 @@ public class SecurityConfig {
         return jwtAuthenticationConverter;
     }
 }
-
-//.pathMatchers(HttpMethod.GET, "/api/v1/products/sku/**").hasRole("ADMIN")

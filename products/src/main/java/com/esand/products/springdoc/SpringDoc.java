@@ -20,8 +20,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@Tag(name = "Products", description = "Contains all operations related to resources for registration, searching, correcting data, and updating status")
+@Tag(name = "Products", description = "Contains all operations related to products and category management")
 public interface SpringDoc {
+
     @Operation(summary = "Register a new product",
             description = "Endpoint that registers a new product.")
     @ApiResponses(value = {
@@ -137,7 +138,7 @@ public interface SpringDoc {
                                                 @RequestParam(value = "beforeDate", required = false) String beforeDate);
 
     @Operation(summary = "Update a product's data",
-            description = "Endpoint to update a product's data by SKU. It's possible to update by specifying only the attribute you want to modify.")
+            description = "Endpoint to update a product's data by SKU. You can update only the attributes you want to modify.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Product data updated successfully",
                     content = @Content),
@@ -149,11 +150,10 @@ public interface SpringDoc {
                             schema = @Schema(implementation = ErrorMessage.class)))
     })
     ResponseEntity<ProductResponseDto> update(@PathVariable String sku,
-                                @RequestBody @Valid ProductUpdateDto dto,
-                                @RequestParam(required = false) Boolean status,
-                                @RequestParam(required = false) Integer addQuantity,
-                                @RequestParam(required = false) Integer subQuantity
-    );
+                                              @RequestBody @Valid ProductUpdateDto dto,
+                                              @RequestParam(required = false) Boolean status,
+                                              @RequestParam(required = false) Integer addQuantity,
+                                              @RequestParam(required = false) Integer subQuantity);
 
     @Operation(summary = "Delete a product by SKU",
             description = "Endpoint to delete a product by SKU.")
@@ -164,4 +164,57 @@ public interface SpringDoc {
                             schema = @Schema(implementation = ErrorMessage.class)))
     })
     ResponseEntity<Void> deleteProductBySku(@PathVariable String sku);
+
+    // Endpoints para gerenciamento de categoria
+
+    @Operation(summary = "Create a new category",
+            description = "Endpoint to create a new category.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Category created successfully!",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid request",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorMessage.class)))
+    })
+    ResponseEntity<String> addCategory(@PathVariable String category);
+
+    @Operation(summary = "Get all categories",
+            description = "Endpoint to retrieve all categories.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Categories retrieved successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = PageableDto.class))),
+            @ApiResponse(responseCode = "404", description = "No categories found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorMessage.class)))
+    })
+    ResponseEntity<PageableDto> getCategories(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable,
+                                              @RequestParam(value = "afterDate", required = false) String afterDate,
+                                              @RequestParam(value = "beforeDate", required = false) String beforeDate);
+
+    @Operation(summary = "Remove a category",
+            description = "Endpoint to delete a category.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Category removed successfully"),
+            @ApiResponse(responseCode = "404", description = "Category not found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorMessage.class)))
+    })
+    ResponseEntity<Void> removeCategory(@PathVariable String category);
+
+    @Operation(summary = "Edit category name",
+            description = "Endpoint to update a category's name.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Category updated successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid request data",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorMessage.class))),
+            @ApiResponse(responseCode = "404", description = "Category not found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorMessage.class)))
+    })
+    ResponseEntity<String> editCategory(@PathVariable String category, @PathVariable String newName);
 }
