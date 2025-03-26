@@ -32,15 +32,6 @@ public class GatewayApplication {
 				.route(r -> r.path("/orders/actuator/**").filters(f -> f.rewritePath("/orders/actuator/(?<segment>.*)", "/actuator/${segment}")).uri("lb://orders"))
 				.route(r -> r.path("/deliveries/actuator").filters(f -> f.rewritePath("/deliveries/actuator", "/actuator")).uri("lb://delivery"))
 				.route(r -> r.path("/deliveries/actuator/**").filters(f -> f.rewritePath("/deliveries/actuator/(?<segment>.*)", "/actuator/${segment}")).uri("lb://delivery"))
-
-				.route(r -> r.path("/products/docs-ui/**").filters(f -> f.rewritePath("/products/docs-ui/(?<segment>.*)", "/swagger-ui/${segment}")).uri("lb://products"))
-				.route(r -> r.path("/products/docs-api").filters(f -> f.rewritePath("/products/docs-api", "/docs-api")).uri("lb://products"))
-				.route(r -> r.path("/customers/docs-ui/**").filters(f -> f.rewritePath("/customers/docs-ui/(?<segment>.*)", "/swagger-ui/${segment}")).uri("lb://customers"))
-				.route(r -> r.path("/customers/docs-api").filters(f -> f.rewritePath("/customers/docs-api", "/docs-api")).uri("lb://customers"))
-				.route(r -> r.path("/orders/docs-ui/**").filters(f -> f.rewritePath("/orders/docs-ui/(?<segment>.*)", "/swagger-ui/${segment}")).uri("lb://orders"))
-				.route(r -> r.path("/orders/docs-api").filters(f -> f.rewritePath("/orders/docs-api", "/docs-api")).uri("lb://orders"))
-				.route(r -> r.path("/deliveries/docs-ui/**").filters(f -> f.rewritePath("/deliveries/docs-ui/(?<segment>.*)", "/swagger-ui/${segment}")).uri("lb://delivery"))
-				.route(r -> r.path("/deliveries/docs-api").filters(f -> f.rewritePath("/deliveries/docs-api", "/docs-api")).uri("lb://delivery"))
 				.build();
 	}
 }
